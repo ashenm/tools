@@ -1,12 +1,14 @@
 safe: ture
 timezone: "Etc/UTC"
 encoding: "utf-8"
+url: "https://ashenm.github.io/tools"
 
 lang: "en"
-title: "Tools"
+title: "Demonstration Tools"
 author: "Ashen Gunaratne"
 email: "mail@ashenm.ml"
-description: "Miscellanies tools used for demonstrations"
+keywords: "ashen m. gunaratne educational tools materials"
+desc: "A collection of miscellanies instructional tools and materials"
 
 defaults:
   scope:

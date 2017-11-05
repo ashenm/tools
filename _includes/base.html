@@ -1,11 +1,11 @@
 <!-- 
 
-  {{ page.title }}
-  {{ page.desc }}
-  {{ page.link }}
+  {{ page.title | default: site.title }}
+  {{ page.desc | default: site.desc }}
+  {{ site.url | append:page.url }}
 
-  {{ site.author }}
-  {{ site.email }}
+  {{ page.author | default: site.author }}
+  {{ page.email | default: site.email }}
 
  -->
 <!DOCTYPE html>
