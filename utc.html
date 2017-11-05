@@ -1,0 +1,156 @@
+---
+title: UTC
+desc: Convert local time to UTC
+keywords: ashen m. gunaratne convert time utc
+link: https://ashenm.github.io/utc
+lang: en
+---
+
+{%- capture metadata -%}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <meta name="description" content="{{ page.desc }}" />
+  <meta name="keywords" content="{{ page.keywords }}" />
+  <meta name="author" content="{{ site.author }}" />
+  <title>{{ page.title }}</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous" />
+  <style type="text/css">
+
+    body {      
+      display: flex;
+      min-height: 100vh;
+      text-align: center;
+      align-items: center;
+    }
+
+    time,
+    output {      
+      font-family: 'Consolas', 'Lucida Console', 'Monaco';
+    }
+
+    .caption {
+      color: #868e96;
+    }
+
+  </style>
+{%- endcapture -%}
+
+{%- capture scripts -%}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.1/moment.min.js" integrity="sha256-zG8v+NWiZxmjNi+CvUYnZwKtHzFtdO8cAKUIdB8+U9I=" crossorigin="anonymous"></script>
+  <script type="text/javascript">
+
+    const time = {
+      utc: {
+        format: 'dddd, MMMM D, YYYY hh:mm:ss A'
+      },
+      local: {
+        format: 'dddd, MMMM D, YYYY hh:mm:ss A ZZ'
+      }
+    };
+
+    class UTC {
+
+      constructor(element, format) {
+        this.container = element;
+        this.format = format;
+      }
+
+      update() {
+        const now = moment().utc();
+        this.container.dateTime = now.toISOString();
+        this.container.innerText = now.format(this.format);
+      }
+
+    }
+
+    class Local extends UTC {
+
+      constructor(element, format) {
+        super(element, format);
+      }
+
+      update() {
+        const now = moment();
+        this.container.dateTime = now.toISOString();
+        this.container.innerText = now.format(this.format);
+      }
+
+    }
+
+    document.onreadystatechange = function() {
+      if (document.readyState === 'interactive') {
+
+        time.converter = document.querySelector('form');
+        time.utc.container = document.getElementById('utc');
+        time.local.container = document.getElementById('local');
+        time.utc.node = time.utc.container.querySelector('time');
+        time.local.node = time.local.container.querySelector('time');
+        time.converter.output = time.converter.nextElementSibling;
+
+        time.utc = new UTC(time.utc.node, time.utc.format);
+        time.local = new Local(time.local.node, time.local.format);
+        time.converter.oninput = clear;
+        time.converter.onsubmit = converter;
+
+        time.utc.update();
+        time.local.update();
+
+        window.setInterval(function() {
+          time.utc.update();
+          time.local.update();
+        }, 1000);
+
+      }
+    };
+
+    function converter(e) {
+      const request = moment(this.convert.value, 'D-M-YYYY hh:mm ZZ');
+      if (request.isValid()) {
+        time.converter.output.innerText = request.utc().format();
+      } else {
+        const warning = document.createElement('p');
+        warning.innerText ='Provided value is not in a recognized format';
+        warning.classList.add('text-danger');
+        time.converter.output.appendChild(warning);
+      }
+      return false;
+    }
+
+    function clear(e) {
+      time.converter.output.innerHTML = '';
+    }
+
+  </script>
+{%- endcapture -%}
+
+{%- capture body -%}
+  <div class="container">
+    <header>
+      <div id="utc">
+        <h4><time datetime="1970-00-01T00:00"></time></h4>
+        <h6 class="caption">UTC</h6>
+      </div>
+      <div id="local">
+        <h4><time datetime="1970-00-01T00:00"></time></h4>
+        <h6 class="caption">Local</h6>
+      </div>
+    </header>
+    <main>
+      <form class="mt-5 mb-3">
+        <div class="form-row justify-content-center">
+          <div class="col-xs-6 col-md-4">
+            <div class="input-group">
+              <input type="datetime" class="form-control" autofocus="autofocus" placeholder="DD/MM/YYY HH:MM [UTC Offset]" aria-label="convert time in format dd/mm/yyyy hh:mm" name="convert" />
+              <span class="input-group-btn">
+                <button class="btn btn-secondary" type="submit">Convert</button>
+              </span>
+            </div>
+          </div>
+        </div>
+      </form>
+      <output></output>
+    </main>
+  </div>
+{%- endcapture -%}
+
+{%- include base.html -%}

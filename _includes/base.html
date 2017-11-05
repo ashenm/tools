@@ -1,0 +1,20 @@
+<!-- 
+
+  {{ page.title }}
+  {{ page.desc }}
+  {{ page.link }}
+
+  {{ site.author }}
+  {{ site.email }}
+
+ -->
+<!DOCTYPE html>
+<html lang="{{ page.lang | default: site.lang }}">
+<head>
+  {{ metadata }}
+  {{ scripts }}
+</head>
+<body>
+  {{ body }}
+</body>
+</html>

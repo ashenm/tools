@@ -1,0 +1,16 @@
+safe: ture
+timezone: "Etc/UTC"
+encoding: "utf-8"
+
+lang: "en"
+title: "Tools"
+author: "Ashen Gunaratne"
+email: "mail@ashenm.ml"
+description: "Miscellanies tools used for demonstrations"
+
+defaults:
+  scope:
+    path: ""
+    type: "pages"
+  values:
+    layout: "default"
