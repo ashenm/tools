@@ -1,9 +1,46 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Hello, World!</title>
-</head>
-<body>
+---
+title: Demonstration Tools
+desc: A collection of miscellanies instructional tools and materials
+keywords: ashen m. gunaratne educational tools
+link: https://ashenm.github.io/tools
+lang: en
+---
 
-</body>
-</html>
+{%- capture metadata -%}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <meta name="description" content="{{ page.desc }}" />
+  <meta name="keywords" content="{{ page.keywords }}" />
+  <meta name="author" content="{{ site.author }}" />
+  <title>{{ page.title }}</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous" />
+  <style type="text/css">
+
+    main {
+      display: flex;
+      min-height: 100vh;
+      align-items: center;
+      font-family: "Segoe UI", "Helvetica", "Arial";
+    }
+
+    h1 {
+      padding-bottom: 0.3em;
+      border-bottom: 1px solid #eaecef;
+    }
+
+  </style>
+{%- endcapture -%}
+
+{%- capture scripts -%}
+{%- endcapture -%}
+
+{%- capture body -%}
+  <main>
+    <div class="container">
+      <h1>Demonstration Tools</h1>
+      <h5>A collection of miscellanies instructional tools and materials</h5>
+    </div>
+  </main>
+{%- endcapture -%}
+
+{%- include base.html -%}
