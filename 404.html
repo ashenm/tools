@@ -1,0 +1,52 @@
+---
+title: 404 Not Found
+desc: Page not found
+---
+
+{%- capture metadata -%}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <meta name="description" content="{{ page.desc }}" />
+  <meta name="keywords" content="{{ page.keywords }}" />
+  <meta name="author" content="{{ site.author }}" />
+  <title>{{ page.title }}</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css" integrity="sha256-3iu9jgsy9TpTwXKb7bNQzqWekRX7pPK+2OLj3R922fo=" crossorigin="anonymous" />
+  <style type="text/css">
+
+    main {
+      color: #777;
+      display: flex;
+      min-height: 100vh;
+      text-align: center;
+      align-items: center;
+      font-family: "Segoe UI", "Helvetica", "Arial";
+    }
+
+    h1 {
+      padding-bottom: 0.3em;
+      border-bottom: 1px solid #eaecef;
+    }
+
+    .ionicons {
+      margin: 16px;
+      font-size: 144px;
+    }
+
+  </style>
+{%- endcapture -%}
+
+{%- capture scripts -%}
+{%- endcapture -%}
+
+{%- capture body -%}
+  <main>
+    <div class="container">
+      <span class="ionicons ion-sad"></span>
+      <h1>404</h1>
+      <h5>The requested page was not found</h5>
+    </div>
+  </main>
+{%- endcapture -%}
+
+{%- include base.html -%}
