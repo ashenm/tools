@@ -1,0 +1,94 @@
+---
+lang: en
+title: Index
+desc: List of instructional tools available with a short description
+keywords: ashen m. gunaratne educational tools materials index
+---
+
+{%- capture metadata -%}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <meta name="description" content="{{ page.desc }}" />
+  <meta name="keywords" content="{{ page.keywords }}" />
+  <meta name="author" content="{{ site.author }}" />
+  <title>{{ page.title }}</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous" />
+  <style type="text/css">
+    
+    table {
+      margin: 20px;
+    }
+
+    caption {
+      text-align: center;
+    }
+
+  </style>
+{%- endcapture -%}
+
+{%- capture scripts -%}
+  <script type="text/javascript">
+
+    const index = {
+      title: 0,
+      desc: 1
+    }
+
+    const tools = {
+      '/rgb': ['RGB Explorer', 'Explore RGB colour scheme'],
+      '/utc': ['UTC', 'Convert local time to UTC']
+    }
+
+    document.onreadystatechange = function() {
+      if (document.readyState === 'interactive') {
+
+        const node = document.querySelector('tbody');
+        const endpoint = `//${location.host}`;
+
+        for (tool in tools) {
+
+          const row = document.createElement('tr');
+          const title = document.createElement('td');
+          const desc = document.createElement('td');
+          const link = document.createElement('a');
+
+          link.rel = `external`;
+          link.href = `${endpoint}${tool}`;
+          link.innerText = tools[tool][index.title];
+          desc.innerText = tools[tool][index.desc];
+
+          title.appendChild(link);
+          row.appendChild(title);
+          row.appendChild(desc);
+          node.appendChild(row);
+
+        };
+
+      }
+    };
+
+  </script>
+{%- endcapture -%}
+
+{%- capture body -%}
+  <main>
+    <div class="container-fluid">
+      <div class="row justify-content-center">
+        <div class="col-md-6">
+          <table class="table table-hover table-responsive-sm">
+            <caption>List of Tools</caption>
+            <thead>
+              <tr>
+                <th scope="col">Tool</th>
+                <th scope="col">Description</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+{%- endcapture -%}
+
+{%- include base.html -%}
