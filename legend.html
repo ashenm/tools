@@ -34,9 +34,15 @@ keywords: ashen m. gunaratne educational tools materials index
     document.onreadystatechange = function() {
       if (document.readyState === 'interactive') {
 
-        const node = document.querySelector('tbody');
+        // extract username and repositoy
+        // const path = location.href.match(/(\w+)\W\w+\W\w+\W(\w+)/);
+        // const username = path[0];
+        // const repositoy = path[1];
 
-        dir(function(error, files) {
+        const username = 'ashenm';
+        const repositoy = 'tools';
+
+        dir(username, repositoy, function(error, files) {
           files.forEach(file => {
 
             // ignore dot and underscore files
@@ -49,6 +55,7 @@ keywords: ashen m. gunaratne educational tools materials index
               return;
             }
 
+            const node = document.querySelector('tbody');
             const row = document.createElement('tr');
             const title = document.createElement('td');
             const desc = document.createElement('td');
@@ -57,7 +64,7 @@ keywords: ashen m. gunaratne educational tools materials index
 
             row.id = ref;
             link.rel = `external`;
-            link.href = `//${location.host}/${ref}`;
+            link.href = `//${location.host}/${repositoy}/${ref}`;
 
             title.appendChild(link);
             row.appendChild(title);
@@ -87,14 +94,10 @@ keywords: ashen m. gunaratne educational tools materials index
      * Execute parameterised function with an array of objects
      * each object representing an item in the repository
      */
-    function dir(callback) {
+    function dir(username, repository, callback) {
 
       const xhr = new XMLHttpRequest();
-
-      // extract username and repositoy
-      // //${username}.github.io/${repositoy}
-      const path = /(\w+)\W\w+\W\w+\W(\w+)/.exec(location.href);
-      const route = `https://api.github.com/repos/${path[1]}/${path[2]}/contents`;
+      const route = `https://api.github.com/repos/${username}/${repository}/contents`;
 
       xhr.responseType = 'json';
       xhr.onreadystatechange = function() {
