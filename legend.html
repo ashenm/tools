@@ -35,12 +35,9 @@ keywords: ashen m. gunaratne educational tools materials index
       if (document.readyState === 'interactive') {
 
         // extract username and repositoy
-        // const path = location.href.match(/(\w+)\W\w+\W\w+\W(\w+)/);
-        // const username = path[0];
-        // const repositoy = path[1];
-
-        const username = 'ashenm';
-        const repositoy = 'tools';
+        const path = location.href.match(/(\w+)\W\w+\W\w+\W(\w+)/);
+        const username = path[0];
+        const repositoy = path[1];
 
         dir(username, repositoy, function(error, files) {
           files.forEach(file => {
