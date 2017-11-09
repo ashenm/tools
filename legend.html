@@ -39,7 +39,7 @@ keywords: ashen m. gunaratne educational tools materials index
         const username = path[1];
         const repositoy = path[2];
 
-        dir(username, repositoy, function(error, files) {
+        dir(username, repositoy, (error, files) => {
           files.forEach(file => {
 
             // ignore dot and underscore files
@@ -47,7 +47,7 @@ keywords: ashen m. gunaratne educational tools materials index
               return;
             }
 
-            // also omit parameterised files
+            // also omit predefined files
             if (excludes.indexOf(file.name) > -1) {
               return;
             }
