@@ -29,61 +29,20 @@ keywords: ashen m. gunaratne educational tools materials index
 {%- capture scripts -%}
   <script type="text/javascript">
 
-    const excludes = ['README.md', '404.html', 'index.html', 'legend.html'];
+    // extract username and repository
+    const path = location.href.match(/(\w+)\W\w+\W\w+\W(\w+)/);
 
+    // global configuration
+    const config = {
+      username: path[1],
+      repository: path[2],
+      excludes: ['README.md', '404.html', 'index.html', 'legend.html']
+    };
+
+    // on DOM ready
     document.onreadystatechange = function() {
       if (document.readyState === 'interactive') {
-
-        // extract username and repositoy
-        const path = location.href.match(/(\w+)\W\w+\W\w+\W(\w+)/);
-        const username = path[1];
-        const repositoy = path[2];
-
-        dir(username, repositoy, (error, files) => {
-          files.forEach(file => {
-
-            // ignore dot and underscore files
-            if (file.name.match(/^[._]/)) {
-              return;
-            }
-
-            // also omit predefined files
-            if (excludes.indexOf(file.name) > -1) {
-              return;
-            }
-
-            const node = document.querySelector('tbody');
-            const row = document.createElement('tr');
-            const title = document.createElement('td');
-            const desc = document.createElement('td');
-            const link = document.createElement('a');
-            const ref = file.name.replace(/\.\w+/, '');
-
-            row.id = ref;
-            link.rel = `next`;
-            link.href = `//${location.host}/${repositoy}/${ref}`;
-
-            title.appendChild(link);
-            row.appendChild(title);
-            row.appendChild(desc);
-            node.appendChild(row);
-
-            metadata(file.download_url, ref, (error, refID, metadata) => {
-
-              if (error) {
-                return;
-              }
-
-              const node = document.getElementById(refID);
-
-              node.firstElementChild.firstChild.innerText = metadata.title;
-              node.lastElementChild.innerText = metadata.desc;
-
-            });
-
-          });
-        });
-
+        dir(config.username, config.repository, '', render);
       }
     };
 
@@ -91,21 +50,22 @@ keywords: ashen m. gunaratne educational tools materials index
      * Execute parameterised function with an array of objects
      * each object representing an item in the repository
      */
-    function dir(username, repository, callback) {
+    function dir(username, repository, path, callback) {
 
       const xhr = new XMLHttpRequest();
-      const route = `https://api.github.com/repos/${username}/${repository}/contents`;
+      const route = `https://api.github.com/repos/${username}/${repository}/contents/${path}`;
 
       xhr.responseType = 'json';
       xhr.onreadystatechange = function() {
         if (xhr.readyState === XMLHttpRequest.DONE) {
           if (xhr.status === 200) {
-            callback(null, xhr.response);
+            callback(null, path, xhr.response);
           } else {
             callback(xhr.status);
           }
         }
-      }
+      };
+
       xhr.open('GET', route);
       xhr.send(null);
 
@@ -113,26 +73,36 @@ keywords: ashen m. gunaratne educational tools materials index
 
     /**
      * Execute parameterised function with an object
-     * where each property corresponding to YAML front matter variables 
+     * where each property corresponding to YAML front matter variables
      */
     function metadata(url, refID, callback) {
 
-      const metadata = {};
-      const xhr = new XMLHttpRequest;
+      const data = {};
+      const xhr = new XMLHttpRequest();
 
       xhr.responseType = 'text';
       xhr.onreadystatechange = function() {
         if (xhr.readyState === XMLHttpRequest.DONE) {
-          // extract front matter and construct hash table
-          if (fm = xhr.response.match(/---\s([^]*)\s---/)) {
-            fm.pop().split(/\r\n|\r|\n/).forEach(meta => {
-              const extract = meta.match(/(\S+): ([\s\S]+)/);
-              metadata[extract[1]] = extract[2];
-            });
-            callback(null, refID, metadata);
-          } else {
-            callback(xhr.status);
+
+          // extract front matter
+          const fm = xhr.response.match(/---\s([^]*)\s---/);
+
+          // handle non-existent font matter
+          if (!fm) {
+            callback(new TypeError(), null, refID);
+            return;
           }
+
+          // construct hash table
+          fm.pop().split(/\r\n|\r|\n/).forEach(row => {
+            const extract = row.match(/(\S+): ([\s\S]+)/);
+            data[extract[1]] = extract[2];
+          });
+
+          // execute callback with invoker reference
+          // and extracted YAML front matter object
+          callback(null, data, refID);
+
         }
       };
 
@@ -142,6 +112,60 @@ keywords: ashen m. gunaratne educational tools materials index
       // xhr.setRequestHeader('Range', 'bytes=0-256');
       xhr.send(null);
 
+    }
+
+    /**
+     * Render repository listing
+     */
+    function render(error, path, files) {
+      files.forEach(file => {
+
+        // ignore dot and underscore files
+        if (file.name.match(/^[._]/)) {
+          return;
+        }
+
+        // also omit predefined files
+        if (config.excludes.indexOf(file.name) > -1) {
+          return;
+        }
+
+        // recursively list sub-directory content
+        if (file.type === 'dir') {
+          dir(config.username, config.repository, `${path}/${file.name}`, render);
+          return;
+        }
+
+        const node = document.querySelector('tbody');
+        const row = document.createElement('tr');
+        const title = document.createElement('td');
+        const desc = document.createElement('td');
+        const link = document.createElement('a');
+        const ref = file.name.replace(/\.\w+/, '');
+
+        row.id = ref;
+        link.rel = `next`;
+        link.href = `//${location.host}/${config.repository}${path}/${ref}`;
+
+        title.appendChild(link);
+        row.appendChild(title);
+        row.appendChild(desc);
+        node.appendChild(row);
+
+        metadata(file.download_url, ref, (error, data, refID) => {
+
+          const node = document.getElementById(refID);
+          const metadata = Object.assign({}, data || {
+            title: refID,
+            desc: '<em>No description available<em>'
+          });
+
+          node.firstElementChild.firstChild.innerText = metadata.title;
+          node.lastElementChild.innerHTML = metadata.desc;
+
+        });
+
+      });
     }
 
   </script>
