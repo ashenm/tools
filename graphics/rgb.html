@@ -1,0 +1,147 @@
+---
+lang: en
+title: RGB Explorer
+desc: Explore RGB colour scheme
+keywords: ashen m. gunaratne rgb explore color scheme
+---
+
+{%- capture metadata -%}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <meta name="description" content="{{ page.desc }}" />
+  <meta name="keywords" content="{{ page.keywords }}" />
+  <meta name="author" content="{{ site.author }}" />
+  <title>{{ page.title }}</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous" />
+  <style type="text/css">
+
+    main {
+      display: flex;
+      min-height: 100vh;
+      align-items: center;
+      font-family: 'Consolas', 'Monaco', 'Lucida Console';
+    }
+
+    form {
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    #canvas {
+      fill: rgb(0, 0, 0);
+    }
+
+  </style>
+{%- endcapture -%}
+
+{%- capture scripts -%}
+  <script type="text/javascript">
+
+    class RGB {
+
+      constructor(colours) {
+
+        // extract parametrised colours
+        // provided in standard `rgb` order
+        this.rgb =
+          /(\d{1,3})\D+(\d{1,3})\D+(\d{1,3})/.exec(colours) || ['0 0 0', 0, 0, 0];
+
+        // individual plateaus
+        this.red = this.rgb[1];
+        this.green = this.rgb[2];
+        this.blue = this.rgb[3];
+
+      }
+
+      /**
+       * Return a string representation of RGB color codes
+       * in the format of `rgb(red, green, blue)`
+       */
+      toString() {
+        return `rgb(${this.red}, ${this.green}, ${this.blue})`;
+      }
+
+      /**
+       * Returns an array populated with RGB color codes
+       */
+      valueOf() {
+        return [this.red, this.green, this.blue];
+      }
+
+    }
+
+    // DOM references
+    const node = {};
+
+    // on DOM ready
+    document.onreadystatechange = function() {
+      if (document.readyState === 'interactive') {
+
+        // initial node references
+        // for output node extraction
+        node.input = document.querySelector('form');
+        node.container = document.querySelector('output');
+
+        // node references for canvas manipulation
+        node.canvas = node.container.querySelector('rect');
+        node.value = node.container.querySelector('span');
+
+        // associate event handlers
+        node.input.oninput = blend;
+
+      }
+    };
+
+    function blend(e) {
+
+      // current colour codes
+      present = new RGB(node.canvas.style.fill);
+
+      // change requested colour value
+      present[e.target.name] = e.target.value;
+
+      // change canvas colour
+      node.canvas.style.fill = present.toString();
+
+      // update value
+      node.value.innerText = present.valueOf();
+
+    }
+
+  </script>
+{%- endcapture -%}
+
+{%- capture body -%}
+  <main>
+    <form>
+      <div class="form-group">
+        <output>
+          <svg width="225" height="225">
+            <rect id="canvas" x="0" y="0" width="100%" height="100%" />
+          </svg>
+          <span class="d-block text-center text-muted">0,0,0</span>
+        </output>
+      </div>
+      <div class="form-group row">
+        <label class="col-sm-3 col-form-label">Red</label>
+        <div class="col-sm-9">
+          <input type="range" min="0" max="255" value="0" name="red" aria-label="red value" class="form-control" />
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-sm-3 col-form-label">Green</label>
+        <div class="col-sm-9">
+          <input type="range" min="0" max="255" value="0" name="green" aria-label="green value" class="form-control" />
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-sm-3 col-form-label">Blue</label>
+        <div class="col-sm-9">
+          <input type="range" min="0" max="255" value="0" name="blue" aria-label="blue value" class="form-control" />
+        </div>
+      </div>
+    </form>
+  </main>
+{%- endcapture -%}
+
+{%- include base.html -%}
