@@ -10,12 +10,15 @@ desc: Page not found
   <meta name="keywords" content="{{ page.keywords }}" />
   <meta name="author" content="{{ site.author }}" />
   <title>{{ page.title }}</title>
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css" integrity="sha256-3iu9jgsy9TpTwXKb7bNQzqWekRX7pPK+2OLj3R922fo=" crossorigin="anonymous" />
   <style type="text/css">
 
+    body {
+      margin: 0px;
+    }
+
     main {
-      color: #777;
+      color: #3a3a3a;
       display: flex;
       min-height: 100vh;
       text-align: center;
@@ -24,13 +27,33 @@ desc: Page not found
     }
 
     h1 {
-      padding-bottom: 0.3em;
+      font-size: 40px;
+      padding-bottom: 4.75px;
       border-bottom: 1px solid #eaecef;
+      border-bottom: 1px solid #eaecef;
+    }
+
+    h5 {
+      color: #555;
+      font-size: 20px;
+    }
+
+    h1,
+    h5 {
+      font-weight: 500;
+      line-height: 1.2;
+      margin: 0px 0px 8px 0px;
     }
 
     .ionicons {
       margin: 16px;
       font-size: 144px;
+    }
+
+    .container {
+      width: 100%;
+      margin-left: 5.75vw;
+      margin-right: 5.75vw;
     }
 
   </style>
