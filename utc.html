@@ -77,46 +77,55 @@ keywords: ashen m. gunaratne convert time utc
     }
 
     document.onreadystatechange = function() {
-      if (document.readyState === 'interactive') {
 
-        time.converter = document.querySelector('form');
-        time.utc.container = document.getElementById('utc');
-        time.local.container = document.getElementById('local');
-        time.utc.node = time.utc.container.querySelector('time');
-        time.local.node = time.local.container.querySelector('time');
-        time.converter.output = time.converter.nextElementSibling;
+      if (document.readyState !== 'interactive')
+        return;
 
-        time.utc = new UTC(time.utc.node, time.utc.format);
-        time.local = new Local(time.local.node, time.local.format);
-        time.converter.oninput = clear;
-        time.converter.onsubmit = converter;
+      time.converter = document.querySelector('form');
+      time.utc.container = document.getElementById('utc');
+      time.local.container = document.getElementById('local');
+      time.utc.node = time.utc.container.querySelector('time');
+      time.local.node = time.local.container.querySelector('time');
+      time.converter.output = time.converter.nextElementSibling;
+      time.converter.outputPOSIX = time.converter.output.nextElementSibling;
 
+      time.utc = new UTC(time.utc.node, time.utc.format);
+      time.local = new Local(time.local.node, time.local.format);
+      time.converter.oninput = clear;
+      time.converter.onsubmit = converter;
+
+      time.utc.update();
+      time.local.update();
+
+      window.setInterval(function() {
         time.utc.update();
         time.local.update();
+      }, 1000);
 
-        window.setInterval(function() {
-          time.utc.update();
-          time.local.update();
-        }, 1000);
-
-      }
     };
 
     function converter(e) {
+
       const request = moment(this.convert.value, 'D-M-YYYY hh:mm ZZ');
+
       if (request.isValid()) {
         time.converter.output.innerText = request.utc().format();
-      } else {
-        const warning = document.createElement('p');
-        warning.innerText ='Provided value is not in a recognized format';
-        warning.classList.add('text-danger');
-        time.converter.output.appendChild(warning);
+        time.converter.outputPOSIX.innerText = +request;
+        return false;
       }
+
+      const warning = document.createElement('p');
+      warning.innerText ='Provided value is not in a recognized format';
+      warning.classList.add('text-danger');
+      time.converter.output.appendChild(warning);
+
       return false;
+
     }
 
     function clear(e) {
       time.converter.output.innerHTML = '';
+      time.converter.outputPOSIX.innerHTML = '';
     }
 
   </script>
@@ -147,6 +156,7 @@ keywords: ashen m. gunaratne convert time utc
           </div>
         </div>
       </form>
+      <output></output>
       <output></output>
     </main>
   </div>
