@@ -87,7 +87,6 @@ keywords: ashen m. gunaratne convert time utc
       time.utc.node = time.utc.container.querySelector('time');
       time.local.node = time.local.container.querySelector('time');
       time.converter.output = time.converter.nextElementSibling;
-      time.converter.outputPOSIX = time.converter.output.nextElementSibling;
 
       time.utc = new UTC(time.utc.node, time.utc.format);
       time.local = new Local(time.local.node, time.local.format);
@@ -109,8 +108,7 @@ keywords: ashen m. gunaratne convert time utc
       const request = moment(this.convert.value, 'D-M-YYYY hh:mm ZZ');
 
       if (request.isValid()) {
-        time.converter.output.innerText = request.utc().format();
-        time.converter.outputPOSIX.innerText = +request;
+        time.converter.output.innerText = request.utc().format() + ' ' + request;
         return false;
       }
 
@@ -125,7 +123,6 @@ keywords: ashen m. gunaratne convert time utc
 
     function clear(e) {
       time.converter.output.innerHTML = '';
-      time.converter.outputPOSIX.innerHTML = '';
     }
 
   </script>
