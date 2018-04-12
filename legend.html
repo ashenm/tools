@@ -30,12 +30,12 @@ keywords: ashen m. gunaratne educational tools materials index
   <script type="text/javascript">
 
     // extract username and repository
-    const path = location.href.match(/(\w+)\W\w+\W\w+\W(\w+)/);
+    const [_, username, repository] = location.href.match(/(\w+)\W\w+\W\w+\W(\w+)/);
 
     // global configuration
     const config = {
-      username: path[1],
-      repository: path[2],
+      username: username,
+      repository: repository,
       excludes: ['images', 'README.md', '404.html', 'index.html', 'legend.html']
     };
 
@@ -57,13 +57,18 @@ keywords: ashen m. gunaratne educational tools materials index
 
       xhr.responseType = 'json';
       xhr.onreadystatechange = function() {
-        if (xhr.readyState === XMLHttpRequest.DONE) {
-          if (xhr.status === 200) {
-            callback(null, path, xhr.response);
-          } else {
-            callback(xhr.status);
-          }
+
+        if (xhr.readyState !== XMLHttpRequest.DONE) {
+          return
         }
+
+        if (xhr.status !== 200) {
+          callback(xhr.status);
+          return
+        }
+ 
+        callback(null, path, xhr.response);
+
       };
 
       xhr.open('GET', route);
@@ -72,8 +77,8 @@ keywords: ashen m. gunaratne educational tools materials index
     }
 
     /**
-     * Execute parameterised function with an object
-     * where each property corresponding to YAML front matter variables
+     * Execute parameterised function with an object which
+     * each property corresponds to a YAML front matter variable
      */
     function metadata(url, refID, callback) {
 
@@ -82,28 +87,29 @@ keywords: ashen m. gunaratne educational tools materials index
 
       xhr.responseType = 'text';
       xhr.onreadystatechange = function() {
-        if (xhr.readyState === XMLHttpRequest.DONE) {
 
-          // extract front matter
-          const fm = xhr.response.match(/---\s([^]*)\s---/);
+        if (xhr.readyState !== XMLHttpRequest.DONE)
+          return;
 
-          // handle non-existent font matter
-          if (!fm) {
-            callback(new TypeError(), null, refID);
-            return;
-          }
+        // extract front matter
+        const fm = xhr.response.match(/---\s([^]*)\s---/);
 
-          // construct hash table
-          fm.pop().split(/\r\n|\r|\n/).forEach(row => {
-            const extract = row.match(/(\S+): ([\s\S]+)/);
-            data[extract[1]] = extract[2];
-          });
-
-          // execute callback with invoker reference
-          // and extracted YAML front matter object
-          callback(null, data, refID);
-
+        // handle non-existent font matter
+        if (!fm) {
+          callback(new TypeError(), null, refID);
+          return;
         }
+
+        // construct hash table
+        fm.pop().split(/\r\n|\r|\n/).forEach(row => {
+          const [key, value] = row.match(/(\S+): ([\s\S]+)/);
+          data[key] = value;
+        });
+
+        // execute callback with invoker reference
+        // and extracted YAML front matter object
+        callback(null, data, refID);
+
       };
 
       xhr.open('GET', url);
