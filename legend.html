@@ -102,7 +102,7 @@ keywords: ashen m. gunaratne educational tools materials index
 
         // construct hash table
         fm.pop().split(/\r\n|\r|\n/).forEach(row => {
-          const [key, value] = row.match(/(\S+): ([\s\S]+)/);
+          const [_, key, value] = row.match(/(\S+): ([\s\S]+)/);
           data[key] = value;
         });
 
