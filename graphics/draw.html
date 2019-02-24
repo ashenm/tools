@@ -1,0 +1,272 @@
+---
+lang: en
+title: DrawBoard
+desc: An Interactive Blackboard
+keywords: blackboard, drawboard, interactive blackboard, interactive drawboard
+---
+
+{%- capture metadata -%}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <meta name="description" content="{{ page.desc }}" />
+  <meta name="keywords" content="{{ page.keywords }}" />
+  <meta name="author" content="{{ site.author }}" />
+
+  <title>{{ page.title }}</title>
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous" />
+
+  <style type="text/css">
+
+    body {
+      margin: 0px;
+    }
+
+    main {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    canvas {
+      width: 100%;
+      height: 100%;
+      background-color: #000;
+    }
+
+    button {
+      color: #fff;
+    }
+
+    input {
+      width: 3ch;
+      color: #fff;
+    }
+
+    input:focus,
+    button:focus {
+      outline: none;
+    }
+
+    #palette {
+      left: 0%;
+      right: 0%;
+      bottom: 2%;
+      position: absolute;
+      width: fit-content;
+    }
+
+    #palette div {
+      margin-left: 1vw;
+      margin-right: 1vw;
+    }
+
+    #redo button,
+    #undo button {
+      width: 15vw;
+      height: 15vw;
+      position: absolute;
+      padding: 0px;
+    }
+
+    #redo button:first-child {
+      top: 0%;
+      right: 0%;
+    }
+
+    #redo button:last-child {
+      bottom: 0%;
+      right: 0%;
+    }
+
+    #undo button:first-child {
+      top: 0%;
+      left: 0%;
+    }
+
+    #undo button:last-child {
+      bottom: 0%;
+      left: 0%;
+    }
+
+    #unbar {
+      left: 0%;
+      right: 0%;
+      bottom: 0%;
+      position: absolute;
+      height: 7.5vh;
+      width: 70vw;
+    }
+
+    .background-none {
+      background: none;
+    }
+
+    .border-none {
+      border: none;
+    }
+
+    .color {
+      width: 2.25em;
+      height: 2.25em;
+      margin-left: 0.15em;
+      margin-right: 0.15em;
+    }
+
+    .d-none {
+      display: none;
+    }
+
+    .mx-auto {
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .rounded {
+      border-radius: 10em;
+    }
+
+    .font-medium {
+      font-size: 2.25rem;
+    }
+
+    .text-center {
+      text-align: center;
+    }
+
+    @media (min-width: 768px) {
+      .d-md-inline-block {
+        display: inline-block;
+      }
+    }
+
+  </style>
+{%- endcapture -%}
+
+{%- capture scripts -%}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.slim.min.js" integrity="sha256-3edrmyuQ0w65f8gfBsqowzjJe2iM6n0nKciPUp8y+7E=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/paper.js/0.12.0/paper-core.min.js" integrity="sha256-BEGxNIyWANERukL0lhg4RV8JBSPZbNo0BcdDKW6uo0Q=" crossorigin="anonymous"></script>
+  <script type="text/javascript">
+
+    // onDOMReady
+    $(function () {
+
+      var path;
+      var stage = [];
+
+      var strokeWidth = 2.5;
+      var strokeColor = '#fff';
+
+      var tool = new paper.Tool();
+      var canvas = paper.setup('drawboard');
+
+      var $colors = $('<div>', { class: 'd-md-inline-block' });
+      var $palette = $('<div>', { id: 'palette', class: 'd-none mx-auto text-center' });
+
+      var $btnUp = $('<button>', { text: '+', class: 'background-none border-none font-medium' });
+      var $btnDown = $('<button>', { text: '-', class: 'background-none border-none font-medium' });
+      var $inputWidth = $('<input>', { value: strokeWidth, maxlength: 3, type: 'text', class: 'background-none border-none font-medium text-center' });
+
+      var $btnWhite = $('<button>', { class: 'color border-none rounded', style: 'background-color: #ffffff;' });
+      var $btnRed = $('<button>', { class: 'color border-none rounded', style: 'background-color: #ff0000;' });
+      var $btnGreen = $('<button>', { class: 'color border-none rounded', style: 'background-color: #00ff00;' });
+      var $btnBlue = $('<button>', { class: 'color border-none rounded', style: 'background-color: #0000ff;' });
+      var $btnYellow = $('<button>', { class: 'color border-none rounded', style: 'background-color: #ffff00;' });
+      var $btnCyan = $('<button>', { class: 'color border-none rounded', style: 'background-color: #00ffff;' });
+      var $btnMagenta = $('<button>', { class: 'color border-none rounded', style: 'background-color: #ff00ff;' });
+
+      var $btnTrash = $('<button>', { html: '<i class="fas fa-trash-alt"></i>', class: 'background-none border-none font-medium' });
+
+      var $btnUndo = $('<button>', { class: 'background-none border-none' });
+      var $btnRedo = $('<button>', { class: 'background-none border-none' });
+
+      tool.onMouseDown = function (event) {
+
+        path = new canvas.Path();
+
+        path.strokeColor = strokeColor;
+        path.strokeWidth = strokeWidth;
+
+        path.add(event.point);
+      
+      };
+
+      tool.onMouseDrag = function (event) {
+        path.add(event.point);
+      };
+
+      tool.onMouseUp = function (event) {
+        path.smooth();
+      };
+
+      $palette.bar = function (event) {
+        setTimeout($palette.unbar, 5000);
+        $palette.show();
+      };
+
+      $palette.unbar = function (event) {
+        $palette.hide();
+      };
+
+      $btnUp.on('click', function (event) {
+        $inputWidth.val(strokeWidth += 1);
+      });
+
+      $btnDown.on('click', function (event) {
+        $inputWidth.val(strokeWidth = Math.abs(strokeWidth - 1));
+      });
+
+      $btnTrash.on('click', function (event) {
+        canvas.project.activeLayer.clear();
+      });
+
+      $btnRedo.on('click', function (event) {
+        stage.length
+          && canvas.project.activeLayer.addChild(stage.pop());
+      });
+
+      $btnUndo.on('click', function (event) {
+        canvas.project.activeLayer.lastChild
+          && stage.push(canvas.project.activeLayer.lastChild)
+          && canvas.project.activeLayer.lastChild.remove();
+      });
+
+      $inputWidth.on('input', function (event) {
+        /[^\d\.]/.test($inputWidth.val()) ? $inputWidth.val(strokeWidth) : strokeWidth = parseFloat($inputWidth.val());
+      });
+
+      $.each([ $btnWhite, $btnRed, $btnGreen, $btnBlue, $btnYellow, $btnCyan, $btnMagenta ], function (index, $element) {
+        $element.on('click', function (event) { $inputWidth.css('color', (strokeColor = $(this).css('background-color'))); });
+        $element.appendTo($colors);
+      });
+
+      $('footer').append(
+
+        $('<div>', { id: 'undo' }).append($btnUndo.clone(true), $btnUndo),
+        $('<div>', { id: 'redo' }).append($btnRedo.clone(true), $btnRedo),
+
+        $('<div>', { id: 'unbar', class: 'mx-auto text-center', click: $palette.bar }),
+
+        $palette.append(
+          $('<div>', { class: 'd-md-inline-block' }).append($btnDown, $inputWidth, $btnUp),
+          $colors, $('<div>', { class: 'd-none d-md-inline-block', html: $btnTrash })
+        )
+
+      );
+
+    });
+
+  </script>
+{%- endcapture -%}
+
+{%- capture body -%}
+  <header>
+  </header>
+  <main>
+    <canvas id="drawboard"></canvas>
+  </main>
+  <footer>
+  </footer>
+{%- endcapture -%}
+
+{%- include base.html -%}
