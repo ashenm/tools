@@ -5,7 +5,8 @@ set -e
 
 # install jekyll
 sudo apt update \
-  && sudo apt install --no-install-recommends jekyll
+  && sudo apt install --no-install-recommends ruby-dev \
+  && sudo gem install --no-ri --no-rdoc jekyll
 
 # install python 3.7.2
 curl --silent --show-error --location --output /tmp/python-3.7.2.tar.bz2 \
