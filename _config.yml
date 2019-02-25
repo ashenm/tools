@@ -13,6 +13,7 @@ desc: "A collection of miscellanies instructional tools and materials"
 exclude:
   - CNAME
   - Makefile
+  - requirements.txt
   - scripts
 
 defaults:
