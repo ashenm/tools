@@ -3,6 +3,11 @@
 
 set -e
 
+# install jekyll
+sudo apt update \
+  && sudo apt install --no-install-recommends ruby-dev \
+  && sudo gem install --no-ri --no-rdoc jekyll
+
 # install python 3.7.2
 curl --silent --show-error --location --output /tmp/python-3.7.2.tar.bz2 \
     --url https://s3.amazonaws.com/travis-python-archives/binaries/ubuntu/16.04/x86_64/python-3.7.2.tar.bz2 \

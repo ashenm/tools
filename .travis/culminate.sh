@@ -1,11 +1,6 @@
 #!/usr/bin/env sh
 # Purge Web Caches
 
-# list artifacts for cache purging
-find _site -type f -printf 'https://tools.ashenm.ml/%P\n' \
-  | jq --raw-input --slurp 'split("\n") | { files: .[:-1] }' \
-  | tee '.artifacts'
-
 # purge CloudFlare caches
 # https://api.cloudflare.com/#zone-purge-files-by-url
 curl --silent \
