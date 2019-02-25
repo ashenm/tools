@@ -3,6 +3,9 @@
 
 set -e
 
+# install jekyll
+sudo apt install --no-install-recommends jekyll
+
 # install python 3.7.2
 curl --silent --show-error --location --output /tmp/python-3.7.2.tar.bz2 \
     --url https://s3.amazonaws.com/travis-python-archives/binaries/ubuntu/16.04/x86_64/python-3.7.2.tar.bz2 \
