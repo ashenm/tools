@@ -1,0 +1,20 @@
+dist:
+  xenial
+
+language:
+  minimal
+
+install:
+  ./.travis/install.sh
+
+script:
+  ./.travis/build.sh
+
+deploy:
+  provider: pages
+  skip-cleanup: true
+  github-token: $GITHUB_TOKEN
+  fqdn: tools.ashenm.ml
+
+after_deploy:
+  ./.travis/culminate.sh
