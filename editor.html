@@ -1,0 +1,95 @@
+---
+lang: en
+title: HTMLEditor
+desc: A Live HTML Editor
+keywords: ashen, gunaratne, ashen gunaratne, tools, html, editor
+---
+
+{%- capture metadata -%}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <meta name="description" content="{{ page.desc }}" />
+  <meta name="keywords" content="{{ page.keywords }}" />
+  <meta name="author" content="{{ site.author }}" />
+
+  <title>{{ page.title }}</title>
+
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous" />
+
+  <style type="text/css">
+    .flex-basis-0 { -ms-flex-preferred-size: 0; flex-basis: 0; }
+  </style>
+{%- endcapture -%}
+
+{%- capture scripts -%}
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.3/ace.js" integrity="sha256-gkWBmkjy/8e1QUz5tv4CCYgEtjR8sRlGiXsMeebVeUo=" crossorigin="anonymous"></script>
+
+  <script type="text/javascript">
+
+    (function () {
+
+      var template = [
+        '<!DOCTYPE html>',
+        '<html>',
+        '  <head></head>',
+        '  <body></body>',
+        '</html>',
+        ''
+      ].join('\n');
+
+      document.onreadystatechange = function onDOMReady () {
+
+        if (document.readyState !== 'interactive') {
+          return;
+        }
+
+        window.editor = ace.edit('editor',
+          { mode: 'ace/mode/html', behavioursEnabled: false, value: template }
+        );
+
+        document.getElementById('run').addEventListener('click', function (e) {
+          window.frames[0].document.open('text/html', 'replace').write(editor.getValue());
+        }, { passive: true });
+
+        document.getElementById('clean').addEventListener('click', function (e) {
+          window.frames[0].document.open('text/html', 'replace').write(template);
+          window.editor.setValue(template, -1);
+        }, { passive: true });
+
+        document.getElementById('editor').addEventListener('keydown', function (e) {
+          e.ctrlKey === true && e.key === 'Enter'
+            ? window.frames[0].document.open('text/html', 'replace').write(editor.getValue()) : '';
+        }, { passive: true });
+
+      };
+
+    })();
+  
+  </script>
+{%- endcapture -%}
+
+{%- capture body -%}
+  <div class="d-flex flex-column vh-100">
+    <header class="d-flex bg-light justify-content-between p-1">
+      <div>
+        <button id="clean" class="btn btn-sm" type="button">
+          <svg width="28px" height="28px" viewBox="0 0 18 16">
+            <path fill="#111" d="M 7 0 C 6.5 0 6.5 0 6.25 1 L 2.5 1 Q 2 1 2 1.5 L 2 2.5 Q 2 3 2.5 3 L 15.5 3 Q 16 3 16 2.5 L 16 1.5 Q 16 1 15.5 1 L 12 1 C 11.75 0 11.75 0 11 0 Z M 3 4 L 3 14.5 Q 3 16 4.5 16 L 13.5 16 Q 15 16 15 14.5 L 15 4 Z" />
+            <path fill="#FFF" d="M 5.5 6.5 L 5.5 13.5 C 5.5 14 6.5 14 6.5 13.5 L 6.5 6.5 C 6.5 6 5.5 6 5.5 6.5 M 8.5 6.5 L 8.5 13.5 C 8.5 14 9.5 14 9.5 13.5 L 9.5 6.5 C 9.5 6 8.5 6 8.5 6.5 M 11.5 6.5 L 11.5 13.5 C 11.5 14 12.5 14 12.5 13.5 L 12.5 6.5 C 12.5 6 11.5 6 11.5 6.5" />
+          </svg>
+        </button>
+      </div>
+      <div>
+        <button id="run" class="btn btn-success" type="button">RUN</button>
+      </div>
+    </header>
+    <main class="d-flex flex-column flex-md-row flex-grow-1">
+      <div class="flex-basis-0 flex-grow-1 p-1"><div id="editor" class="border rounded h-100 w-100"></div></div>
+      <div class="flex-basis-0 flex-grow-1 pr-1 py-1"><iframe class="border rounded h-100 w-100"></iframe></div>
+    </main>
+    <footer>
+    </footer>
+  </div>
+{%- endcapture -%}
+
+{%- include base.html -%}
