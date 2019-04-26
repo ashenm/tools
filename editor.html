@@ -50,7 +50,7 @@ keywords: ashen, gunaratne, ashen gunaratne, tools, html, editor
         window.preview = document.getElementById('preview');
 
         document.getElementById('run').addEventListener('click', function (e) {
-          windpw.preview.setAttribute('srcdoc', window.editor.getValue());
+          window.preview.setAttribute('srcdoc', window.editor.getValue());
         }, { passive: true });
 
         document.getElementById('clean').addEventListener('click', function (e) {
