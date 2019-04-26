@@ -47,18 +47,20 @@ keywords: ashen, gunaratne, ashen gunaratne, tools, html, editor
           { mode: 'ace/mode/html', behavioursEnabled: false, value: template }
         );
 
+        window.preview = document.getElementById('preview');
+
         document.getElementById('run').addEventListener('click', function (e) {
-          window.frames[0].document.open('text/html', 'replace').write(editor.getValue());
+          windpw.preview.setAttribute('srcdoc', window.editor.getValue());
         }, { passive: true });
 
         document.getElementById('clean').addEventListener('click', function (e) {
-          window.frames[0].document.open('text/html', 'replace').write(template);
+          window.preview.setAttribute('srcdoc', template);
           window.editor.setValue(template, -1);
         }, { passive: true });
 
         document.getElementById('editor').addEventListener('keydown', function (e) {
           e.ctrlKey === true && e.key === 'Enter'
-            ? window.frames[0].document.open('text/html', 'replace').write(editor.getValue()) : '';
+            ? window.preview.setAttribute('srcdoc', window.editor.getValue()) : '';
         }, { passive: true });
 
       };
@@ -85,7 +87,7 @@ keywords: ashen, gunaratne, ashen gunaratne, tools, html, editor
     </header>
     <main class="d-flex flex-column flex-md-row flex-grow-1">
       <div class="flex-basis-0 flex-grow-1 p-1"><div id="editor" class="border rounded h-100 w-100"></div></div>
-      <div class="flex-basis-0 flex-grow-1 px-1 pb-1 pt-md-1 pl-md-0"><iframe class="border rounded h-100 w-100"></iframe></div>
+      <div class="flex-basis-0 flex-grow-1 px-1 pb-1 pt-md-1 pl-md-0"><iframe id="preview" class="border rounded h-100 w-100" name="preview"></iframe></div>
     </main>
     <footer>
     </footer>
