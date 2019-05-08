@@ -60,43 +60,6 @@ keywords: blackboard, drawboard, interactive blackboard, interactive drawboard
       vertical-align: middle;
     }
 
-    #redo button,
-    #undo button {
-      width: 15vw;
-      height: 15vw;
-      position: absolute;
-      padding: 0px;
-    }
-
-    #redo button:first-child {
-      top: 0%;
-      right: 0%;
-    }
-
-    #redo button:last-child {
-      bottom: 0%;
-      right: 0%;
-    }
-
-    #undo button:first-child {
-      top: 0%;
-      left: 0%;
-    }
-
-    #undo button:last-child {
-      bottom: 0%;
-      left: 0%;
-    }
-
-    #unbar {
-      left: 0%;
-      right: 0%;
-      bottom: 0%;
-      position: absolute;
-      height: 7.5vh;
-      width: 70vw;
-    }
-
     .background-none {
       background: none;
     }
@@ -134,9 +97,7 @@ keywords: blackboard, drawboard, interactive blackboard, interactive drawboard
     }
 
     @media (min-width: 768px) {
-      .d-md-inline-block {
-        display: inline-block;
-      }
+      .d-md-inline-block { display: inline-block; }
     }
 
   </style>
@@ -176,19 +137,8 @@ keywords: blackboard, drawboard, interactive blackboard, interactive drawboard
 
       var $btnTrash = $('<button>', { class: 'background-none border-none', html: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" style="width: 2.25rem; height: 2.25rem;"><path fill="currentColor" d="M432 32H312l-9.4-18.7A24 24 0 0 0 281.1 0H166.8a23.72 23.72 0 0 0-21.4 13.3L136 32H16A16 16 0 0 0 0 48v32a16 16 0 0 0 16 16h416a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16zM53.2 467a48 48 0 0 0 47.9 45h245.8a48 48 0 0 0 47.9-45L416 128H32z"></path></svg>' });
 
-      var $btnUndo = $('<button>', { class: 'background-none border-none' });
-      var $btnRedo = $('<button>', { class: 'background-none border-none' });
-
       tool.onMouseDown = function (event) {
-
-        stage = [];
-        path = new canvas.Path();
-
-        path.strokeColor = strokeColor;
-        path.strokeWidth = strokeWidth;
-
-        path.add(event.point);
-      
+        path = new canvas.Path({ segments: [ event.point ], strokeColor: strokeColor, strokeWidth: strokeWidth });
       };
 
       tool.onMouseDrag = function (event) {
@@ -196,7 +146,38 @@ keywords: blackboard, drawboard, interactive blackboard, interactive drawboard
       };
 
       tool.onMouseUp = function (event) {
-        path.smooth();
+
+        if (event.point.x !== path.firstSegment.point.x
+         || event.point.y !== path.firstSegment.point.y) {
+          return path.smooth(stage = []);
+        }
+
+        canvas.project.activeLayer.lastChild.remove();
+
+        event.factorX = event.point.x / canvas.view.size.width;
+        event.factorY = event.point.y / canvas.view.size.height;
+
+        if (event.factorY > 0.15 && event.factorY < 0.85) {
+          return;
+        }
+
+        if (event.factorX <= 0.15) {
+          canvas.project.activeLayer.lastChild
+            && stage.push(canvas.project.activeLayer.lastChild)
+            && canvas.project.activeLayer.lastChild.remove();
+          return;
+        }
+
+        if (event.factorX >= 0.85) {
+          stage.length
+            && canvas.project.activeLayer.addChild(stage.pop());
+          return;
+        }
+
+        if (event.factorY >= 0.925) {
+          $palette.bar();
+        }
+
       };
 
       $palette.bar = function (event) {
@@ -220,17 +201,6 @@ keywords: blackboard, drawboard, interactive blackboard, interactive drawboard
         stage = canvas.project.activeLayer.clear();
       });
 
-      $btnRedo.on('click', function (event) {
-        stage.length
-          && canvas.project.activeLayer.addChild(stage.pop());
-      });
-
-      $btnUndo.on('click', function (event) {
-        canvas.project.activeLayer.lastChild
-          && stage.push(canvas.project.activeLayer.lastChild)
-          && canvas.project.activeLayer.lastChild.remove();
-      });
-
       $inputWidth.on('input', function (event) {
         /[^\d\.]/.test($inputWidth.val()) ? $inputWidth.val(strokeWidth) : strokeWidth = parseFloat($inputWidth.val());
       });
@@ -240,19 +210,12 @@ keywords: blackboard, drawboard, interactive blackboard, interactive drawboard
         $element.appendTo($colors);
       });
 
-      $('footer').append(
-
-        $('<div>', { id: 'undo' }).append($btnUndo.clone(true), $btnUndo),
-        $('<div>', { id: 'redo' }).append($btnRedo.clone(true), $btnRedo),
-
-        $('<div>', { id: 'unbar', class: 'mx-auto text-center', click: $palette.bar }),
-
-        $palette.append(
-          $('<div>', { class: 'd-md-inline-block' }).append($btnDown, $inputWidth, $btnUp),
-          $colors, $('<div>', { class: 'd-none d-md-inline-block', html: $btnTrash })
-        )
-
+      $palette.append(
+        $('<div>', { class: 'd-md-inline-block' }).append($btnDown, $inputWidth, $btnUp),
+        $colors, $('<div>', { class: 'd-none d-md-inline-block', html: $btnTrash })
       );
+
+      $('footer').append($palette);
 
     });
 
