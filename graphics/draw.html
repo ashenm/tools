@@ -198,7 +198,7 @@ keywords: blackboard, drawboard, interactive blackboard, interactive drawboard
       });
 
       $btnTrash.on('click', function (event) {
-        stage = canvas.project.activeLayer.clear();
+        canvas.project.activeLayer.clear(stage = []);
       });
 
       $inputWidth.on('input', function (event) {
