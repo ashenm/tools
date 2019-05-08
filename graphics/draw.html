@@ -7,7 +7,7 @@ keywords: blackboard, drawboard, interactive blackboard, interactive drawboard
 
 {%- capture metadata -%}
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no" />
   <meta name="description" content="{{ page.desc }}" />
   <meta name="keywords" content="{{ page.keywords }}" />
   <meta name="author" content="{{ site.author }}" />
@@ -262,7 +262,7 @@ keywords: blackboard, drawboard, interactive blackboard, interactive drawboard
   <header>
   </header>
   <main>
-    <canvas id="drawboard"></canvas>
+    <canvas id="drawboard" data-paper-resize="true"></canvas>
   </main>
   <footer>
   </footer>
