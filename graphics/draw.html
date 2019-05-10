@@ -49,7 +49,6 @@ keywords: blackboard, drawboard, interactive blackboard, interactive drawboard
     #palette {
       left: 0%;
       right: 0%;
-      bottom: 2%;
       position: absolute;
       width: fit-content;
     }
@@ -174,17 +173,17 @@ keywords: blackboard, drawboard, interactive blackboard, interactive drawboard
           return;
         }
 
-        $palette.bar();
+        if (event.factorY >= 0.85) {
+          $palette.bar('initial', '2%');
+          return;
+        }
+
+        $palette.bar('2%', 'initial');
 
       };
 
-      $palette.bar = function (event) {
-        setTimeout($palette.unbar, 5000);
-        $palette.show();
-      };
-
-      $palette.unbar = function (event) {
-        $palette.hide();
+      $palette.bar = function (t, b) {
+        setTimeout(function ($$) { $$.hide(); }, 5000, $palette.css({ top: t, bottom: b, display: 'block' }));
       };
 
       $btnUp.on('click', function (event) {
