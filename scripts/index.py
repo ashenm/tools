@@ -17,7 +17,7 @@ spacer = ' '
 newline = '\n'
 
 # index excludes
-excludes = ('index.html', '404.html')
+excludes = ('catalogue.html', 'index.html', '404.html')
 
 # front matter RegEx
 reFrontMatter = compile(r'---\n(.*)\n---', DOTALL)
@@ -50,13 +50,13 @@ for file in sorted(iglob('**', recursive=True)):
   ]))
 
 # write index doc
-with open(file='legend.html', mode='wt', encoding='utf_8', newline=newline) as document:
+with open(file='catalogue.html', mode='wt', encoding='utf_8', newline=newline) as document:
   document.write(newline.join([
 
     '---',
     'lang: en',
-    'title: Index',
-    'keywords: ashen, gunaratne, ashen m. gunaratne, educational, tools, materials, index',
+    'title: Catalogue',
+    'keywords: ashen, gunaratne, ashen m. gunaratne, educational, tools, materials, catalogue',
     '---',
 
     '',
