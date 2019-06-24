@@ -17,7 +17,7 @@ spacer = ' '
 newline = '\n'
 
 # index excludes
-excludes = ('index.html', 'legend.html', '404.html')
+excludes = ('index.html', '404.html')
 
 # front matter RegEx
 reFrontMatter = compile(r'---\n(.*)\n---', DOTALL)
