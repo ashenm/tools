@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # Build Site Index
 
-from yaml import load
 from glob import iglob
 from re import DOTALL, compile
+from yaml import FullLoader, load
 
 # index
 tbody = []
@@ -40,7 +40,7 @@ for file in sorted(iglob('**', recursive=True)):
   if not frontmatter:
     continue
 
-  frontmatter = load(frontmatter.group(1))
+  frontmatter = load(stream=frontmatter.group(1), Loader=FullLoader)
 
   tbody.append(newline.join([
     f'{spacer * offset}<tr>',
