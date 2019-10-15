@@ -1,0 +1,207 @@
+---
+lang: en
+title: Subnetting
+desc: Logical subdision of an IPv4 network
+keywords: ashen, gunaratne, ashen m. gunaratne, subnet, subnetting
+---
+
+{%- capture metadata -%}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <meta name="description" content="{{ page.desc }}" />
+  <meta name="keywords" content="{{ page.keywords }}" />
+  <meta name="author" content="{{ site.author }}" />
+
+  <title>{{ page.title }}</title>
+
+  <style type="text/css">
+
+    body {
+      display: flex;
+      min-height: 100vh;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      margin: 0;
+    }
+
+    #classifier {
+      margin: 0.5rem 0 2rem 0;
+    }
+
+    #bore:focus {
+      outline: none;
+    }
+
+    #bore::-webkit-inner-spin-button,
+    #bore::-webkit-outer-spin-button {
+      margin-left: 0.25rem;
+      opacity: 1;
+    }
+
+    #gauge {
+      overflow: visible;
+    }
+
+    #gauge > path.plimsoll {
+      fill: none;
+      stroke-width: 0.25;
+      stroke: #AAA;
+    }
+
+    #gauge > text.plimsoll {
+      font-size: 1pt;
+      dominant-baseline: hanging;
+      text-anchor: middle;
+      fill: #BBB;
+    }
+
+    #stats > label {
+      display: flex;
+      justify-content: space-between;
+      margin: 0.5rem 0;
+    }
+
+    #stats > label > input {
+      background: none;
+      text-align: right;
+      border: none;
+    }
+
+    .invalid {
+      background-color: #EA4335!important;
+      border-radius: 1rem 0 0 1rem!important;
+    }
+
+  </style>
+{%- endcapture -%}
+
+{%- capture scripts -%}
+  <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
+
+  <script type="text/javascript">
+
+    (function () {
+
+      document.addEventListener('DOMContentLoaded', function () {
+
+        var bore = document.getElementById('bore');
+        var gauge = document.getElementById('gauge');
+
+        var subnet = document.getElementById('subnet');
+        var network = document.getElementById('network');
+        var classifier = document.getElementById('classification');
+
+        var networks = document.getElementById('networks');
+        var subnetworks = document.getElementById('subnetworks');
+        var hosts = document.getElementById('hosts');
+
+        classifier.addEventListener('change', function (e) {
+
+          var factor = (32 - this.value) / 2;
+
+          subnet.setAttribute('x', this.value);
+          subnet.setAttribute('width', factor);
+          network.setAttribute('width', this.value);
+
+          networks.setAttribute('value', Math.pow(2, this.value - this.value / 8));
+          subnetworks.setAttribute('value', Math.pow(2, factor));
+          hosts.setAttribute('value', subnetworks.value - 2);
+          bore.setAttribute('max', 32 - network.width.baseVal.value - 2);
+          bore.value = factor;
+
+        });
+
+        bore.addEventListener('input', function (e) {
+          
+          if (!this.checkValidity()) {
+            this.classList.add('invalid');
+            return;
+          }
+
+          this.classList.remove('invalid');
+          subnet.setAttribute('width', this.value || 0);
+          subnetworks.setAttribute('value', subnet.width.baseVal.value !== 0 ? Math.pow(2, subnet.width.baseVal.value) : 0);
+          hosts.setAttribute('value', Math.pow(2, 32 - network.width.baseVal.value - subnet.width.baseVal.value) - 2);
+
+        });
+
+        interact(subnet).resizable({
+          edges: { top: false, right: true, bottom: false, left: false },
+          modifiers: [ interact.modifiers.restrictSize({ min: { width: 0.5 }, max: function (x, y, e) { return { width: bore.max * gauge.width.baseVal.value / gauge.viewBox.baseVal.width }; } }) ]
+        }).on('resizemove', function (e) {
+          bore.value = Math.round(subnet.width.baseVal.value);
+          subnet.setAttribute('width', subnet.width.baseVal.value + e.dx / (gauge.width.baseVal.value / gauge.viewBox.baseVal.width));
+          subnetworks.setAttribute('value', bore.value !== '0' ? Math.pow(2, bore.value) : 0);
+          hosts.setAttribute('value', Math.pow(2, 32 - network.width.baseVal.value - bore.value) - 2);
+        }).on('resizeend', function (e) {
+          subnet.setAttribute('width', bore.value);
+        });
+
+      });
+
+    })();
+
+  </script>
+{%- endcapture -%}
+
+{%- capture body -%}
+  <header>
+  </header>
+  <main>
+    <div>
+      <svg id="gauge" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 9">
+        <rect id="rest" x="0" y="0" width="32" height="6" fill="#FBBC05" />
+        <rect id="subnet" x="8" y="0" width="12" height="6" fill="#34A853" />
+        <rect id="network" x="0" y="0" width="8" height="6" fill="#4285F4" />
+        <path class="plimsoll" d="M 0 7 l 0 1 l 8 0 l 0 -1 m 0 1 l 8 0 l 0 -1 m 0 1 l 8 0 l 0 -1 m 0 1 l 8 0 l 0 -1" />
+        <path class="plimsoll" opacity="0.5" d="M 1 7.5 l 0 0.5 M 2 7.5 l 0 0.5 M 3 7.5 l 0 0.5 M 4 7.5 l 0 0.5 M 5 7.5 l 0 0.5 M 6 7.5 l 0 0.5 M 7 7.5 l 0 0.5
+          M 9 7.5 l 0 0.5 M 10 7.5 l 0 0.5 M 11 7.5 l 0 0.5 M 12 7.5 l 0 0.5 M 13 7.5 l 0 0.5 M 14 7.5 l 0 0.5 M 15 7.5 l 0 0.5
+          M 17 7.5 l 0 0.5 M 18 7.5 l 0 0.5 M 19 7.5 l 0 0.5 M 20 7.5 l 0 0.5 M 21 7.5 l 0 0.5 M 22 7.5 l 0 0.5 M 23 7.5 l 0 0.5
+          M 25 7.5 l 0 0.5 M 26 7.5 l 0 0.5 M 27 7.5 l 0 0.5 M 28 7.5 l 0 0.5 M 29 7.5 l 0 0.5 M 30 7.5 l 0 0.5 M 31 7.5 l 0 0.5" />
+        <text class="plimsoll" x="32" y="8.5">32</text>
+        <text class="plimsoll" x="16" y="8.5">16</text>
+        <text class="plimsoll" x="24" y="8.5">24</text>
+        <text class="plimsoll" x="8" y="8.5">8</text>
+        <text class="plimsoll" x="0" y="8.5">0</text>
+      </svg>
+    </div>
+    <div id="classifier">
+      <label>
+        Address Class:
+        <select id="classification">
+          <option value="8">A</option>
+          <option value="16">B</option>
+          <option value="24">C</option>
+          <option disabled="disabled">D</option>
+          <option disabled="disabled">E</option>
+        </select>
+      </label>
+    </div>
+    <div id="stats">
+      <label>
+        Subnet bits:
+        <input id="bore" type="number" min="0" max="22" value="12" />
+      </label>
+      <hr />
+      <label>
+        Networks:
+        <input id="networks" type="text" value="126" disabled="disabled" />
+      </label>
+      <label>
+        Subnetworks:
+        <input id="subnetworks" type="text" value="4096" disabled="disabled" />
+      </label>
+      <label>
+        Hosts:
+        <input id="hosts" type="text" value="4094" disabled="disabled" />
+      </label>
+    </div>
+  </main>
+  <footer>
+  </footer>
+{%- endcapture -%}
+
+{%- include base.html -%}
+
+{%- comment -%} vim: set expandtab shiftwidth=2 syntax=liquid: {%- endcomment -%}
