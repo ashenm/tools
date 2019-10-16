@@ -128,7 +128,7 @@ keywords: ashen, gunaratne, ashen m. gunaratne, subnet, subnetting
 
         interact(subnet).resizable({
           edges: { top: false, right: true, bottom: false, left: false },
-          modifiers: [ interact.modifiers.restrictSize({ min: { width: 0.5 }, max: function (x, y, e) { return { width: bore.max * gauge.width.baseVal.value / gauge.viewBox.baseVal.width }; } }) ]
+          modifiers: [ interact.modifiers.restrictSize({ min: { width: 0, right: 1 }, max: function (x, y, e) { return { width: bore.max * gauge.width.baseVal.value / gauge.viewBox.baseVal.width }; } }) ]
         }).on('resizemove', function (e) {
           bore.value = Math.round(subnet.width.baseVal.value);
           subnet.setAttribute('width', subnet.width.baseVal.value + e.dx / (gauge.width.baseVal.value / gauge.viewBox.baseVal.width));
