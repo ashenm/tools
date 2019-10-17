@@ -60,7 +60,7 @@ keywords: ashen, gunaratne, ashen gunaratne, tools, html, editor
           window.editor.setValue(template, -1);
         }, { passive: true });
 
-        document.getElementById('editor').addEventListener('keydown', function (e) {
+        window.editor.container.addEventListener('keydown', function (e) {
 
           if (e.ctrlKey === true && e.key === '-') {
             window.editor.setFontSize(window.editor.getFontSize() - 1);
@@ -74,7 +74,7 @@ keywords: ashen, gunaratne, ashen gunaratne, tools, html, editor
 
         }, { passive: false });
 
-        document.getElementById('editor').addEventListener('keydown', function (e) {
+        window.editor.container.addEventListener('keydown', function (e) {
           e.ctrlKey === true && e.key === 'Enter'
             ? window.preview.setAttribute('srcdoc', window.editor.getValue()) : '';
         }, { passive: true });
