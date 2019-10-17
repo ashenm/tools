@@ -128,13 +128,12 @@ keywords: ashen, gunaratne, ashen m. gunaratne, subnet, subnetting
 
         interact(subnet).resizable({
           edges: { top: false, right: true, bottom: false, left: false },
-          modifiers: [ interact.modifiers.restrictSize({ min: { width: 0, right: 1 }, max: function (x, y, e) { return { width: bore.max * gauge.width.baseVal.value / gauge.viewBox.baseVal.width }; } }) ]
+          modifiers: [ interact.modifiers.restrictSize({ min: { width: 0, right: 1 }, max: function (x, y, e) { return { width: bore.max * gauge.width.baseVal.value / gauge.viewBox.baseVal.width }; } }),
+            interact.modifiers.snapSize({ targets: [ function (x, y, e) { return { width: Math.round(x / (gauge.width.baseVal.value / gauge.viewBox.baseVal.width)) * (gauge.width.baseVal.value / gauge.viewBox.baseVal.width) }; } ] }) ]
         }).on('resizemove', function (e) {
-          bore.value = Math.round(subnet.width.baseVal.value);
-          subnet.setAttribute('width', subnet.width.baseVal.value + e.dx / (gauge.width.baseVal.value / gauge.viewBox.baseVal.width));
-          subnetworks.setAttribute('value', bore.value !== '0' ? Math.pow(2, bore.value) : 0);
+          bore.value = e.rect.width / (gauge.width.baseVal.value / gauge.viewBox.baseVal.width);
           hosts.setAttribute('value', Math.pow(2, 32 - network.width.baseVal.value - bore.value) - 2);
-        }).on('resizeend', function (e) {
+          subnetworks.setAttribute('value', bore.value !== '0' ? Math.pow(2, bore.value) : 0);
           subnet.setAttribute('width', bore.value);
         });
 
