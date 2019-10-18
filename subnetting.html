@@ -83,6 +83,82 @@ keywords: ashen, gunaratne, ashen m. gunaratne, subnet, subnetting
 
     (function () {
 
+      class Abacus {
+
+        constructor () {
+
+          // bits
+          this._max = 22;
+          this._host = 12;
+          this._subnet = 12;
+          this._network = 8;
+
+          // count
+          this._networks = 126;
+          this._subnets = 4096;
+          this._hosts = 4096;
+
+        }
+
+        get max () {
+          return this._max;
+        }
+
+        get host () {
+          return this._host;
+        }
+
+        get hosts () {
+          return this._hosts;
+        }
+
+        get subnet () {
+          return this._subnet;
+        }
+
+        get subnets () {
+          return this._subnets;
+        }
+
+        get network () {
+          return this._network;
+        }
+
+        get networks () {
+          return this._networks;
+        }
+
+        set network (value) {
+
+          this._network = value;
+          this._subnet = (32 - this._network) / 2;
+          this._host = this._subnet;
+          this._max = 32 - this._network - 2;
+
+          this._networks = Math.pow(2, this._network - this._network / 8);
+          this._subnets = Math.pow(2, this._subnet);
+          this._hosts = this._subnets - 2;
+
+        }
+
+        set subnet (value) {
+
+          this._subnet = value;
+          this._host = 32 - this._network - this._subnet;
+
+          this._subnets = this._subnet !== 0 ? Math.pow(2, this._subnet) : 0;
+          this._hosts = Math.pow(2, this._host) - 2;
+
+        }
+
+        set host (value) {
+          this.subnet = 32 - this._network - value;
+        }
+
+      }
+
+      var abacus = new Abacus();
+
       document.addEventListener('DOMContentLoaded', function () {
 
         var bore = document.getElementById('bore');
@@ -98,17 +174,16 @@ keywords: ashen, gunaratne, ashen m. gunaratne, subnet, subnetting
 
         classifier.addEventListener('change', function (e) {
 
-          var factor = (32 - this.value) / 2;
+          abacus.network = this.value;
+          subnet.setAttribute('x', abacus.network);
+          subnet.setAttribute('width', abacus.subnet);
+          network.setAttribute('width', abacus.network);
 
-          subnet.setAttribute('x', this.value);
-          subnet.setAttribute('width', factor);
-          network.setAttribute('width', this.value);
-
-          networks.setAttribute('value', Math.pow(2, this.value - this.value / 8));
-          subnetworks.setAttribute('value', Math.pow(2, factor));
-          hosts.setAttribute('value', subnetworks.value - 2);
-          bore.setAttribute('max', 32 - network.width.baseVal.value - 2);
-          bore.value = factor;
+          networks.setAttribute('value', abacus.networks);
+          subnetworks.setAttribute('value', abacus.subnets);
+          hosts.setAttribute('value', abacus.hosts);
+          bore.setAttribute('max', abacus.max);
+          bore.value = abacus.subnet;
 
         });
 
@@ -120,9 +195,9 @@ keywords: ashen, gunaratne, ashen m. gunaratne, subnet, subnetting
           }
 
           this.classList.remove('invalid');
-          subnet.setAttribute('width', this.value || 0);
-          subnetworks.setAttribute('value', subnet.width.baseVal.value !== 0 ? Math.pow(2, subnet.width.baseVal.value) : 0);
-          hosts.setAttribute('value', Math.pow(2, 32 - network.width.baseVal.value - subnet.width.baseVal.value) - 2);
+          subnet.setAttribute('width', abacus.subnet = this.value || 0);
+          subnetworks.setAttribute('value', abacus.subnets);
+          hosts.setAttribute('value', abacus.hosts);
 
         });
 
@@ -131,10 +206,9 @@ keywords: ashen, gunaratne, ashen m. gunaratne, subnet, subnetting
           modifiers: [ interact.modifiers.restrictSize({ min: { width: 0, right: 1 }, max: function (x, y, e) { return { width: bore.max * gauge.width.baseVal.value / gauge.viewBox.baseVal.width }; } }),
             interact.modifiers.snapSize({ targets: [ function (x, y, e) { return { width: Math.round(x / (gauge.width.baseVal.value / gauge.viewBox.baseVal.width)) * (gauge.width.baseVal.value / gauge.viewBox.baseVal.width) }; } ] }) ]
         }).on('resizemove', function (e) {
-          bore.value = e.rect.width / (gauge.width.baseVal.value / gauge.viewBox.baseVal.width);
-          hosts.setAttribute('value', Math.pow(2, 32 - network.width.baseVal.value - bore.value) - 2);
-          subnetworks.setAttribute('value', bore.value !== '0' ? Math.pow(2, bore.value) : 0);
-          subnet.setAttribute('width', bore.value);
+          subnet.setAttribute('width', abacus.subnet = bore.value = e.rect.width / (gauge.width.baseVal.value / gauge.viewBox.baseVal.width));
+          subnetworks.setAttribute('value', abacus.subnets);
+          hosts.setAttribute('value', abacus.hosts);
         });
 
       });
