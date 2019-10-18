@@ -131,13 +131,10 @@ keywords: ashen, gunaratne, ashen m. gunaratne, subnet, subnetting
         set network (value) {
 
           this._network = value;
-          this._subnet = (32 - this._network) / 2;
-          this._host = this._subnet;
+          this._networks = Math.pow(2, this._network - this._network / 8);
           this._max = 32 - this._network - 2;
 
-          this._networks = Math.pow(2, this._network - this._network / 8);
-          this._subnets = Math.pow(2, this._subnet);
-          this._hosts = this._subnets - 2;
+          this.subnet = (32 - this._network) / 2;
 
         }
 
@@ -174,7 +171,7 @@ keywords: ashen, gunaratne, ashen m. gunaratne, subnet, subnetting
 
         classifier.addEventListener('change', function (e) {
 
-          abacus.network = this.value;
+          abacus.network = +this.value;
           subnet.setAttribute('x', abacus.network);
           subnet.setAttribute('width', abacus.subnet);
           network.setAttribute('width', abacus.network);
@@ -195,7 +192,7 @@ keywords: ashen, gunaratne, ashen m. gunaratne, subnet, subnetting
           }
 
           this.classList.remove('invalid');
-          subnet.setAttribute('width', abacus.subnet = this.value || 0);
+          subnet.setAttribute('width', abacus.subnet = +this.value || 0);
           subnetworks.setAttribute('value', abacus.subnets);
           hosts.setAttribute('value', abacus.hosts);
 
@@ -254,7 +251,7 @@ keywords: ashen, gunaratne, ashen m. gunaratne, subnet, subnetting
     <div id="stats">
       <label>
         Subnet bits:
-        <input id="bore" type="number" min="0" max="22" value="12" />
+        <input id="bore" type="number" min="0" max="22" placeholder="0" value="12" />
       </label>
       <hr />
       <label>
