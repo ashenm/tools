@@ -93,11 +93,26 @@ keywords: ashen, gunaratne, ashen m. gunaratne, subnet, subnetting
           this._subnet = 12;
           this._network = 8;
 
+          // dot-decimal
+          this._netmask = '255.255.240.0';
+
           // count
           this._networks = 126;
           this._subnets = 4096;
           this._hosts = 4096;
 
+        }
+
+        static dotBinary (dotDecimal) {
+          return dotDecimal.split('.').map(function (value) { return (+value).toString(2).padStart(8, 0); }).join('.');
+        }
+
+        static dotDecimal (binary) {
+          return binary.toString().match(/\d{8}/g).map(function (value) { return parseInt(value, 2).toString(); }).join('.');
+        }
+
+        static prefixLength (dotDecimal) {
+          return this.dotBinary(dotDecimal).replace(/\./g, '').replace(/0.*$/, '').length;
         }
 
         get max () {
@@ -128,6 +143,14 @@ keywords: ashen, gunaratne, ashen m. gunaratne, subnet, subnetting
           return this._networks;
         }
 
+        get netmask () {
+          return this._netmask;
+        }
+
+        set netmask (value) {
+          this.subnet = Abacus.prefixLength(value) - this._network;
+        }
+
         set network (value) {
 
           this._network = value;
@@ -143,6 +166,7 @@ keywords: ashen, gunaratne, ashen m. gunaratne, subnet, subnetting
           this._subnet = value;
           this._host = 32 - this._network - this._subnet;
 
+          this._netmask = Abacus.dotDecimal('1'.repeat(this._network + this._subnet).padEnd(32, '0'));
           this._subnets = this._subnet !== 0 ? Math.pow(2, this._subnet) : 0;
           this._hosts = Math.pow(2, this._host) - 2;
 
@@ -160,6 +184,7 @@ keywords: ashen, gunaratne, ashen m. gunaratne, subnet, subnetting
 
         var bore = document.getElementById('bore');
         var gauge = document.getElementById('gauge');
+        var netmask = document.getElementById('netmask');
 
         var subnet = document.getElementById('subnet');
         var network = document.getElementById('network');
@@ -175,11 +200,18 @@ keywords: ashen, gunaratne, ashen m. gunaratne, subnet, subnetting
           subnet.setAttribute('x', abacus.network);
           subnet.setAttribute('width', abacus.subnet);
           network.setAttribute('width', abacus.network);
+          netmask.setAttribute('placeholder', Abacus.dotDecimal('1'.repeat(abacus.network).padEnd(32, 0)));
+          netmask.setAttribute('pattern', netmask.placeholder.replace('.', '\\.').replace(/\b0\b/g, '\\d{1,3}'));
 
           networks.setAttribute('value', abacus.networks);
           subnetworks.setAttribute('value', abacus.subnets);
           hosts.setAttribute('value', abacus.hosts);
           bore.setAttribute('max', abacus.max);
+
+          netmask.classList.remove('invalid');
+          bore.classList.remove('invalid');
+
+          netmask.value = abacus.netmask;
           bore.value = abacus.subnet;
 
         });
@@ -192,7 +224,31 @@ keywords: ashen, gunaratne, ashen m. gunaratne, subnet, subnetting
           }
 
           this.classList.remove('invalid');
+          netmask.classList.remove('invalid');
           subnet.setAttribute('width', abacus.subnet = +this.value || 0);
+          subnetworks.setAttribute('value', abacus.subnets);
+          hosts.setAttribute('value', abacus.hosts);
+          netmask.value = abacus.netmask;
+
+        });
+
+        netmask.addEventListener('input', function (e) {
+
+          if (!this.checkValidity()) {
+            this.classList.add('invalid');
+            return;
+          }
+
+          if (Abacus.prefixLength(this.value) > 30
+           || Abacus.dotBinary(this.value).match(/0.*1/)) {
+            this.classList.add('invalid');
+            return;
+          }
+
+          this.classList.remove('invalid');
+          bore.classList.remove('invalid');
+          abacus.netmask = this.value || this.placeholder;
+          subnet.setAttribute('width', bore.value = abacus.subnet);
           subnetworks.setAttribute('value', abacus.subnets);
           hosts.setAttribute('value', abacus.hosts);
 
@@ -206,6 +262,7 @@ keywords: ashen, gunaratne, ashen m. gunaratne, subnet, subnetting
           subnet.setAttribute('width', abacus.subnet = bore.value = e.rect.width / (gauge.width.baseVal.value / gauge.viewBox.baseVal.width));
           subnetworks.setAttribute('value', abacus.subnets);
           hosts.setAttribute('value', abacus.hosts);
+          netmask.value = abacus.netmask;
         });
 
       });
@@ -252,6 +309,10 @@ keywords: ashen, gunaratne, ashen m. gunaratne, subnet, subnetting
       <label>
         Subnet bits:
         <input id="bore" type="number" min="0" max="22" placeholder="0" value="12" />
+      </label>
+      <label>
+        Subnet mask:
+        <input id="netmask" type="text" minlength="7" maxlength="15" placeholder="255.0.0.0" pattern="255\.\d{1,3}\.\d{1,3}\.\d{1,3}" size="15" value="255.255.240.0" />
       </label>
       <hr />
       <label>
