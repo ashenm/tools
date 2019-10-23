@@ -1,0 +1,271 @@
+---
+lang: en
+title: VLSM
+desc: Logical arbitrary-length subnet division
+keywords: ashen, gunaratne, ashen m. gunaratne, cidr, vlsm, ipv4
+---
+
+{%- capture metadata -%}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <meta name="description" content="{{ page.desc }}" />
+  <meta name="keywords" content="{{ page.keywords }}" />
+  <meta name="author" content="{{ site.author }}" />
+
+  <title>{{ page.title }}</title>
+
+  <style type="text/css">
+
+    body {
+      display: flex;
+      min-height: 100vh;
+      text-align: center;
+      justify-content: center;
+      align-items: center;
+      margin: 0;
+    }
+
+    input {
+      border: none;
+    }
+
+    input:focus {
+      outline: none;
+    }
+
+    input::-webkit-inner-spin-button,
+    input::-webkit-outer-spin-button {
+      display: none;
+    }
+
+    input.octet {
+      width: 3ch;
+      text-align: center;
+    }
+
+    label.distribution {
+      display: flex;
+      justify-content: space-between;
+      margin: 0.5rem 0;
+    }
+
+    label.distribution > input {
+      border: none;
+      text-align: right;
+      background: none;
+    }
+
+    #status {
+      width: 1.5ch;
+      display: inline-block;
+      border-radius: 1.5ch;
+      transform: translate(1ch, 0.125ch);
+      height: 1.5ch;
+    }
+
+    #prefix {
+      width: 2ch;
+    }
+
+    .invalid {
+      background-color: #EA4335!important;
+    }
+
+    @media (min-width: 992px) { main { transform: scale(1.25); } }
+
+  </style>
+{%- endcapture -%}
+
+{%- capture scripts -%}
+  <script type="text/javascript">
+
+    class Abacus {
+
+      constructor () {
+        this._network = '10.0.0.0';
+        this._broadcast = '10.255.255.255';
+        this._address = '10.0.0.0';
+        this._prefix = '8';
+      }
+
+      get network () {
+        return this._network;
+      }
+
+      get broadcast () {
+        return this._broadcast;
+      }
+
+      get prefix () {
+        return this._prefix;
+      }
+
+      get netmask () {
+        return Abacus.dotDecimal('1'.repeat(this.prefix).padEnd(32, 0));
+      }
+
+      get wildcard () {
+        return Abacus.dotDecimal('0'.repeat(this.prefix).padEnd(32, 1));
+      }
+
+      get hosts () {
+        return Math.pow(2, 32 - this.prefix);
+      }
+
+      set network (value) {
+
+        var address = value.split('.');
+        var netmask = this.netmask.split('.');
+        var wildcard = this.wildcard.split('.');
+
+        this._broadcast = address.map(function (value, index, values) { return value | wildcard[index]; }).join('.');
+        this._network = address.map(function (value, index, values) { return value & netmask[index]; }).join('.');
+        this._address = value;
+
+      }
+
+      set broadcast (value) {
+        this.network = value;
+      }
+
+      set prefix (value) {
+        this._prefix = value;
+        this.network = this._address;
+      }
+
+      static dotBinary (dotDecimal) {
+        return dotDecimal.split('.').map(function (value) { return (+value).toString(2).padStart(8, 0); }).join('.');
+      }
+
+      static dotDecimal (binary) {
+        return binary.toString().match(/\d{8}/g).map(function (value) { return parseInt(value, 2).toString(); }).join('.');
+      }
+
+      static prefixLength (dotDecimal) {
+        return this.dotBinary(dotDecimal).replace(/\./g, '').replace(/0.*$/, '').length;
+      }
+
+    }
+
+    (function () {
+
+      document.addEventListener('DOMContentLoaded', function (e) {
+
+        window.abacus = new Abacus();
+        window.statusbar = document.getElementById('status');
+
+        // octets
+        window.octets = {
+          first: document.getElementById('first'),
+          second: document.getElementById('second'),
+          third: document.getElementById('third'),
+          forth: document.getElementById('forth')
+        };
+
+        // mask length
+        window.prefix = document.getElementById('prefix');
+
+        // distribution stats
+        window.network = document.getElementById('network');
+        window.broadcast = document.getElementById('broadcast');
+        window.hosts = document.getElementById('hosts');
+
+        window.prefix.addEventListener('input', function () {
+          validate(this, { statusbar: window.statusbar }) && update(window.abacus.prefix = this.value || 8);
+        });
+
+        window.octets.first.addEventListener('input', octets, { passive: true });
+        window.octets.second.addEventListener('input', octets, { passive: true });
+        window.octets.third.addEventListener('input', octets, { passive: true });
+        window.octets.forth.addEventListener('input', octets, { passive: true });
+
+        window.octets.first.addEventListener('keyup', spotlight, { passive: true });
+        window.octets.second.addEventListener('keyup', spotlight, { passive: true });
+        window.octets.third.addEventListener('keyup', spotlight, { passive: true });
+        window.octets.forth.addEventListener('keyup', spotlight, { passive: true });
+
+      });
+
+      var spotlight = function (e) {
+        this.nextElementSibling && this.max.length === this.value.length && this.nextElementSibling.focus();
+      };
+
+      var octets = function (e) {
+        validate(this, { statusbar: window.statusbar }) && update(window.abacus.network = [ window.octets.first.value || 10,
+          window.octets.second.value || 0, window.octets.third.value || 0, window.octets.forth.value || 0 ].join('.'));
+      };
+
+      var validate = function (e, opt) {
+
+        if (e.value.length > e.max.length) {
+          e.value = e.value.slice(0, e.max.length);
+        }
+
+        var value = +e.value;
+
+        if (value !== value) {
+          opt.statusbar.classList.add('invalid');
+          return false;
+        }
+
+        if (e.min > value || value > e.max) {
+          opt.statusbar.classList.add('invalid');
+          return false;
+        }
+
+        opt.statusbar.classList.remove('invalid');
+
+        return true;
+
+      };
+
+      var update = function () {
+        window.broadcast.value = window.abacus.broadcast;
+        window.network.value = window.abacus.network;
+        window.hosts.value = window.abacus.hosts;
+      };
+
+    })();
+
+  </script>
+{%- endcapture -%}
+
+{%- capture body -%}
+  <header>
+  </header>
+  <main>
+    <div>
+      <input id="first" class="octet" type="number" min="0" max="255" placeholder="10" autofocus="autofocus" />
+      .
+      <input id="second" class="octet" type="number" min="0" max="255" placeholder="0" />
+      .
+      <input id="third" class="octet" type="number" min="0" max="255" placeholder="0" />
+      .
+      <input id="forth" class="octet" type="number" min="0" max="255" placeholder="0" />
+      /
+      <input id="prefix" type="number" min="1" max="32" placeholder="8" />
+      <output id="status"></output>
+    </div>
+    <hr />
+    <div>
+      <label class="distribution">
+        Network:
+        <input id="network" type="text" disabled="disabled" placeholder="10.0.0.0" />
+      </label>
+      <label class="distribution">
+        Broadcast:
+        <input id="broadcast" type="text" disabled="disabled" placeholder="10.255.255.255" />
+      </label>
+      <label class="distribution">
+        Hosts:
+        <input id="hosts" type="number" disabled="disabled" placeholder="16777216" />
+      </label>
+    </div>
+  </main>
+  <footer>
+  </footer>
+{%- endcapture -%}
+
+{%- include base.html -%}
+
+{%- comment -%} vim: set expandtab shiftwidth=2 syntax=liquid: {%- endcomment -%}
