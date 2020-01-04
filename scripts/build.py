@@ -3,4 +3,4 @@
 
 from os import P_WAIT, spawnlp
 
-spawnlp(P_WAIT, 'jekyll', 'jekyll', 'build')
+spawnlp(P_WAIT, 'jekyll', 'jekyll', 'build', '--profile')
