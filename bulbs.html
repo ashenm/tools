@@ -1,0 +1,240 @@
+---
+lang: en
+title: Binary Bulbs
+desc: An interactive illustration of binary number system
+keywords: ashen, gunaratne, ashen m. gunaratne, binary, number representation
+---
+
+{%- capture bulb -%}
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 27">
+    <path class="filament" d="M 0 3 C 0 0 16 0 16 3 Q 14.75 5.5 14.25 7.5 S 14 8 13.5 8 L 2.5 8 Q 2 8 1.75 7.5 S 1.25 5.5 0 3" />
+    <path class="mount" d="M 2.5 8.5 L 13.5 8.5 Q 14 8.5 14 9 Q 12.75 12.5 12 21 C 11.5 22 4.5 22 4 21 Q 3.25 12.5 2 9 Q 2 8.5 2.5 8.5 M 5 22.25 H 11 V 23 H 5 Z M 5 23.5 H 11 V 24.25 H 5 Z M 6 24.75 H 10 V 25.5 H 6 Z" />
+  </svg>
+{%- endcapture -%}
+
+{%- capture metadata -%}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <meta name="description" content="{{ page.desc }}" />
+  <meta name="keywords" content="{{ page.keywords }}" />
+  <meta name="author" content="{{ site.author }}" />
+
+  <title>{{ page.title }}</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha256-L/W5Wfqfa0sdBNIKN9cG6QA5F2qx4qICmU2VgLruv9Y=" crossorigin="anonymous" />
+
+  <style>
+
+    body {
+      display: flex;
+      min-height: 100vh;
+      flex-direction: column;
+      justify-content: space-between;
+      user-select: none;
+    }
+
+    input:disabled {
+      background: none;
+      color: inherit;
+    }
+
+    input#value {
+      border: none;
+      min-width: 3ch;
+      font-size: 2.25rem;
+      text-align: center;
+      -moz-appearance: textfield;
+    }
+
+    input#value:focus {
+      outline: none;
+    }
+
+    input#value::-webkit-inner-spin-button,
+    input#value::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+    }
+
+    svg {
+      overflow: visible;
+    }
+
+    svg.input {
+      width: 1.25rem;
+      height: 1.25rem;
+      cursor: pointer;
+      stroke: none;
+      fill: #666;
+    }
+
+    .bulb {
+      fill: #222;
+      overflow: visible;
+      margin-bottom: 2.5rem;
+      cursor: pointer;
+      stroke: none;
+    }
+
+    .bulb.symbol svg {
+      display: none;
+    }
+
+    .bulb.symbol::after {
+      content: "0";
+      font-family: sans-serif;
+      font-size: 10vw;
+    }
+
+    .bulb.illuminate.symbol::after {
+      content: "1";
+    }
+
+    .filament {
+      fill: none;
+      stroke: #222;
+      stroke-width: 0.5;
+    }
+
+    .illuminate .filament {
+      fill: #FBCB43;
+    }
+
+    .label {
+      margin-bottom: 0.5rem;
+    }
+
+    @media (min-width: 1200px) {
+      .label { font-size: 1.5rem; }
+    }
+
+  </style>
+{%- endcapture -%}
+
+{%- capture scripts -%}
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.slim.min.js" integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8=" crossorigin="anonymous"></script>
+
+  <script>
+
+    $(function () {
+
+      // aggregate total
+      window.$OUTPUT = $('#value');
+
+      // facilitate direct value input
+      window.$OUTPUT.on('input', change);
+
+      // facilitate increments/decrements
+      $('.input.up').click(function (e) { change(e, +1); });
+      $('.input.down').click(function (e) { change(e, -1); });
+
+      // ui maneuvers
+      $('#bulbs').change(function (e) { $('.bulb').toggleClass('symbol'); });
+      $('#inputs').change(function (e) { $('.input').attr('disabled', function (i, a) { return !a; }).filter('svg').toggleClass('invisible'); });
+      $('#labels').change(function (e) { $('.label').toggleClass('invisible'); })
+
+      // state toggling
+      $('.bulb').click(illuminate);
+
+    });
+
+    var illuminate = function (e, bin) {
+
+      if (bin) {
+        return $('.bulb').map(function (i, e) { return bin[i] === '1' ? $(e).addClass('illuminate') : $(e).removeClass('illuminate'); });
+      }
+
+      var $this = $(this);
+
+      // decrement
+      if ($this.hasClass('illuminate')) {
+        return change(e, -1 * $this.removeClass('illuminate').data('placeholder'));
+      }
+
+      // increment
+      change(e, 1 * $this.addClass('illuminate').data('placeholder'));
+
+    };
+
+    var change = function (e, i) {
+
+      var value = +window.$OUTPUT.val();
+
+      // ensure not NaN
+      if (value !== value) {
+        return window.$OUTPUT.val(window.$OUTPUT.val().slice(0, -1));
+      }
+
+      // ensure within valid range
+      if (value < 0 || value > 255) {
+        return window.$OUTPUT.val(Math.abs(value.toString().slice(0, -1)));
+      }
+
+      // add increments
+      value += i || 0;
+
+      // ensure value still valid
+      if (value < 0 || value > 255) {
+        return;
+      }
+
+      // illuminate value
+      illuminate(e, value.toString(2).padStart(8, 0));
+
+      // trim leading zeros
+      window.$OUTPUT.val(value);
+
+    };
+
+  </script>
+{%- endcapture -%}
+
+{%- capture body -%}
+  <header>
+  </header>
+  <main class="container text-center">
+    <div class="row flex-nowrap">
+    {%- for _ in (1..8) reversed -%}
+
+      {%- assign value = 1 -%}
+
+      {%- for i in (2.._) %}
+        {%- capture value -%}{{ value | times: 2 }}{%- endcapture -%}
+      {%- endfor -%}
+
+      <figure class="bulb col" title="click to toggle state" data-placeholder="{{ value }}">
+        <figcaption class="label font-weight-bold">{{ value }}</figcaption>{{ bulb }}
+      </figure>
+
+    {%- endfor -%}
+    </div>
+    <div>
+      <svg class="input up mx-auto" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+        <path d="M 0 16 L 8 0 L 16 16 Z" />
+      </svg>
+      <div class="col-12">
+        <input id="value" class="input mx-auto" type="number" min="0" max="255" value="0" />
+      </div>
+      <svg class="input down mx-auto" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+        <path d="M 0 0 L 8 16 L 16 0 Z" />
+      </svg>
+    </div>
+  </main>
+  <footer class="mx-auto mr-md-0">
+    <div class="custom-control custom-control-inline custom-switch">
+      <input id="bulbs" class="custom-control-input" type="checkbox" checked="checked" />
+      <label for="bulbs" class="custom-control-label">bulbs</label>
+    </div>
+    <div class="custom-control custom-control-inline custom-switch">
+      <input id="inputs" class="custom-control-input" type="checkbox" checked="checked" />
+      <label for="inputs" class="custom-control-label">inputs</label>
+    </div>
+    <div class="custom-control custom-control-inline custom-switch">
+      <input id="labels" class="custom-control-input" type="checkbox" checked="checked" />
+      <label for="labels" class="custom-control-label">labels</label>
+    </div>
+  </footer>
+{%- endcapture -%}
+
+{%- include base.html -%}
+
+{%- comment -%} vim: set expandtab shiftwidth=2 syntax=liquid: {%- endcomment -%}
