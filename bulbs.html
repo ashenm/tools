@@ -115,13 +115,15 @@ keywords: ashen, gunaratne, ashen m. gunaratne, binary, number representation
 
   <script>
 
+    var $output;
+
     $(function () {
 
       // aggregate total
-      window.$OUTPUT = $('#value');
+      $output = $('#value');
 
       // facilitate direct value input
-      window.$OUTPUT.on('input', change);
+      $output.on('input', change);
 
       // facilitate increments/decrements
       $('.input.up').click(function (e) { change(e, +1); });
@@ -146,7 +148,7 @@ keywords: ashen, gunaratne, ashen m. gunaratne, binary, number representation
 
       // disable game mode
       if (!$this.prop('checked')) {
-        window.$OUTPUT.off('change');
+        $output.off('change');
         return $this;
       }
 
@@ -164,10 +166,10 @@ keywords: ashen, gunaratne, ashen m. gunaratne, binary, number representation
       }
 
       // trap state toggles
-      window.$OUTPUT.change(value, referee);
+      $output.change(value, referee);
 
       // clear existing state
-      change(e, -1 * window.$OUTPUT.val());
+      change(e, -1 * $output.val());
 
     };
 
@@ -212,16 +214,16 @@ keywords: ashen, gunaratne, ashen m. gunaratne, binary, number representation
 
     var change = function (e, i) {
 
-      var value = +window.$OUTPUT.val();
+      var value = +$output.val();
 
       // ensure not NaN
       if (value !== value) {
-        return window.$OUTPUT.val(window.$OUTPUT.val().slice(0, -1));
+        return $output.val($output.val().slice(0, -1));
       }
 
       // ensure within valid range
       if (value < 0 || value > 255) {
-        return window.$OUTPUT.val(Math.abs(value.toString().slice(0, -1)));
+        return $output.val(Math.abs(value.toString().slice(0, -1)));
       }
 
       // add increments
@@ -236,7 +238,7 @@ keywords: ashen, gunaratne, ashen m. gunaratne, binary, number representation
       illuminate(e, value.toString(2).padStart(8, 0));
 
       // update value trimming leading zeros
-      window.$OUTPUT.val(value).trigger('change');
+      $output.val(value).trigger('change');
 
     };
 
