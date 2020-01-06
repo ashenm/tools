@@ -135,7 +135,7 @@ keywords: ashen, gunaratne, ashen m. gunaratne, binary, number representation
       // ui maneuvers
       $('#bulbs').change(function (e) { $('.bulb').toggleClass('symbol'); });
       $('#inputs').change(function (e) { $('.input').attr('disabled', function (i, a) { return !a; }).filter('svg').toggleClass('invisible'); });
-      $('#labels').change(function (e) { $('.label').toggleClass('invisible'); })
+      $('#labels').change(function (e) { $('.label').toggleClass('invisible'); });
 
       // state toggling
       $('.bulb').click(illuminate);
@@ -161,7 +161,7 @@ keywords: ashen, gunaratne, ashen m. gunaratne, binary, number representation
 
       // ensure value within valid range
       if (value !== value || value % 1 !== 0 || value < 1 || value > 255) {
-        window.alert("The value must be an integer between 1 and 255");
+        window.alert('The value must be an integer between 1 and 255');
         return $this.prop('checked', false);
       }
 
