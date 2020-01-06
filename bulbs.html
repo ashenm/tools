@@ -127,6 +127,9 @@ keywords: ashen, gunaratne, ashen m. gunaratne, binary, number representation
       $('.input.up').click(function (e) { change(e, +1); });
       $('.input.down').click(function (e) { change(e, -1); });
 
+      // facilitate game mode
+      $('#fixture').change(fixture);
+
       // ui maneuvers
       $('#bulbs').change(function (e) { $('.bulb').toggleClass('symbol'); });
       $('#inputs').change(function (e) { $('.input').attr('disabled', function (i, a) { return !a; }).filter('svg').toggleClass('invisible'); });
@@ -136,6 +139,58 @@ keywords: ashen, gunaratne, ashen m. gunaratne, binary, number representation
       $('.bulb').click(illuminate);
 
     });
+
+    var fixture = function (e) {
+
+      var $this = $(this);
+
+      // disable game mode
+      if (!$this.prop('checked')) {
+        window.$OUTPUT.off('change');
+        return $this;
+      }
+
+      var value = +window.prompt('Input an integer between 1 and 255');
+
+      // cancellations
+      if (!value) {
+        return $this.prop('checked', false);
+      }
+
+      // ensure value within valid range
+      if (value !== value || value % 1 !== 0 || value < 1 || value > 255) {
+        window.alert("The value must be an integer between 1 and 255");
+        return $this.prop('checked', false);
+      }
+
+      // trap state toggles
+      window.$OUTPUT.change(value, referee);
+
+      // clear existing state
+      change(e, -1 * window.$OUTPUT.val());
+
+    };
+
+    var referee = function (e) {
+
+      var i;
+
+      if (e.data.toString() !== $(this).val()) {
+        return false;
+      }
+
+      // reciprocate win
+      for (i = 1; i <= 10; i++) {
+        window.setTimeout(illuminate, i * 75, null, i % 2 !== 0 ? '10101010' : '01010101');
+      }
+
+      // clear previous state
+      window.setTimeout(change, i * 75, null, -1 * e.data);
+
+      // disable game mode
+      $('#fixture').click();
+
+    };
 
     var illuminate = function (e, bin) {
 
@@ -180,8 +235,8 @@ keywords: ashen, gunaratne, ashen m. gunaratne, binary, number representation
       // illuminate value
       illuminate(e, value.toString(2).padStart(8, 0));
 
-      // trim leading zeros
-      window.$OUTPUT.val(value);
+      // update value trimming leading zeros
+      window.$OUTPUT.val(value).trigger('change');
 
     };
 
@@ -223,6 +278,10 @@ keywords: ashen, gunaratne, ashen m. gunaratne, binary, number representation
     <div class="custom-control custom-control-inline custom-switch">
       <input id="bulbs" class="custom-control-input" type="checkbox" checked="checked" />
       <label for="bulbs" class="custom-control-label">bulbs</label>
+    </div>
+    <div class="custom-control custom-control-inline custom-switch">
+      <input id="fixture" class="custom-control-input" type="checkbox" />
+      <label for="fixture" class="custom-control-label">game mode</label>
     </div>
     <div class="custom-control custom-control-inline custom-switch">
       <input id="inputs" class="custom-control-input" type="checkbox" checked="checked" />
