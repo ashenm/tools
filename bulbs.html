@@ -55,6 +55,13 @@ keywords: ashen, gunaratne, ashen m. gunaratne, binary, number representation
       -webkit-appearance: none;
     }
 
+    output {
+      margin-top: 1rem;
+      margin-bottom: 1.25rem;
+      font-size: 2.25rem;
+      width: 5ch;
+    }
+
     svg {
       overflow: visible;
     }
@@ -70,9 +77,9 @@ keywords: ashen, gunaratne, ashen m. gunaratne, binary, number representation
     .bulb {
       fill: #222;
       overflow: visible;
-      margin-bottom: 2.5rem;
       cursor: pointer;
       stroke: none;
+      margin: 0;
     }
 
     .bulb.symbol svg {
@@ -122,6 +129,9 @@ keywords: ashen, gunaratne, ashen m. gunaratne, binary, number representation
       // aggregate total
       $output = $('#value');
 
+      // facilitate ascii representation
+      $output.$ascii = $('output');
+
       // facilitate direct value input
       $output.on('input', change);
 
@@ -136,6 +146,7 @@ keywords: ashen, gunaratne, ashen m. gunaratne, binary, number representation
       $('#bulbs').change(function (e) { $('.bulb').toggleClass('symbol'); });
       $('#inputs').change(function (e) { $('.input').attr('disabled', function (i, a) { return !a; }).filter('svg').toggleClass('invisible'); });
       $('#labels').change(function (e) { $('.label').toggleClass('invisible'); });
+      $('#ascii').change(function (e) { $output.$ascii.toggleClass('invisible'); });
 
       // state toggling
       $('.bulb').click(illuminate);
@@ -214,6 +225,7 @@ keywords: ashen, gunaratne, ashen m. gunaratne, binary, number representation
 
     var change = function (e, i) {
 
+      var ascii;
       var value = +$output.val();
 
       // ensure not NaN
@@ -227,7 +239,9 @@ keywords: ashen, gunaratne, ashen m. gunaratne, binary, number representation
       }
 
       // add increments
+      // compute ascii correspondence
       value += i || 0;
+      ascii = String.fromCharCode(value);
 
       // ensure value still valid
       if (value < 0 || value > 255) {
@@ -239,6 +253,9 @@ keywords: ashen, gunaratne, ashen m. gunaratne, binary, number representation
 
       // update value trimming leading zeros
       $output.val(value).trigger('change');
+
+      // update ascii correspondence
+      $output.$ascii.val(ascii.trim() ? ascii : encodeURIComponent(ascii));
 
     };
 
@@ -265,6 +282,9 @@ keywords: ashen, gunaratne, ashen m. gunaratne, binary, number representation
     {%- endfor -%}
     </div>
     <div>
+      <output class="bg-light rounded-pill invisible">%00</output>
+    </div>
+    <div>
       <svg class="input up mx-auto" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
         <path d="M 0 16 L 8 0 L 16 16 Z" />
       </svg>
@@ -276,10 +296,14 @@ keywords: ashen, gunaratne, ashen m. gunaratne, binary, number representation
       </svg>
     </div>
   </main>
-  <footer class="mx-auto mr-md-0">
+  <footer class="text-center text-xl-right">
     <div class="custom-control custom-control-inline custom-switch">
       <input id="bulbs" class="custom-control-input" type="checkbox" checked="checked" />
       <label for="bulbs" class="custom-control-label">bulbs</label>
+    </div>
+    <div class="custom-control custom-control-inline custom-switch">
+      <input id="ascii" class="custom-control-input" type="checkbox" />
+      <label for="ascii" class="custom-control-label">ascii</label>
     </div>
     <div class="custom-control custom-control-inline custom-switch">
       <input id="fixture" class="custom-control-input" type="checkbox" />
