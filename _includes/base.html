@@ -24,5 +24,12 @@
 
   {{ body }}
 
+  {%- if jekyll.environment == 'production' -%}
+    <!-- BEGIN Google Analytics -->
+    <script async="async" src='https://www.google-analytics.com/analytics.js'></script>
+    <script>window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;ga('create','UA-84329766-3','auto');ga('send','pageview');</script>
+    <!-- END Google Analytics -->
+  {%- endif -%}
+
 </body>
 </html>
