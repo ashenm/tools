@@ -1,0 +1,317 @@
+---
+lang: en
+title: GridSnap
+desc: Delineate gridlines onto an image
+keywords: ashen, gunaratne, ashen m. gunaratne, grid, guidelines
+---
+
+{%- capture metadata -%}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <meta name="description" content="{{ page.desc }}" />
+  <meta name="keywords" content="{{ page.keywords }}" />
+  <meta name="author" content="{{ site.author }}" />
+
+  <title>{{ page.title }}</title>
+
+  <style>
+
+    :root {
+      --slider-width: 1.5ch;
+    }
+
+    body {
+      margin: 0;
+    }
+
+    main {
+      height: calc(100vh - 2rem);
+      margin: 1rem;
+      margin-right: calc(1rem + var(--slider-width));
+    }
+
+    footer {
+      background: #FFF;
+      display: none;
+      height: calc(100vh - 1.5rem);
+      padding: 0.75rem;
+      padding-left: calc(0.75rem + var(--slider-width)); /* include slider width to clinch pixelated offsets */
+      position: absolute;
+      right: 0;
+      top: 0;
+      width: calc(25vw - 1.5rem);
+    }
+
+    svg {
+      height: 100%;
+      margin-left: auto;
+      margin-right: auto;
+      overflow: visible;
+      display: block;
+      width: 100%;
+    }
+
+    div.input {
+      padding-top: 0.75rem;
+    }
+
+    input {
+      border-width: 1px;
+      display: block;
+      padding: 0;
+      width: calc(100% - 2px);
+    }
+
+    input[type="file"] {
+      visibility: hidden;
+    }
+
+    input[type="file"]::before {
+      background: #DDD;
+      border-radius: 5px;
+      content: "Choose Image";
+      cursor: pointer;
+      display: inline-block;
+      padding: 1px 6px;
+      position: relative;
+      text-align: center;
+      visibility: visible;
+      width: calc(100% - 12px);
+    }
+
+    #slider {
+      background-color: #DDD;
+      color: #AAA;
+      cursor: pointer;
+      font-weight: bold;
+      height: calc(50vh + 1ex);
+      padding-top: calc(50vh - 1ex);
+      position: absolute;
+      right: 0;
+      top: 0;
+      width: var(--slider-width);
+    }
+
+    rect.backdrop {
+      fill: #DFDFDF;
+    }
+
+    text.input {
+      dominant-baseline: middle;
+      cursor: pointer;
+      text-anchor: middle;
+    }
+
+    text.label {
+      fill: #000000;
+    }
+
+    @media (min-width: 768px) {
+
+      footer {
+        border: 1px solid #DDD;
+        border-radius: 5px;
+        display: block;
+        height: calc(100vh - 1.5rem - 12px);
+        margin: 5px;
+        padding: 0.75rem;
+        width: calc(25vw - 1.5rem - 12px);
+      }
+
+      main {
+        margin-right: calc(25vw + 1rem);
+      }
+
+      #slider {
+        display: none;
+      }
+
+    }
+
+    @media (min-width: 1024px) {
+
+      footer {
+        width: 256px;
+      }
+
+      main {
+        margin-right: calc(268px + 2.5rem);
+      }
+
+    }
+
+  </style>
+{%- endcapture -%}
+
+{%- capture scripts -%}
+  <script src="//cdnjs.cloudflare.com/ajax/libs/d3/5.15.0/d3.min.js" integrity="sha256-m0QmIsBXcOMiETRmpT3qg2IQ/i0qazJA2miCHzOmS1Y=" crossorigin="anonymous"></script>
+  <script>
+
+    var createGrid = function (s, d, b) {
+
+      var radius = 1.5;
+      var offset = radius / 2;
+      var blocks = b || 16;
+
+      var spacing = d.width / blocks;
+      var seeds = d3.range(spacing, d.height, spacing);
+
+      var markers = d3.select(s)
+        .selectAll('g')
+        .remove()
+        .exit()
+        .data(d3.cross(seeds.slice(0, blocks - 1), seeds))
+        .enter()
+        .append('g')
+        .attr('data-coords', function (d) {
+          return [ Math.ceil(d[0] / spacing), Math.ceil(d[1] / spacing) ].join(', ');
+        })
+        .attr('transform', function (d) {
+          return 'translate(' + d[0] + ',' + d[1] + ')';
+        });
+
+      markers.append('circle')
+        .style('fill', d3.select('input[type="color"]').node().value || '#FFF')
+        .attr('class', 'marker')
+        .attr('cx', -offset)
+        .attr('cy', -offset)
+        .attr('r', radius);
+
+      markers.on('mouseenter', function (d) {
+
+        var container = d3.select(this);
+
+        var label = container.append('text')
+          .attr('class', 'label').text(this.dataset.coords);
+
+        var bbox = this.getBBox();
+
+        container.append('rect').attr('class', 'backdrop')
+          .attr('height', bbox.height).attr('width', bbox.width)
+          .attr('x', bbox.x).attr('y', bbox.y);
+
+        container.raise();
+        label.raise();
+
+      });
+
+      markers.on('mouseleave', function (d) {
+        d3.selectAll('text.label, rect.backdrop').remove();
+      });
+
+      markers.on('click', function (d) {
+        window.setTimeout(Element.prototype.dispatchEvent.bind(this), 1250, new MouseEvent('mouseleave'));
+      });
+
+    };
+
+    document.onreadystatechange = function () {
+
+      if (document.readyState !== 'interactive') {
+        return;
+      }
+
+      var reader = new FileReader();
+      var image = document.createElement('img');
+
+      var file = d3.select('input[type="file"]');
+      var grids = d3.select('input[type="number"]');
+      var color = d3.select('input[type="color"]');
+
+      var auxiliary = d3.select('text.input');
+
+      var slider = d3.select('#slider');
+      var footer = d3.select('footer');
+
+      var svg = d3.select('svg');
+      var canvas = svg.select('image');
+
+      image.addEventListener('load', function () {
+
+        var clientBBox;
+
+        svg.style('height', '').style('width', '');
+
+        canvas.attr('href', this.src);
+        canvas.attr('transform', 'scale(' + Math.min(svg.style('height').replace(/px$/, '') / this.height,
+          svg.style('width').replace(/px$/, '') / this.width) + ')');
+
+        clientBBox = canvas.node().getBoundingClientRect();
+
+        svg.style('width', clientBBox.width);
+        createGrid(svg.node(), clientBBox);
+
+      });
+
+      window.addEventListener('resize', function () {
+        image.src ? image.dispatchEvent(new Event('load')) : undefined;
+      });
+
+      reader.addEventListener('load', function () {
+        image.setAttribute('src', this.result);
+      });
+
+      file.on('change', function () {
+        this.files.length ? reader.readAsDataURL(this.files[0]) : undefined;
+      });
+
+      grids.on('input', function () {
+        image.src && this.value == +this.value ? createGrid(svg.node(), canvas.node().getBoundingClientRect(), this.value) : undefined;
+      });
+
+      color.on('input', function () {
+        svg.selectAll('circle.marker').style('fill', this.value);
+      });
+
+      slider.on('click', function () {
+
+        if (/block/.test(footer.style('display'))) {
+          slider.style('transform', 'initial').html('&#8882;');
+          footer.style('display', 'none');
+          return this;
+        }
+
+        slider.style('transform', 'translateX(-25vw)').html('&#8883;');
+        footer.style('display', 'block');
+
+      });
+
+      auxiliary.on('click', function () {
+        file.node().click();
+      });
+
+    };
+
+  </script>
+{%- endcapture -%}
+
+{%- capture body -%}
+  <header>
+  </header>
+  <main>
+    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+      <text class="input" x="50%" y="50%">Choose Image</text>
+      <image width="0" height="0" style="height: auto; width: auto;" />
+    </svg>
+  </main>
+  <footer>
+    <div class="input">
+      <input type="file" accept="image/*" />
+    </div>
+    <div class="input">
+      <label>
+        Grid # <input type="number" min="0" value="16" />
+      </label>
+    </div>
+    <div class="input">
+      <label>
+        Color <input type="color" value="#FFFFFF" />
+      </label>
+    </div>
+  </footer>
+  <div id="slider">&#8882;</div>
+{%- endcapture -%}
+
+{%- include base.html -%}
+
+{%- comment -%} vim: set expandtab shiftwidth=2 syntax=liquid: {%- endcomment -%}
