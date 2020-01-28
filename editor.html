@@ -79,6 +79,10 @@ keywords: ashen, gunaratne, ashen gunaratne, tools, html, editor
             ? window.preview.setAttribute('srcdoc', window.editor.getValue()) : '';
         }, { passive: true });
 
+        window.addEventListener('beforeunload', function (e) {
+          return e.returnValue = e.preventDefault() || '';
+        });
+
         window.editor.focus();
 
       };
