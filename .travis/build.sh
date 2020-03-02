@@ -4,7 +4,7 @@
 set -e
 
 # build jekyll site
-. /home/travis/virtualenv/python3.7.2/bin/activate \
+. /home/travis/virtualenv/python3.7.6/bin/activate \
   && ./scripts/index.py \
   && ./scripts/build.py
 
