@@ -53,6 +53,15 @@ keywords: ashen, gunaratne, ashen m. gunaratne, rgb, explore, color, scheme
       display: block;
     }
 
+    output.beam {
+      height: 1ch;
+      display: inline-block;
+      background: #000000;
+      vertical-align: middle;
+      border-radius: 1ch;
+      width: 1ch;
+    }
+
   </style>
 {%- endcapture -%}
 
@@ -63,19 +72,31 @@ keywords: ashen, gunaratne, ashen m. gunaratne, rgb, explore, color, scheme
 
     var blend = function blendBGBScheme (e) {
 
-      if (!/input/i.test(e.target.nodeName)) {
+      var beam;
+
+      if (!(beam = e.target.dataset.beam)) {
         return false;
       }
 
-      node.container.dataset[e.target.dataset.beam] = e.target.value;
+      node.form.beams[beam].dec.value = e.target.value;
 
-      node.form.dec[0].value = node.container.dataset.red || 0;
-      node.form.dec[1].value = node.container.dataset.green || 0;
-      node.form.dec[2].value = node.container.dataset.blue || 0;
+      node.form.beams[beam].hex.value = (+e.target.value).toString(16).padStart(2, 0);
 
-      node.form.hex[0].value = (+node.form.dec[0].value).toString(16).padStart(2, 0);
-      node.form.hex[1].value = (+node.form.dec[1].value).toString(16).padStart(2, 0);
-      node.form.hex[2].value = (+node.form.dec[2].value).toString(16).padStart(2, 0);
+      switch (beam) {
+
+        case 'red':
+          node.form.beam[0].style.backgroundColor = '#' + node.form.hex[0].value + '0000';
+          break;
+
+        case 'green':
+          node.form.beam[1].style.backgroundColor = '#00' + node.form.hex[1].value + '00';
+          break;
+
+        case 'blue':
+          node.form.beam[2].style.backgroundColor = '#0000' + node.form.hex[2].value;
+          break;
+
+      }
 
       node.canvas.style.background = '#'.concat([
         node.form.hex[0].value, node.form.hex[1].value, node.form.hex[2].value
@@ -98,6 +119,14 @@ keywords: ashen, gunaratne, ashen m. gunaratne, rgb, explore, color, scheme
       // associate extended node references
       node.form.dec = node.form.querySelectorAll('.dec');
       node.form.hex = node.form.querySelectorAll('.hex');
+      node.form.beam = node.form.querySelectorAll('.beam');
+
+      // construct collective node references
+      node.form.beams = {
+        red: { beam: node.form.beam[0], dec: node.form.dec[0], hex: node.form.hex[0] },
+        green: { beam: node.form.beam[1], dec: node.form.dec[1], hex: node.form.hex[1] },
+        blue: { beam: node.form.beam[2], dec: node.form.dec[2], hex: node.form.hex[2] }
+      };
 
       // associate event handlers
       node.form.oninput = blend;
@@ -125,6 +154,9 @@ keywords: ashen, gunaratne, ashen m. gunaratne, rgb, explore, color, scheme
         </thead>
         <tbody>
           <tr>
+            <td>
+              <output class="beam"></output>
+            </td>
             <td class="label">Red</td>
             <td class="slider">
               <input class="slider" type="range" min="0" max="255" value="0" data-beam="red" />
@@ -137,6 +169,9 @@ keywords: ashen, gunaratne, ashen m. gunaratne, rgb, explore, color, scheme
             </td>
           </tr>
           <tr>
+            <td>
+              <output class="beam"></output>
+            </td>
             <td class="label">Green</td>
             <td>
               <input class="slider" type="range" min="0" max="255" value="0" data-beam="green" />
@@ -149,6 +184,9 @@ keywords: ashen, gunaratne, ashen m. gunaratne, rgb, explore, color, scheme
             </td>
           </tr>
           <tr>
+            <td>
+              <output class="beam"></output>
+            </td>
             <td class="label">Blue</td>
             <td>
               <input class="slider" type="range" min="0" max="255" value="0" data-beam="blue" />
