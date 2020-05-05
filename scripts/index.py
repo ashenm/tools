@@ -2,6 +2,7 @@
 # Build Site Index
 
 from glob import iglob
+from html import escape
 from re import DOTALL, compile
 from yaml import FullLoader, load
 
@@ -44,8 +45,8 @@ for file in sorted(iglob('**', recursive=True)):
 
   tbody.append(newline.join([
     f'{spacer * offset}<tr>',
-    f'{spacer * offset}{spacer * width}<td><a href="{file.replace(".html", "")}">{frontmatter["title"]}</a></td>',
-    f'{spacer * offset}{spacer * width}<td>{frontmatter.get("desc", "<em>No description available<em>")}</td>',
+    f'{spacer * offset}{spacer * width}<td><a href="{file.replace(".html", "")}">{escape(frontmatter["title"])}</a></td>',
+    f'{spacer * offset}{spacer * width}<td>{escape(frontmatter.get("desc", "<em>No description available<em>"))}</td>',
     f'{spacer * offset}</tr>'
   ]))
 
