@@ -37,6 +37,14 @@ keywords: ashen, gunaratne, ashen m. gunaratne, rgb, explore, color, scheme
       width: 100%;
     }
 
+    output#blend {
+      height: 256px;
+      margin: 0.5rem auto;
+      background: #000000;
+      display: block;
+      width: 256px;
+    }
+
     input.dec,
     input.hex {
       border: none;
@@ -45,12 +53,6 @@ keywords: ashen, gunaratne, ashen m. gunaratne, rgb, explore, color, scheme
 
     input.hex {
       text-transform: uppercase;
-    }
-
-    svg {
-      background: #000000; /* TODO */
-      margin: 0.5rem auto;
-      display: block;
     }
 
     output.beam {
@@ -113,8 +115,7 @@ keywords: ashen, gunaratne, ashen m. gunaratne, rgb, explore, color, scheme
 
       // associate node references
       node.form = document.querySelector('table');
-      node.container = document.querySelector('output');
-      node.canvas = document.querySelector('svg');
+      node.canvas = document.querySelector('output#blend');
 
       // associate extended node references
       node.form.dec = node.form.querySelectorAll('.dec');
@@ -139,9 +140,7 @@ keywords: ashen, gunaratne, ashen m. gunaratne, rgb, explore, color, scheme
 {%- capture body -%}
   <main>
     <form>
-      <output>
-        <svg height="255" width="255"></svg>
-      </output>
+      <output id="blend"></output>
       <hr />
       <table>
         <thead>
