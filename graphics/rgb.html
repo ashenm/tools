@@ -83,20 +83,24 @@ keywords: ashen, gunaratne, ashen m. gunaratne, rgb, explore, color, scheme
 
     var blend = function blendBGBScheme (e) {
 
-      var beam;
       var value = +e.target.value;
+      var beam = e.target.dataset.beam;
+
+      if (!beam) {
+        return false;
+      }
+
+      if (e.target.classList.contains('hex')) {
+        value = parseInt(e.target.value, 16);
+      }
 
       if (value !== value) {
         e.target.classList.add('invalid');
         return false;
       }
 
-      if (value < e.target.min || e.target.max < value) {
+      if (value < 0 || value > 255) {
         e.target.classList.add('invalid');
-        return false;
-      }
-
-      if (!(beam = e.target.dataset.beam)) {
         return false;
       }
 
@@ -185,10 +189,10 @@ keywords: ashen, gunaratne, ashen m. gunaratne, rgb, explore, color, scheme
               <input class="slider" type="range" min="0" max="255" value="0" data-beam="red" />
             </td>
             <td class="input">
-              <input class="dec" type="text" min="0" max="255" placeholder="255" size="3" value="0" data-beam="red" />
+              <input class="dec" type="text" placeholder="255" size="3" value="0" data-beam="red" />
             </td>
             <td class="input">
-              <input class="hex" disabled="disabled" type="text" placeholder="FF" size="2" value="00" data-beam="red" />
+              <input class="hex" type="text" placeholder="FF" size="2" value="00" data-beam="red" />
             </td>
           </tr>
           <tr>
@@ -200,10 +204,10 @@ keywords: ashen, gunaratne, ashen m. gunaratne, rgb, explore, color, scheme
               <input class="slider" type="range" min="0" max="255" value="0" data-beam="green" />
             </td>
             <td>
-              <input class="dec" min="0" max="255" type="text" placeholder="255" size="3" value="0" data-beam="green" />
+              <input class="dec" type="text" placeholder="255" size="3" value="0" data-beam="green" />
             </td>
             <td>
-              <input class="hex" disabled="disabled" type="text" placeholder="FF" size="2" value="00" data-beam="green" />
+              <input class="hex" type="text" placeholder="FF" size="2" value="00" data-beam="green" />
             </td>
           </tr>
           <tr>
@@ -215,10 +219,10 @@ keywords: ashen, gunaratne, ashen m. gunaratne, rgb, explore, color, scheme
               <input class="slider" type="range" min="0" max="255" value="0" data-beam="blue" />
             </td>
             <td>
-              <input class="dec" min="0" max="255" type="text" placeholder="255" size="3" value="0" data-beam="blue" />
+              <input class="dec" type="text" placeholder="255" size="3" value="0" data-beam="blue" />
             </td>
             <td>
-              <input class="hex" disabled="disabled" type="text" placeholder="FF" size="2" value="00" data-beam="blue" />
+              <input class="hex" type="text" placeholder="FF" size="2" value="00" data-beam="blue" />
             </td>
           </tr>
         </tbody>
