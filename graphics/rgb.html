@@ -45,14 +45,23 @@ keywords: ashen, gunaratne, ashen m. gunaratne, rgb, explore, color, scheme
       width: 256px;
     }
 
+    input {
+      border-radius: 0.25rem;
+    }
+
     input.dec,
     input.hex {
       border: none;
+      padding-right: 0.125rem;
       text-align: right;
     }
 
     input.hex {
       text-transform: uppercase;
+    }
+
+    input.invalid {
+      background: #DC3545;
     }
 
     output.beam {
@@ -75,14 +84,25 @@ keywords: ashen, gunaratne, ashen m. gunaratne, rgb, explore, color, scheme
     var blend = function blendBGBScheme (e) {
 
       var beam;
+      var value = +e.target.value;
+
+      if (value !== value) {
+        e.target.classList.add('invalid');
+        return false;
+      }
+
+      if (value < e.target.min || e.target.max < value) {
+        e.target.classList.add('invalid');
+        return false;
+      }
 
       if (!(beam = e.target.dataset.beam)) {
         return false;
       }
 
-      node.form.beams[beam].dec.value = e.target.value;
-
-      node.form.beams[beam].hex.value = (+e.target.value).toString(16).padStart(2, 0);
+      node.form.beams[beam].dec.value = value;
+      node.form.beams[beam].hex.value = value.toString(16).padStart(2, 0);
+      node.form.beams[beam].slider.value = value;
 
       switch (beam) {
 
@@ -104,6 +124,8 @@ keywords: ashen, gunaratne, ashen m. gunaratne, rgb, explore, color, scheme
         node.form.hex[0].value, node.form.hex[1].value, node.form.hex[2].value
       ].join(''));
 
+      e.target.classList.remove('invalid');
+
     };
 
     document.onreadystatechange = function () {
@@ -121,12 +143,13 @@ keywords: ashen, gunaratne, ashen m. gunaratne, rgb, explore, color, scheme
       node.form.dec = node.form.querySelectorAll('.dec');
       node.form.hex = node.form.querySelectorAll('.hex');
       node.form.beam = node.form.querySelectorAll('.beam');
+      node.form.slider = node.form.querySelectorAll('.slider');
 
       // construct collective node references
       node.form.beams = {
-        red: { beam: node.form.beam[0], dec: node.form.dec[0], hex: node.form.hex[0] },
-        green: { beam: node.form.beam[1], dec: node.form.dec[1], hex: node.form.hex[1] },
-        blue: { beam: node.form.beam[2], dec: node.form.dec[2], hex: node.form.hex[2] }
+        red: { beam: node.form.beam[0], dec: node.form.dec[0], hex: node.form.hex[0], slider: node.form.slider[0] },
+        green: { beam: node.form.beam[1], dec: node.form.dec[1], hex: node.form.hex[1], slider: node.form.slider[1] },
+        blue: { beam: node.form.beam[2], dec: node.form.dec[2], hex: node.form.hex[2], slider: node.form.slider[2] }
       };
 
       // associate event handlers
@@ -158,11 +181,11 @@ keywords: ashen, gunaratne, ashen m. gunaratne, rgb, explore, color, scheme
               <output class="beam"></output>
             </td>
             <td class="label">Red</td>
-            <td class="slider">
+            <td class="input">
               <input class="slider" type="range" min="0" max="255" value="0" data-beam="red" />
             </td>
             <td class="input">
-              <input class="dec" disabled="disabled" type="text" placeholder="255" size="3" value="0" data-beam="red" />
+              <input class="dec" type="text" min="0" max="255" placeholder="255" size="3" value="0" data-beam="red" />
             </td>
             <td class="input">
               <input class="hex" disabled="disabled" type="text" placeholder="FF" size="2" value="00" data-beam="red" />
@@ -177,7 +200,7 @@ keywords: ashen, gunaratne, ashen m. gunaratne, rgb, explore, color, scheme
               <input class="slider" type="range" min="0" max="255" value="0" data-beam="green" />
             </td>
             <td>
-              <input class="dec" disabled="disabled" type="text" placeholder="255" size="3" value="0" data-beam="green" />
+              <input class="dec" min="0" max="255" type="text" placeholder="255" size="3" value="0" data-beam="green" />
             </td>
             <td>
               <input class="hex" disabled="disabled" type="text" placeholder="FF" size="2" value="00" data-beam="green" />
@@ -192,7 +215,7 @@ keywords: ashen, gunaratne, ashen m. gunaratne, rgb, explore, color, scheme
               <input class="slider" type="range" min="0" max="255" value="0" data-beam="blue" />
             </td>
             <td>
-              <input class="dec" disabled="disabled" type="text" placeholder="255" size="3" value="0" data-beam="blue" />
+              <input class="dec" min="0" max="255" type="text" placeholder="255" size="3" value="0" data-beam="blue" />
             </td>
             <td>
               <input class="hex" disabled="disabled" type="text" placeholder="FF" size="2" value="00" data-beam="blue" />
