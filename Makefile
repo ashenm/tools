@@ -10,12 +10,17 @@ clean: ## remove build artefacts
 
 .PHONY: help
 .SILENT: help
-help:  ## show make targets
+help:  ## list make targets
 	awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {sub("\\\\n",sprintf("\n%22c"," "), $$2);printf " \033[36m%-20s\033[0m  %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
 .PHONY: index
 index: ## build catalogue
 	./scripts/index.py
+
+.PHONY: list
+.SILENT: list
+list: index ## show tools catalogue
+	./scripts/list.py
 
 .PHONY: serve
 serve: build ## locally serve site
