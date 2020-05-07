@@ -1,0 +1,69 @@
+---
+lang: en
+title: LiveFeed
+desc: A Webcam Viewer
+keywords: mediastream, preview, webcam
+---
+
+{%- capture metadata -%}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no" />
+  <meta name="description" content="{{ page.desc }}" />
+  <meta name="keywords" content="{{ page.keywords }}" />
+  <meta name="author" content="{{ site.author }}" />
+
+  <title>{{ page.title }}</title>
+
+  <style>
+
+    body {
+      margin: 0;
+      height: 100vh;
+      overflow: hidden;
+      width: 100vw;
+    }
+
+    video {
+      height: 100vh;
+      transform: scale(-1, 1);
+      width: auto;
+    }
+
+    @media (orientation: landscape) {
+      video { height: auto; width: 100vw; }
+    }
+
+  </style>
+{%- endcapture -%}
+
+{%- capture scripts -%}
+  <script>
+
+    document.addEventListener('DOMContentLoaded', function () {
+
+      if (!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) {
+        // TODO standardise compatibility handling
+        return window.alert('Unsupported Media Capture and Streams!');
+      }
+
+      navigator.mediaDevices.getUserMedia({ audio: true, video: true })
+        .then(stream => document.querySelector('video').srcObject = stream);
+
+    });
+
+  </script>
+{%- endcapture -%}
+
+{%- capture body -%}
+  <header>
+  </header>
+  <main>
+    <video autoplay="autoplay"></video>
+  </main>
+  <footer>
+  </footer>
+{%- endcapture -%}
+
+{%- include base.html -%}
+
+{%- comment -%} vim: set expandtab shiftwidth=2 syntax=liquid: {%- endcomment -%}
