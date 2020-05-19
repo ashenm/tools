@@ -103,6 +103,8 @@ keywords: ashen, gunaratne, ashen m. gunaratne, convert, time, utc, est, unix
         this.format = format || 'ddd, MMMM D, YYYY hh:mm:ss';
         this.moment = this.refresh();
 
+        this.butler = window.setInterval(UTC.__butler__, 1000, this);
+
         this.populate();
 
       }
@@ -114,6 +116,10 @@ keywords: ashen, gunaratne, ashen m. gunaratne, convert, time, utc, est, unix
 
       refresh () {
         return this.moment = moment.utc();
+      }
+
+      static __butler__ (instance) {
+        instance.populate();
       }
 
     }
@@ -176,12 +182,6 @@ keywords: ashen, gunaratne, ashen m. gunaratne, convert, time, utc, est, unix
       window.timer.local = new Local(window.timer.timers[2]);
 
       document.querySelector('input').addEventListener('input', convert, { passive: true });
-
-      window.setInterval(function () {
-        window.timer.utc.populate();
-        window.timer.local.populate();
-        window.timer.est.populate();
-      }, 1000);
 
     };
 
