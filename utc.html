@@ -1,8 +1,8 @@
 ---
 lang: en
 title: UTC
-desc: Convert local time to UTC
-keywords: ashen, gunaratne, ashen m. gunaratne, convert, time, utc
+desc: Convert local time to UTC, EST, or UNIX
+keywords: ashen, gunaratne, ashen m. gunaratne, convert, time, utc, est, unix
 ---
 
 {%- capture metadata -%}
@@ -14,15 +14,20 @@ keywords: ashen, gunaratne, ashen m. gunaratne, convert, time, utc
 
   <title>{{ page.title }}</title>
 
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous" />
-
-  <style type="text/css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap-reboot.min.css" integrity="sha256-xYVniYXUBtVTE4ja+KwHMJju/nGqmLCOJxoKGhnkspU=" crossorigin="anonymous" />
+  <style>
 
     body {
       display: flex;
-      min-height: 100vh;
       text-align: center;
+      flex-direction: column;
+      justify-content: center;
       align-items: center;
+      min-height: 100vh;
+    }
+
+    main {
+      width: 100%;
     }
 
     time,
@@ -30,136 +35,195 @@ keywords: ashen, gunaratne, ashen m. gunaratne, convert, time, utc
       font-family: 'Consolas', 'Lucida Console', 'Monaco';
     }
 
-    .caption {
+    time {
+      font-size: 1.125rem;
+    }
+
+    div.originator {
+      margin: 0.75rem;
+    }
+
+    div.translation {
+      display: table;
+      table-layout: fixed;
+      visibility: hidden;
+      margin: auto;
+    }
+
+    div.gloss {
+      display: table-row;
+    }
+
+    div.gloss > label,
+    div.gloss > output {
+      display: table-cell;
+    }
+
+    div.gloss > label {
+      border-left: 0.5rem solid transparent;
+      text-align: right;
+    }
+
+    input {
+      border: 1px solid #CED4DA;
+      border-radius: 0.25rem;
+      padding: 0.375rem 0.75rem;
+      text-align: center;
+      max-width: 320px;
+      width: 100%;
+    }
+
+    input.invalid {
+      background: #DC3545;
+    }
+
+    label {
       color: #868e96;
+      display: block;
+      font-size: small;
+      text-transform: uppercase;
     }
 
   </style>
 {%- endcapture -%}
 
 {%- capture scripts -%}
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.1/moment.min.js" integrity="sha256-zG8v+NWiZxmjNi+CvUYnZwKtHzFtdO8cAKUIdB8+U9I=" crossorigin="anonymous"></script>
-  <script type="text/javascript">
+  <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.25.3/moment.min.js" integrity="sha256-C66CaAImteEKZPYvgng9j10J/45e9sAuZyfPYCwp4gE=" crossorigin="anonymous"></script>
+  <script>
 
-    const time = {
-      utc: {
-        format: 'dddd, MMMM D, YYYY hh:mm:ss A'
-      },
-      local: {
-        format: 'dddd, MMMM D, YYYY hh:mm:ss A ZZ'
-      }
+    window.timer = {
+      RFC2822: 'ddd, DD MMM YYYY HH:mm:ss ZZ'
     };
 
     class UTC {
 
-      constructor(element, format) {
+      constructor (element, format) {
+
         this.container = element;
-        this.format = format;
+        this.format = format || 'ddd, MMMM D, YYYY hh:mm:ss';
+        this.moment = this.refresh();
+
+        this.populate();
+
       }
 
-      update() {
-        const now = moment().utc();
-        this.container.dateTime = now.toISOString();
-        this.container.innerText = now.format(this.format);
+      populate () {
+        this.container.innerText = this.refresh().format(this.format);
+        this.container.dateTime = this.moment.toISOString();
       }
 
-    }
-
-    class Local extends UTC {
-
-      constructor(element, format) {
-        super(element, format);
-      }
-
-      update() {
-        const now = moment();
-        this.container.dateTime = now.toISOString();
-        this.container.innerText = now.format(this.format);
+      refresh () {
+        return this.moment = moment.utc();
       }
 
     }
 
-    document.onreadystatechange = function() {
+    class EST extends UTC {
 
-      if (document.readyState !== 'interactive')
-        return;
+      constructor (element) {
+        super(element, window.timer.RFC2822);
+      }
 
-      time.converter = document.querySelector('form');
-      time.utc.container = document.getElementById('utc');
-      time.local.container = document.getElementById('local');
-      time.utc.node = time.utc.container.querySelector('time');
-      time.local.node = time.local.container.querySelector('time');
-      time.converter.output = time.converter.nextElementSibling;
+      refresh () {
+        return this.moment = moment.utc().utcOffset('-05:00');
+      }
 
-      time.utc = new UTC(time.utc.node, time.utc.format);
-      time.local = new Local(time.local.node, time.local.format);
-      time.converter.oninput = clear;
-      time.converter.onsubmit = converter;
+    }
 
-      time.utc.update();
-      time.local.update();
+    class Local extends EST {
 
-      window.setInterval(function() {
-        time.utc.update();
-        time.local.update();
-      }, 1000);
+      refresh () {
+        return this.moment = moment().local();
+      }
+
+    }
+
+    const convert = function convertTextInput (e) {
+
+      e.target.classList.remove('invalid');
+
+      if (!e.target.value) {
+        return window.output.innerText = window.translation.style.visibility = '';
+      }
+
+      const input = moment(e.target.value, 'D-M-YYYY hh:mm ZZ');
+
+      if (!input.isValid()) {
+        return e.target.classList.add('invalid');
+      }
+
+      window.translation.style.visibility = 'visible';
+
+      window.output[0].innerText = input.utc().format();
+      window.output[1].innerText = input.utcOffset('-05:00').format();
+      window.output[2].innerText = +input;
 
     };
 
-    function converter(e) {
+    document.onreadystatechange = function onDOMContentLoaded () {
 
-      const request = moment(this.convert.value, 'D-M-YYYY hh:mm ZZ');
-
-      if (request.isValid()) {
-        time.converter.output.innerText = request.utc().format() + ' ' + request;
+      if (document.readyState !== 'interactive') {
         return false;
       }
 
-      const warning = document.createElement('p');
-      warning.innerText ='Provided value is not in a recognized format';
-      warning.classList.add('text-danger');
-      time.converter.output.appendChild(warning);
+      window.output = document.getElementsByTagName('output');
+      window.timer.timers = document.getElementsByTagName('time');
 
-      return false;
+      window.translation = document.querySelector('div.translation');
 
-    }
+      window.timer.utc = new UTC(window.timer.timers[0]);
+      window.timer.est = new EST(window.timer.timers[1]);
+      window.timer.local = new Local(window.timer.timers[2]);
 
-    function clear(e) {
-      time.converter.output.innerHTML = '';
-    }
+      document.querySelector('input').addEventListener('input', convert, { passive: true });
+
+      window.setInterval(function () {
+        window.timer.utc.populate();
+        window.timer.local.populate();
+        window.timer.est.populate();
+      }, 1000);
+
+    };
 
   </script>
 {%- endcapture -%}
 
 {%- capture body -%}
-  <div class="container">
-    <header>
-      <div id="utc">
-        <h4><time datetime="1970-01-01T00:00:00.000Z">Thursday, January 1, 1970 12:00:00 AM</time></h4>
-        <h6 class="caption">UTC</h6>
+  <header>
+    <div class="timer">
+      <time datetime="1970-01-01T00:00:00.000Z">Thursday, January 1, 1970 12:00:00 AM</time>
+      <label>utc</label>
+    </div>
+    <div class="timer">
+      <time datetime="1969-12-31T19:00:00.000-05:00">Wednesday, December 31, 1969 07:00:00 PM</time>
+      <label>est</label>
+    </div>
+    <div class="timer">
+      <time datetime="1970-01-01T00:00:00.000Z">Thursday, January 1, 1970 12:00:00 AM +0000</time>
+      <label>local</label>
+    </div>
+  </header>
+  <main>
+    <div class="originator">
+      <input type="text" autofocus="autofocus" placeholder="DD/MM/YYY HH:MM [UTC Offset]" />
+    </div>
+    <div class="translation">
+      <div class="gloss">
+        <output></output>
+        <label>utc</label>
       </div>
-      <div id="local">
-        <h4><time datetime="1970-01-01T00:00:00.000Z">Thursday, January 1, 1970 12:00:00 AM +0000</time></h4>
-        <h6 class="caption">Local</h6>
+      <div class="gloss">
+        <output></output>
+        <label>est</label>
       </div>
-    </header>
-    <main>
-      <form class="mt-5 mb-3">
-        <div class="form-row justify-content-center">
-          <div class="col-xs-6 col-md-4">
-            <div class="input-group">
-              <input type="text" class="form-control" autofocus="autofocus" placeholder="DD/MM/YYY HH:MM [UTC Offset]" aria-label="convert time in format dd/mm/yyyy hh:mm" name="convert" />
-              <span class="input-group-btn">
-                <button class="btn btn-secondary" type="submit">Convert</button>
-              </span>
-            </div>
-          </div>
-        </div>
-      </form>
-      <output></output>
-      <output></output>
-    </main>
-  </div>
+      <div class="gloss">
+        <output></output>
+        <label>unix</label>
+      </div>
+    </div>
+  </main>
+  <footer>
+  </footer>
 {%- endcapture -%}
 
 {%- include base.html -%}
