@@ -133,7 +133,14 @@ keywords: ashen, gunaratne, ashen m. gunaratne, audio, bit depth, bit rate, samp
   <main>
     <form>
       <label>
-        Channels <input id="channels" type="number" value="1" />
+        Channels
+        <select id="channels">
+          <option value="1">1 (Monophonic)</option>
+          <option value="2" selected="selected">2 (Stereophonic)</option>
+          <option value="4">4 (Quadraphonic)</option>
+          <option value="6">6 (5.1 Surround)</option>
+          <option value="8">8 (Octophonic)</option>
+        </select>
       </label>
       <label>
         Duration <input id="duration" autofocus="autofocus" type="number" value="0" /> sec
