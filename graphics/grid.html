@@ -247,6 +247,10 @@ keywords: ashen, gunaratne, ashen m. gunaratne, grid, guidelines
         image.src ? image.dispatchEvent(new Event('load')) : undefined;
       });
 
+      document.addEventListener('paste', function (e) {
+        e.clipboardData.files.length ? reader.readAsDataURL(e.clipboardData.files[0]) : undefined;
+      });
+
       reader.addEventListener('load', function () {
         image.setAttribute('src', this.result);
       });
