@@ -16,10 +16,71 @@ keywords: ashen, gunaratne, ashen gunaratne, tools, html, editor
 
   <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
 
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha256-YLGeXaapI0/5IgZopewRJcFXomhRMlYYjugPLSyNjTY=" crossorigin="anonymous" />
-
   <style type="text/css">
-    .flex-basis-0 { -ms-flex-preferred-size: 0; flex-basis: 0; }
+
+    body {
+      margin: 0;
+      display: grid;
+      grid-template-rows: auto 1fr;
+      min-height: 100vh;
+      min-width: 100vw;
+    }
+
+    header,
+    main {
+      padding: 0.25rem;
+    }
+
+    header {
+      display: flex;
+      background-color: #F8F9FA;
+      justify-content: space-between;
+      flex: 0 0 100%;
+    }
+
+    main {
+      display: grid;
+      grid-template-rows: 1fr 1fr;
+      grid-gap: 0.25rem;
+    }
+
+    main > div {
+      border: 1px solid #DEE2E6;
+      border-radius: 2.5px;
+    }
+
+    iframe {
+      border: none;
+      height: 100%;
+      width: 100%;
+    }
+
+    button {
+      font-size: 1rem;
+      padding: 0.25rem 0.5rem;
+    }
+
+    button:focus {
+      outline: none;
+    }
+
+    button#clean {
+      background: none;
+      border: none;
+    }
+
+    button#run {
+      color: #FFF;
+      background-color: #28A745;
+      border-radius: 0.25rem;
+      padding: 0.25rem 0.75rem;
+      border: none;
+    }
+
+    @media (min-width: 768px) {
+      main { grid-template: 1fr / 1fr 1fr; }
+    }
+
   </style>
 {%- endcapture -%}
 
@@ -93,27 +154,23 @@ keywords: ashen, gunaratne, ashen gunaratne, tools, html, editor
 {%- endcapture -%}
 
 {%- capture body -%}
-  <div class="d-flex flex-column vh-100">
-    <header class="d-flex bg-light justify-content-between p-1">
-      <div>
-        <button id="clean" class="btn btn-sm" type="button">
-          <svg width="28px" height="28px" viewBox="0 0 18 16" xmlns="http://www.w3.org/2000/svg">
-            <path fill="#111" d="M 7 0 C 6.5 0 6.5 0 6.25 1 L 2.5 1 Q 2 1 2 1.5 L 2 2.5 Q 2 3 2.5 3 L 15.5 3 Q 16 3 16 2.5 L 16 1.5 Q 16 1 15.5 1 L 12 1 C 11.75 0 11.75 0 11 0 Z M 3 4 L 3 14.5 Q 3 16 4.5 16 L 13.5 16 Q 15 16 15 14.5 L 15 4 Z" />
-            <path fill="#FFF" d="M 5.5 6.5 L 5.5 13.5 C 5.5 14 6.5 14 6.5 13.5 L 6.5 6.5 C 6.5 6 5.5 6 5.5 6.5 M 8.5 6.5 L 8.5 13.5 C 8.5 14 9.5 14 9.5 13.5 L 9.5 6.5 C 9.5 6 8.5 6 8.5 6.5 M 11.5 6.5 L 11.5 13.5 C 11.5 14 12.5 14 12.5 13.5 L 12.5 6.5 C 12.5 6 11.5 6 11.5 6.5" />
-          </svg>
-        </button>
-      </div>
-      <div>
-        <button id="run" class="btn btn-success" type="button">RUN</button>
-      </div>
-    </header>
-    <main class="d-flex flex-column flex-md-row flex-grow-1">
-      <div class="flex-basis-0 flex-grow-1 p-1"><div id="editor" class="border rounded h-100 w-100"></div></div>
-      <div class="flex-basis-0 flex-grow-1 px-1 pb-1 pt-md-1 pl-md-0"><iframe id="preview" class="border rounded h-100 w-100" name="preview"></iframe></div>
-    </main>
-    <footer>
-    </footer>
-  </div>
+  <header>
+    <button id="clean" type="button">
+      <svg width="28px" height="28px" viewBox="0 0 18 16" xmlns="http://www.w3.org/2000/svg">
+        <path fill="#111" d="M 7 0 C 6.5 0 6.5 0 6.25 1 L 2.5 1 Q 2 1 2 1.5 L 2 2.5 Q 2 3 2.5 3 L 15.5 3 Q 16 3 16 2.5 L 16 1.5 Q 16 1 15.5 1 L 12 1 C 11.75 0 11.75 0 11 0 Z M 3 4 L 3 14.5 Q 3 16 4.5 16 L 13.5 16 Q 15 16 15 14.5 L 15 4 Z" />
+        <path fill="#FFF" d="M 5.5 6.5 L 5.5 13.5 C 5.5 14 6.5 14 6.5 13.5 L 6.5 6.5 C 6.5 6 5.5 6 5.5 6.5 M 8.5 6.5 L 8.5 13.5 C 8.5 14 9.5 14 9.5 13.5 L 9.5 6.5 C 9.5 6 8.5 6 8.5 6.5 M 11.5 6.5 L 11.5 13.5 C 11.5 14 12.5 14 12.5 13.5 L 12.5 6.5 C 12.5 6 11.5 6 11.5 6.5" />
+      </svg>
+    </button>
+    <button id="run" type="button">RUN</button>
+  </header>
+  <main>
+    <div id="editor"></div>
+    <div>
+      <iframe id="preview" name="preview"></iframe>
+    </div>
+  </main>
+  <footer>
+  </footer>
 {%- endcapture -%}
 
 {%- include base.html -%}
