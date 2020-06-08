@@ -3,11 +3,14 @@
 
 from glob import iglob
 from html import escape
+from os.path import dirname
+from collections import defaultdict
 from re import DOTALL, compile
 from yaml import FullLoader, load
 
 # index
 tbody = []
+groups = defaultdict(list)
 
 # html indent
 width = 2
@@ -23,8 +26,8 @@ excludes = ('catalogue.html', 'index.html', '404.html')
 # front matter RegEx
 reFrontMatter = compile(r'---\n(.*)\n---', DOTALL)
 
-# build index
-for file in sorted(iglob('**', recursive=True)):
+# group index entries
+for file in sorted(iglob('**', recursive=True), key=dirname):
 
   if file.startswith('_'):
     continue
@@ -41,14 +44,26 @@ for file in sorted(iglob('**', recursive=True)):
   if not frontmatter:
     continue
 
+  group = dirname(file) or 'generic'
   frontmatter = load(stream=frontmatter.group(1), Loader=FullLoader)
+
+  groups[group].append(newline.join([
+    f'{spacer * offset}<tr>',
+    f'{spacer * offset}{spacer * width}<td headers="{group}"><a href="{file.replace(".html", "")}">{escape(frontmatter["title"])}</a></td>',
+    f'{spacer * offset}{spacer * width}<td headers="{group}">{escape(frontmatter.get("desc", "<em>No description available<em>"))}</td>',
+    f'{spacer * offset}</tr>'
+  ]))
+
+# build index
+for group in groups.keys():
 
   tbody.append(newline.join([
     f'{spacer * offset}<tr>',
-    f'{spacer * offset}{spacer * width}<td><a href="{file.replace(".html", "")}">{escape(frontmatter["title"])}</a></td>',
-    f'{spacer * offset}{spacer * width}<td>{escape(frontmatter.get("desc", "<em>No description available<em>"))}</td>',
-    f'{spacer * offset}</tr>'
+    f'{spacer * offset}{spacer * width}<th id="{group}" colspan="2">{group.title()}</th>',
+    f'{spacer * offset}</tr>',
   ]))
+
+  tbody.append(newline.join(groups[group]))
 
 # write index doc
 with open(file='catalogue.html', mode='wt', encoding='utf_8', newline=newline) as document:
@@ -99,6 +114,11 @@ with open(file='catalogue.html', mode='wt', encoding='utf_8', newline=newline) a
     '',
     '    thead th {',
     '      border-bottom: 2px solid #e9ecef;',
+    '    }',
+    '',
+    '    tbody th {',
+    '      color: #6C757D;',
+    '      border-top: none;',
     '    }',
     '',
     '    tbody tr:hover {',
