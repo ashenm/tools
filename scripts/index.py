@@ -27,7 +27,7 @@ excludes = ('catalogue.html', 'index.html', '404.html')
 reFrontMatter = compile(r'---\n(.*)\n---', DOTALL)
 
 # group index entries
-for file in sorted(iglob('**', recursive=True), key=dirname):
+for file in sorted(iglob('**', recursive=True)):
 
   if file.startswith('_'):
     continue
@@ -55,7 +55,7 @@ for file in sorted(iglob('**', recursive=True), key=dirname):
   ]))
 
 # build index
-for group in groups.keys():
+for group in sorted(groups.keys()):
 
   tbody.append(newline.join([
     f'{spacer * offset}<tr>',
