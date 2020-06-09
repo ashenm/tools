@@ -20,6 +20,10 @@ keywords: ashen, gunaratne, ashen m. gunaratne, mathematics, asciimath, latex, t
       box-sizing: border-box;
     }
 
+    *:focus {
+      outline: none;
+    }
+
     body {
       margin: 0;
       height: 100vh;
@@ -64,7 +68,17 @@ keywords: ashen, gunaratne, ashen m. gunaratne, mathematics, asciimath, latex, t
     button.control {
       display: block;
       font-family: monospace;
+      border: 1px solid #767676;
       cursor: pointer;
+    }
+
+    button.control:first-of-type {
+      border-radius: 2.5px 2.5px 0 0;
+      border-bottom: none;
+    }
+
+    button.control:last-of-type {
+      border-radius: 0 0 2.5px 2.5px;
     }
 
     @media (min-width: 512px) {
