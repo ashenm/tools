@@ -1,1 +1,3 @@
+cairosvg
+PIL
 PyYAML
