@@ -5,8 +5,7 @@ set -e
 
 # build jekyll site
 . /home/travis/virtualenv/python3.7.6/bin/activate \
-  && ./scripts/index.py \
-  && ./scripts/build.py
+  && make --debug build
 
 # list artifacts for cache purging
 find _site -type f -printf 'https://tools.ashenm.ml/%P\n' \
