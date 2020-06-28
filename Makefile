@@ -1,12 +1,16 @@
 .DEFAULT_GOAL:=help
 
 .PHONY: build
-build: index ## build site
+build: index icons ## build site
 	./scripts/build.py
 
 .PHONY: clean
 clean: ## remove build artefacts
 	./scripts/clean.py
+
+.PHONY: icons
+icons: ## fabricate site icons
+	./scripts/icons.py
 
 .PHONY: help
 .SILENT: help

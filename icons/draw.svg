@@ -1,0 +1,18 @@
+<svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+
+  <!-- backdrop -->
+  <rect x="0" y="0" rx="5" ry="5" width="32" height="32" fill="#FFFFFF" />
+
+  <!-- pencil -->
+  <path fill="#1C1C1C" d="M 24 4 L 26 2 Q 27 1 28 2 L 31 5 Q 30 6 31 7 L 29 9 Z
+    M 23.5 4.5 L 11 17 L 16 22 L 28.5 9.5 Z
+    M 10.5 17.5 L 15.5 22.5 L 9 24 Z" />
+
+  <!-- pencil path -->
+  <path fill="#1C1C1C" d="M 3 3 L 7 7 V 11 L 3 7 Z
+    M 3 12 L 7 16 V 26 H 30 L 26 30 H 5.5 Q 3 30 3 27.5 Z" />
+  <path fill="#0F9D58" d="M 3 7.5 L 7 11.5 V 12.5 L 3 8.5 Z" />
+  <path fill="#F4B400" d="M 3 9 L 7 13 V 14 L 3 10 Z" />
+  <path fill="#DB4437" d="M 3 10.5 L 7 14.5 V 15.5 L 3 11.5 Z" />
+
+</svg>
