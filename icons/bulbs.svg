@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 27">
+
+  <defs>
+    <linearGradient id="fillament" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color: #888; stop-opacity: 0.5;" />
+      <stop offset="100%" style="stop-color: #FFF; stop-opacity: 1;" />
+    </linearGradient>
+  </defs>
+
+  <!-- fillament -->
+  <path d="M 0 3 C 0 0 16 0 16 3 Q 14.75 5.5 14.25 7.5 S 14 8 13.5 8 L 2.5 8 Q 2 8 1.75 7.5 S 1.25 5.5 0 3" style="fill: url(#fillament); stroke: #888; stroke-width: 0.5;" />
+
+  <!-- mount -->
+  <path d="M 2.5 8.5 L 13.5 8.5 Q 14 8.5 14 9 Q 12.75 12.5 12 21 C 11.5 22 4.5 22 4 21 Q 3.25 12.5 2 9 Q 2 8.5 2.5 8.5 M 5 22.25 H 11 V 23 H 5 Z M 5 23.5 H 11 V 24.25 H 5 Z M 6 24.75 H 10 V 25.5 H 6 Z" style="fill: #888;" />
+
+</svg>
