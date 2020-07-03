@@ -1,0 +1,138 @@
+---
+lang: en
+title: Bytes
+desc: A Binary Prefix Calculator
+keywords: ashen, gunaratne, ashen m. gunaratne, binary prefixes, iec, iso, metric, si
+---
+
+{%- capture metadata -%}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no" />
+  <meta name="description" content="{{ page.desc }}" />
+  <meta name="keywords" content="{{ page.keywords }}" />
+  <meta name="author" content="{{ site.author }}" />
+
+  <title>{{ page.title }}</title>
+
+  <style>
+
+    body {
+      display: flex;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+
+    main {
+      max-width: 256px;
+      margin: auto;
+    }
+
+    main > div {
+      display: grid;
+      font-family: monospace;
+      grid-template-columns: 1fr 3ch;
+      grid-column-gap: 0.5rem;
+      grid-row-gap: 0.25rem;
+      margin: 0.5rem 0;
+    }
+
+    main > div > input {
+      text-align: right;
+    }
+
+    main > div > input.invalid {
+      outline: 1px auto #DB4437;
+    }
+
+    @media (min-width: 768px) {
+      :root { font-size: 1.5rem; }
+    }
+
+    @media (min-width: 1024px) {
+      :root { font-size: 1.75rem; }
+    }
+
+  </style>
+{%- endcapture -%}
+
+{%- capture scripts -%}
+  <script>
+
+    var handler = function populateMagnitudes (e) {
+
+      var value = +e.target.value;
+
+      if (value !== value) {
+        e.target.classList.add('invalid');
+        return false;
+      }
+
+      if (e.target.classList.contains('iec')) {
+        value *= Math.pow(1024, e.target.dataset.magnitude);
+      } else if (e.target.classList.contains('metric')) {
+        value *= Math.pow(1000, e.target.dataset.magnitude);
+      }
+
+      window.bytes.value = value;
+
+      for (var input of window.inputs) {
+
+        if (input.classList.contains('iec')) {
+          input.value = value / Math.pow(1024, input.dataset.magnitude);
+          continue;
+        }
+
+        if (input.classList.contains('metric')) {
+          input.value = value / Math.pow(1000, input.dataset.magnitude);
+          continue;
+        }
+
+      }
+
+      e.target.classList.remove('invalid');
+
+      return true;
+
+    };
+
+    document.onreadystatechange = function onDOMContentLoaded () {
+
+      if (document.readyState !== 'interactive') {
+        return false;
+      }
+
+      document.querySelector('main')
+        .addEventListener('input', handler, { passive: true });
+
+      window.inputs = document.getElementsByTagName('input');
+      window.bytes = document.getElementById('bytes');
+
+    };
+
+  </script>
+{%- endcapture -%}
+
+{%- capture body -%}
+  <header></header>
+  <main>
+    <div>
+      <input id="bytes" autofocus="autofocus" /> B
+    </div>
+    <div>
+      <input class="metric" data-magnitude="1" /> kB
+      <input class="metric" data-magnitude="2" /> MB
+      <input class="metric" data-magnitude="3" /> GB
+    </div>
+    <div>
+      <input class="iec" data-magnitude="1" /> KiB
+      <input class="iec" data-magnitude="2" /> MiB
+      <input class="iec" data-magnitude="3" /> GiB
+    </div>
+  </main>
+  <footer></footer>
+{%- endcapture -%}
+
+{%- include base.html -%}
+
+{%- comment -%} vim: set expandtab shiftwidth=2 syntax=liquid: {%- endcomment -%}
