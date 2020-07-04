@@ -74,23 +74,23 @@ keywords: ashen, gunaratne, ashen m. gunaratne, binary prefixes, iec, iso, metri
         value *= Math.pow(1000, e.target.dataset.magnitude);
       }
 
-      window.bytes.value = value;
-
       for (var input of window.inputs) {
 
         if (input.classList.contains('iec')) {
           input.value = value / Math.pow(1024, input.dataset.magnitude);
+          input.classList.remove('invalid');
           continue;
         }
 
         if (input.classList.contains('metric')) {
           input.value = value / Math.pow(1000, input.dataset.magnitude);
+          input.classList.remove('invalid');
           continue;
         }
 
       }
 
-      e.target.classList.remove('invalid');
+      window.bytes.value = value;
 
       return true;
 
