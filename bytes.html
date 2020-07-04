@@ -70,37 +70,17 @@ keywords: ashen, gunaratne, ashen m. gunaratne, binary prefixes, iec, iso, metri
 
     var handler = function populateMagnitudes (e) {
 
-      var value = +e.target.value;
+      var bits = e.target.value * e.target.dataset.magnitude;
 
-      if (value !== value) {
+      if (bits !== bits) {
         e.target.classList.add('invalid');
         return false;
       }
 
-      if (e.target.classList.contains('iec')) {
-        value *= Math.pow(1024, e.target.dataset.magnitude);
-      } else if (e.target.classList.contains('metric')) {
-        value *= Math.pow(1000, e.target.dataset.magnitude);
-      }
-
       for (var input of window.inputs) {
-
-        if (input.classList.contains('iec')) {
-          input.value = value / Math.pow(1024, input.dataset.magnitude);
-          input.classList.remove('invalid');
-          continue;
-        }
-
-        if (input.classList.contains('metric')) {
-          input.value = value / Math.pow(1000, input.dataset.magnitude);
-          input.classList.remove('invalid');
-          continue;
-        }
-
+        input.value = bits / input.dataset.magnitude;
+        input.classList.remove('invalid');
       }
-
-      window.bits.value = 8 * value;
-      window.bytes.value = value;
 
       return true;
 
@@ -116,8 +96,6 @@ keywords: ashen, gunaratne, ashen m. gunaratne, binary prefixes, iec, iso, metri
         .addEventListener('input', handler, { passive: true });
 
       window.inputs = document.getElementsByTagName('input');
-      window.bytes = document.getElementById('bytes');
-      window.bits = document.getElementById('bits');
 
     };
 
@@ -130,34 +108,34 @@ keywords: ashen, gunaratne, ashen m. gunaratne, binary prefixes, iec, iso, metri
     <form>
       <fieldset>
         <div>
-          <input id="bits" type="number" /> b
+          <input type="number" data-magnitude="1" /> b
         </div>
         <div>
-          <input id="bytes" type="number" autofocus="autofocus" /> B
+          <input type="number" autofocus="autofocus" data-magnitude="8" /> B
         </div>
       </fieldset>
       <fieldset>
         <legend>SI (Metric)</legend>
         <div>
-          <input class="metric" type="number" data-magnitude="1" /> kB
+          <input class="metric" type="number" data-magnitude="8000" /> kB
         </div>
         <div>
-          <input class="metric" type="number" data-magnitude="2" /> MB
+          <input class="metric" type="number" data-magnitude="8000000" /> MB
         </div>
         <div>
-          <input class="metric" type="number" data-magnitude="3" /> GB
+          <input class="metric" type="number" data-magnitude="8000000000" /> GB
         </div>
       </fieldset>
       <fieldset>
         <legend>IEC 80000</legend>
         <div>
-          <input class="iec" type="number" data-magnitude="1" /> KiB
+          <input class="iec" type="number" data-magnitude="8192" /> KiB
         </div>
         <div>
-          <input class="iec" type="number" data-magnitude="2" /> MiB
+          <input class="iec" type="number" data-magnitude="8388608" /> MiB
         </div>
         <div>
-          <input class="iec" type="number" data-magnitude="3" /> GiB
+          <input class="iec" type="number" data-magnitude="8589934592" /> GiB
         </div>
       </fieldset>
     </form>
