@@ -90,6 +90,7 @@ keywords: ashen, gunaratne, ashen m. gunaratne, binary prefixes, iec, iso, metri
 
       }
 
+      window.bits.value = 8 * value;
       window.bytes.value = value;
 
       return true;
@@ -107,6 +108,7 @@ keywords: ashen, gunaratne, ashen m. gunaratne, binary prefixes, iec, iso, metri
 
       window.inputs = document.getElementsByTagName('input');
       window.bytes = document.getElementById('bytes');
+      window.bits = document.getElementById('bits');
 
     };
 
@@ -117,6 +119,7 @@ keywords: ashen, gunaratne, ashen m. gunaratne, binary prefixes, iec, iso, metri
   <header></header>
   <main>
     <div>
+      <input id="bits" type="number" /> b
       <input id="bytes" type="number" autofocus="autofocus" /> B
     </div>
     <div>
