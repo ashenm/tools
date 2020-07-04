@@ -16,40 +16,49 @@ keywords: ashen, gunaratne, ashen m. gunaratne, binary prefixes, iec, iso, metri
 
   <style>
 
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       display: flex;
       align-items: center;
+      justify-content: center;
       min-height: 100vh;
       margin: 0;
     }
 
-    main {
-      max-width: 256px;
-      margin: auto;
-    }
-
-    main > div {
-      display: grid;
-      font-family: monospace;
-      grid-template-columns: 1fr 3ch;
-      grid-column-gap: 0.5rem;
-      grid-row-gap: 0.25rem;
+    fieldset {
+      border-radius: 5px;
       margin: 0.5rem 0;
     }
 
-    main > div > input {
+    fieldset > div {
+      display: grid;
+      font-family: monospace;
+      grid-template-columns: 1fr 3ch;
+      grid-column-gap: 0.25rem;
+      margin: 0.25rem 0;
+    }
+
+    fieldset > div > input {
       text-align: right;
     }
 
-    main > div > input.invalid {
+    fieldset > div > input.invalid {
       outline: 1px auto #DB4437;
     }
 
-    @media (min-width: 768px) {
-      :root { font-size: 1.5rem; }
+    legend {
+      color: #FFF;
+      background: #888;
+      border-radius: 5px;
+      padding: 0 0.25rem;
+      font-size: small;
+      width: 100%;
     }
 
-    @media (min-width: 1024px) {
+    @media (min-width: 768px) {
       :root { font-size: 1.75rem; }
     }
 
@@ -118,20 +127,40 @@ keywords: ashen, gunaratne, ashen m. gunaratne, binary prefixes, iec, iso, metri
 {%- capture body -%}
   <header></header>
   <main>
-    <div>
-      <input id="bits" type="number" /> b
-      <input id="bytes" type="number" autofocus="autofocus" /> B
-    </div>
-    <div>
-      <input class="metric" type="number" data-magnitude="1" /> kB
-      <input class="metric" type="number" data-magnitude="2" /> MB
-      <input class="metric" type="number" data-magnitude="3" /> GB
-    </div>
-    <div>
-      <input class="iec" type="number" data-magnitude="1" /> KiB
-      <input class="iec" type="number" data-magnitude="2" /> MiB
-      <input class="iec" type="number" data-magnitude="3" /> GiB
-    </div>
+    <form>
+      <fieldset>
+        <div>
+          <input id="bits" type="number" /> b
+        </div>
+        <div>
+          <input id="bytes" type="number" autofocus="autofocus" /> B
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>SI (Metric)</legend>
+        <div>
+          <input class="metric" type="number" data-magnitude="1" /> kB
+        </div>
+        <div>
+          <input class="metric" type="number" data-magnitude="2" /> MB
+        </div>
+        <div>
+          <input class="metric" type="number" data-magnitude="3" /> GB
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>IEC 80000</legend>
+        <div>
+          <input class="iec" type="number" data-magnitude="1" /> KiB
+        </div>
+        <div>
+          <input class="iec" type="number" data-magnitude="2" /> MiB
+        </div>
+        <div>
+          <input class="iec" type="number" data-magnitude="3" /> GiB
+        </div>
+      </fieldset>
+    </form>
   </main>
   <footer></footer>
 {%- endcapture -%}
