@@ -35,10 +35,19 @@ keywords: ashen, gunaratne, ashen m. gunaratne, binary prefixes, iec, iso, metri
 
     fieldset > div {
       display: grid;
+      border-radius: 5px;
       font-family: monospace;
       grid-template-columns: 1fr 3ch;
       grid-column-gap: 0.25rem;
       margin: 0.25rem 0;
+    }
+
+    fieldset > div.x-bits {
+      background: #F4B400;
+    }
+
+    fieldset > div.hidden {
+      display: none;
     }
 
     fieldset > div > input {
@@ -56,6 +65,17 @@ keywords: ashen, gunaratne, ashen m. gunaratne, binary prefixes, iec, iso, metri
       padding: 0 0.25rem;
       font-size: small;
       width: 100%;
+    }
+
+    footer {
+      font-size: initial;
+      position: absolute;
+      bottom: 0.5rem;
+      right: 0.5rem;
+    }
+
+    footer > label {
+      display: flex;
     }
 
     @media (orientation: portrait) {
@@ -90,6 +110,14 @@ keywords: ashen, gunaratne, ashen m. gunaratne, binary prefixes, iec, iso, metri
 
     };
 
+    var xhandler = function toggleBitMultiples (e) {
+
+      for (var xbit of window.xbits) {
+        xbit.classList.toggle('hidden');
+      }
+
+    };
+
     document.onreadystatechange = function onDOMContentLoaded () {
 
       if (document.readyState !== 'interactive') {
@@ -99,7 +127,11 @@ keywords: ashen, gunaratne, ashen m. gunaratne, binary prefixes, iec, iso, metri
       document.querySelector('form')
         .addEventListener('input', handler, { passive: true });
 
+      document.getElementById('x-bits')
+        .addEventListener('input', xhandler, { passive: true });
+
       window.inputs = document.getElementsByTagName('input');
+      window.xbits = document.getElementsByClassName('x-bits');
 
     };
 
@@ -107,7 +139,8 @@ keywords: ashen, gunaratne, ashen m. gunaratne, binary prefixes, iec, iso, metri
 {%- endcapture -%}
 
 {%- capture body -%}
-  <header></header>
+  <header>
+  </header>
   <main>
     <form>
       <fieldset>
@@ -120,11 +153,20 @@ keywords: ashen, gunaratne, ashen m. gunaratne, binary prefixes, iec, iso, metri
       </fieldset>
       <fieldset>
         <legend>SI (Metric)</legend>
+        <div class="x-bits hidden">
+          <input class="metric" type="number" data-magnitude="1000" /> kb
+        </div>
         <div>
           <input class="metric" type="number" data-magnitude="8000" /> kB
         </div>
+        <div class="x-bits hidden">
+          <input class="metric" type="number" data-magnitude="1000000" /> Mb
+        </div>
         <div>
           <input class="metric" type="number" data-magnitude="8000000" /> MB
+        </div>
+        <div class="x-bits hidden">
+          <input class="metric" type="number" data-magnitude="1000000000" /> Gb
         </div>
         <div>
           <input class="metric" type="number" data-magnitude="8000000000" /> GB
@@ -144,7 +186,11 @@ keywords: ashen, gunaratne, ashen m. gunaratne, binary prefixes, iec, iso, metri
       </fieldset>
     </form>
   </main>
-  <footer></footer>
+  <footer>
+    <label>
+      *-bits <input id="x-bits" type="checkbox" />
+    </label>
+  </footer>
 {%- endcapture -%}
 
 {%- include base.html -%}
