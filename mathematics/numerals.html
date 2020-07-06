@@ -68,7 +68,7 @@ keywords: ashen, gunaratne, ashen m. gunaratne, binary, decimal, denary, octal, 
         return e.target.classList.add('invalid');
       }
 
-      for (var base of window.form) {
+      for (var base of window.form.inputs) {
         base.value = value.toString(base.dataset.base);
         base.classList.remove('invalid');
       }
@@ -82,13 +82,7 @@ keywords: ashen, gunaratne, ashen m. gunaratne, binary, decimal, denary, octal, 
       }
 
       window.form = document.querySelector('form');
-
-      window.form.bin = document.querySelector('input[data-base="2"]');
-      window.form.qua = document.querySelector('input[data-base="4"]');
-      window.form.sen = document.querySelector('input[data-base="6"]');
-      window.form.oct = document.querySelector('input[data-base="8"]');
-      window.form.dec = document.querySelector('input[data-base="10"]');
-      window.form.hex = document.querySelector('input[data-base="16"]');
+      window.form.inputs = window.form.querySelectorAll('input[data-base]');
 
       window.form.addEventListener('input', converse, { passive: true });
 
