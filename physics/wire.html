@@ -33,9 +33,15 @@ keywords: ashen, gunaratne, ashen m. gunaratne, awg, american wire gauge, diamet
     }
 
     input {
+      border: 1px solid #AAA;
+      border-radius: 2.5px;
       font-size: inherit;
       text-align: right;
       margin: 0.125rem 0;
+    }
+
+    input.invalid {
+      background-color: #EA4335;
     }
 
     select {
@@ -138,9 +144,11 @@ keywords: ashen, gunaratne, ashen m. gunaratne, awg, american wire gauge, diamet
         return false;
       }
 
-      var value = +e.target.value;
+      var crude = e.target.value;
+      var value = +crude;
 
       if (value !== value) {
+        e.target.classList.add('invalid');
         return false;
       }
 
@@ -153,6 +161,10 @@ keywords: ashen, gunaratne, ashen m. gunaratne, awg, american wire gauge, diamet
       for (var getter of window.form.getters) {
         getter.value = window.AWG[getter.dataset.getter]();
       }
+
+      e.target.value = crude;
+
+      e.target.classList.remove('invalid');
 
       return true;
 
@@ -186,25 +198,25 @@ keywords: ashen, gunaratne, ashen m. gunaratne, awg, american wire gauge, diamet
       <fieldset>
         <legend>Guage</legend>
         <div>
-          <input autofocus="autofocus" data-getter="getAWG" data-setter="setAWG" value="0" /> AWG
+          <input type="number" autofocus="autofocus" data-getter="getAWG" data-setter="setAWG" value="0" /> AWG
         </div>
       </fieldset>
       <fieldset>
         <legend>Diameter</legend>
         <div>
-          <input data-getter="getDiameter" data-setter="setDiameter" /> mm
+          <input type="number" step="0.01" data-getter="getDiameter" data-setter="setDiameter" /> mm
         </div>
         <div>
-          <input data-getter="getDiameterIn" data-setter="setDiameterIn" /> in
+          <input type="number" step="0.01" data-getter="getDiameterIn" data-setter="setDiameterIn" /> in
         </div>
       </fieldset>
       <fieldset>
         <legend>Cross Section Area</legend>
         <div>
-          <input data-getter="getCSA" data-setter="setCSA" /> mm<sup>2</sup>
+          <input type="number" step="0.01" data-getter="getCSA" data-setter="setCSA" /> mm<sup>2</sup>
         </div>
         <div>
-          <input data-getter="getCSAIn" /> in<sup>2</sup>
+          <input type="number" step="0.01" data-getter="getCSAIn" /> in<sup>2</sup>
         </div>
       </fieldset>
       <fieldset>
@@ -217,10 +229,10 @@ keywords: ashen, gunaratne, ashen m. gunaratne, awg, american wire gauge, diamet
           </select>
         </div>
         <div>
-          <input data-getter="getResistance" disabled="disabled" /> &#937;/m
+          <input type="number" data-getter="getResistance" disabled="disabled" /> &#937;/m
         </div>
         <div>
-          <input data-getter="getResistanceFt" disabled="disabled" /> &#937;/ft
+          <input type="number" data-getter="getResistanceFt" disabled="disabled" /> &#937;/ft
         </div>
       </fieldset>
     </form>
