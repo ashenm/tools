@@ -59,7 +59,7 @@ for group in sorted(groups.keys()):
 
   tbody.append(newline.join([
     f'{spacer * offset}<tr>',
-    f'{spacer * offset}{spacer * width}<th id="{group}" colspan="2">{group.title()}</th>',
+    f'{spacer * offset}{spacer * width}<th id="{group}" colspan="2">{group.replace("-", " ").title()}</th>',
     f'{spacer * offset}</tr>',
   ]))
 
