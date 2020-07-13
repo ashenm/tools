@@ -62,7 +62,9 @@ keywords: ashen, gunaratne, ashen m. gunaratne, binary, decimal, denary, octal, 
 
     var converse = function converseNumeralBases (e) {
 
-      var value = parseInt(e.target.value, e.target.dataset.base);
+      var crude = e.target.value;
+      var radix = e.target.dataset.base;
+      var value = parseInt(crude, radix);
 
       if (value !== value) {
         return e.target.classList.add('invalid');
@@ -72,6 +74,9 @@ keywords: ashen, gunaratne, ashen m. gunaratne, binary, decimal, denary, octal, 
         base.value = value.toString(base.dataset.base);
         base.classList.remove('invalid');
       }
+
+      e.target.value = crude.replace(/(^0*)(.*)/, '$1')
+        .concat(value.toString(radix).replace(/^0+/, ''));
 
     };
 
