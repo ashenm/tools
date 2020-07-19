@@ -7,7 +7,7 @@ keywords: ashen, gunaratne, ashen m. gunaratne, grid, guidelines
 
 {%- capture metadata -%}
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no" />
   <meta name="description" content="{{ page.desc }}" />
   <meta name="keywords" content="{{ page.keywords }}" />
   <meta name="author" content="{{ site.author }}" />
@@ -16,126 +16,115 @@ keywords: ashen, gunaratne, ashen m. gunaratne, grid, guidelines
 
   <style>
 
-    :root {
-      --slider-width: 1.5ch;
+    * {
+      box-sizing: border-box;
     }
 
     body {
       margin: 0;
+      height: 100vh;
+      padding: 2.5vh 2.5vw;
+      width: 100vw;
     }
 
     main {
-      height: calc(100vh - 2rem);
-      margin: 1rem;
-      margin-right: calc(1rem + var(--slider-width));
-    }
-
-    footer {
-      background: #FFF;
-      display: none;
-      height: calc(100vh - 1.5rem);
-      padding: 0.75rem;
-      padding-left: calc(0.75rem + var(--slider-width)); /* include slider width to clinch pixelated offsets */
-      position: absolute;
-      right: 0;
-      top: 0;
-      width: calc(25vw - 1.5rem);
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      max-width: 95vw;
+      max-height: 95vh;
+      width: 100%;
     }
 
     svg {
       height: 100%;
-      margin-left: auto;
-      margin-right: auto;
-      overflow: visible;
       display: block;
       width: 100%;
     }
 
-    div.input {
-      padding-top: 0.75rem;
-    }
-
-    input {
-      border-width: 1px;
-      display: block;
-      padding: 0;
-      width: calc(100% - 2px);
-    }
-
-    input[type="file"] {
-      visibility: hidden;
-    }
-
-    input[type="file"]::before {
-      background: #DDD;
-      border-radius: 5px;
-      content: "Choose Image";
-      cursor: pointer;
-      display: inline-block;
-      padding: 1px 6px;
-      position: relative;
-      text-align: center;
-      visibility: visible;
-      width: calc(100% - 12px);
-    }
-
-    #slider {
-      background-color: #DDD;
-      color: #AAA;
-      cursor: pointer;
-      font-weight: bold;
-      height: calc(50vh + 1ex);
-      padding-top: calc(50vh - 1ex);
-      position: absolute;
-      right: 0;
-      top: 0;
-      width: var(--slider-width);
-    }
-
-    rect.backdrop {
-      fill: #DFDFDF;
-    }
-
     text.input {
-      dominant-baseline: middle;
       cursor: pointer;
+      dominant-baseline: middle;
       text-anchor: middle;
     }
 
-    text.label {
-      fill: #000000;
+    output {
+      padding: 2.5px;
+      position: fixed;
+      transform: translate(0, -100%);
+      background-color: #DFDFDF;
+      border-radius: 2.5px;
+      display: none;
+      color: #000;
+    }
+
+    footer,
+    footer::before {
+      transition: bottom 0.5s;
+      position: fixed;
+      bottom: -100%;
+      right: 0.125rem;
+      left: 0.125rem;
+    }
+
+    footer {
+      background: #EEED;
+      border-radius: 5px;
+      margin: auto;
+    }
+
+    footer::before {
+      content: "△";
+      display: block;
+      text-align: center;
+      padding: 0.25rem;
+      cursor: pointer;
+      bottom: 0;
+    }
+
+    footer.disclose {
+      bottom: 0.125rem;
+    }
+
+    footer.disclose::before {
+      content: "▽";
+      position: static;
+    }
+
+    div.input {
+      padding: 0.25rem 0.5rem;
+    }
+
+    label {
+      display: grid;
+      grid-template-columns: 1fr 2.5fr;
+    }
+
+    input {
+      text-align: center;
+      width: 100%;
     }
 
     @media (min-width: 768px) {
-
-      footer {
-        border: 1px solid #DDD;
-        border-radius: 5px;
-        display: block;
-        height: calc(100vh - 1.5rem - 12px);
-        margin: 5px;
-        padding: 0.75rem;
-        width: calc(25vw - 1.5rem - 12px);
-      }
-
-      main {
-        margin-right: calc(25vw + 1rem);
-      }
-
-      #slider {
-        display: none;
-      }
-
+      footer { max-width: 75vw; }
     }
 
     @media (min-width: 1024px) {
 
-      footer {
-        width: 256px;
+      body {
+        width: 75vw;
       }
 
-      main {
-        margin-right: calc(268px + 2.5rem);
+      footer {
+        top: 0.125rem;
+        padding: 0.5rem;
+        width: 25vw;
+        left: unset;
+      }
+
+      footer::before {
+        display: none;
       }
 
     }
@@ -144,145 +133,142 @@ keywords: ashen, gunaratne, ashen m. gunaratne, grid, guidelines
 {%- endcapture -%}
 
 {%- capture scripts -%}
-  <script src="//cdnjs.cloudflare.com/ajax/libs/d3/5.15.0/d3.min.js" integrity="sha256-m0QmIsBXcOMiETRmpT3qg2IQ/i0qazJA2miCHzOmS1Y=" crossorigin="anonymous"></script>
   <script>
 
-    var createGrid = function (s, d, b) {
+    window.SVGNS = 'http://www.w3.org/2000/svg';
 
-      var radius = 1.5;
+    var range = function createIterator (min, max) {
+      return Array.from(Array(max).keys()).slice(min);
+    };
+
+    var grid = function createGrid (c, b) {
+
+      var clone;
+
+      var radius = 1.75;
       var offset = radius / 2;
-      var blocks = b || 16;
 
-      var spacing = d.width / blocks;
-      var seeds = d3.range(spacing, d.height, spacing);
+      var circle = document.createElementNS(window.SVGNS, 'circle');
+      var delineators = document.createElementNS(window.SVGNS, 'g');
+      var tier = document.createElementNS(window.SVGNS, 'g');
 
-      var markers = d3.select(s)
-        .selectAll('g')
-        .remove()
-        .exit()
-        .data(d3.cross(seeds.slice(0, blocks - 1), seeds))
-        .enter()
-        .append('g')
-        .attr('data-coords', function (d) {
-          return [ Math.ceil(d[0] / spacing), Math.ceil(d[1] / spacing) ].join(', ');
-        })
-        .attr('transform', function (d) {
-          return 'translate(' + d[0] + ',' + d[1] + ')';
-        });
+      var bounds = c.getBoundingClientRect();
+      var spacing = Math.max(bounds.width, bounds.height) / b;
 
-      markers.append('circle')
-        .style('fill', d3.select('input[type="color"]').node().value || '#FFF')
-        .attr('class', 'marker')
-        .attr('cx', -offset)
-        .attr('cy', -offset)
-        .attr('r', radius);
+      circle.setAttribute('r', radius);
+      circle.setAttribute('cx', -offset);
+      circle.setAttribute('cy', -offset);
+      circle.setAttribute('class', 'delineator');
 
-      markers.on('mouseenter', function (d) {
+      for (var x of range(1, Math.ceil(bounds.width / spacing))) {
+        clone = circle.cloneNode(true);
+        clone.setAttribute('transform', 'translate(' + x * spacing + ',0)');
+        clone.setAttribute('data-coordX', x);
+        tier.appendChild(clone);
+      }
 
-        var container = d3.select(this);
+      for (var y of range(1, Math.ceil(bounds.height / spacing))) {
+        clone = tier.cloneNode(true);
+        clone.setAttribute('transform', 'translate(0,' + y * spacing + ')');
+        clone.setAttribute('data-coordY', y);
+        delineators.appendChild(clone);
+      }
 
-        var label = container.append('text')
-          .attr('class', 'label').text(this.dataset.coords);
+      for (var delineator of c.querySelectorAll('.delineators')) {
+        delineator.remove();
+      }
 
-        var bbox = this.getBBox();
-
-        container.append('rect').attr('class', 'backdrop')
-          .attr('height', bbox.height).attr('width', bbox.width)
-          .attr('x', bbox.x).attr('y', bbox.y);
-
-        container.raise();
-        label.raise();
-
-      });
-
-      markers.on('mouseleave', function (d) {
-        d3.selectAll('text.label, rect.backdrop').remove();
-      });
-
-      markers.on('click', function (d) {
-        window.setTimeout(Element.prototype.dispatchEvent.bind(this), 1250, new MouseEvent('mouseleave'));
-      });
+      delineators.setAttribute('class', 'delineators');
+      c.appendChild(delineators);
 
     };
 
-    document.onreadystatechange = function () {
+    var label = function showDelineatorCoordinates (e) {
 
-      if (document.readyState !== 'interactive') {
-        return;
+      if (!e.target.classList.contains('delineator')) {
+        return window.output.style.display = 'none';
       }
 
+      var bounds = e.target.getBoundingClientRect();
+
+      window.output.innerText = [ e.target.getAttribute('data-coordX'),
+        e.target.parentElement.getAttribute('data-coordY') ].join(', ');
+
+      window.output.style.top = bounds.top + 'px';
+      window.output.style.left = bounds.left + 'px';
+      window.output.style.display = 'block';
+
+    };
+
+    document.onreadystatechange = function onDOMContentLoaded () {
+
+      if (document.readyState !== 'interactive') {
+        return false;
+      }
+
+      var svg = document.querySelector('svg');
+      var file = document.getElementById('file');
+      var blocks = document.getElementById('blocks');
+      var color = document.getElementById('color');
+      var main = document.querySelector('main');
+
       var reader = new FileReader();
-      var image = document.createElement('img');
+      var img = document.createElement('img');
 
-      var file = d3.select('input[type="file"]');
-      var grids = d3.select('input[type="number"]');
-      var color = d3.select('input[type="color"]');
+      var image = svg.querySelector('image');
+      var text = svg.querySelector('text');
 
-      var auxiliary = d3.select('text.input');
+      window.output = document.querySelector('output');
 
-      var slider = d3.select('#slider');
-      var footer = d3.select('footer');
+      file.addEventListener('change', function (e) {
+        this.files.length ? reader.readAsDataURL(this.files[0]) : undefined;
+      });
 
-      var svg = d3.select('svg');
-      var canvas = svg.select('image');
+      reader.addEventListener('load', function (e) {
+        img.setAttribute('src', this.result);
+      });
 
-      image.addEventListener('load', function () {
+      img.addEventListener('load', function (e) {
 
-        var clientBBox;
+        var bounds = main.getBoundingClientRect();
+        var scale = Math.min(bounds.width / this.width, bounds.height / this.height);
 
-        svg.style('height', '').style('width', '');
+        image.setAttribute('href', this.src);
 
-        canvas.attr('href', this.src);
-        canvas.attr('transform', 'scale(' + Math.min(svg.style('height').replace(/px$/, '') / this.height,
-          svg.style('width').replace(/px$/, '') / this.width) + ')');
+        image.style.transform = 'scale(' + scale + ')';
+        svg.style.height = this.height * scale + 'px';
+        svg.style.width = this.width * scale + 'px';
 
-        clientBBox = canvas.node().getBoundingClientRect();
-
-        svg.style('width', clientBBox.width);
-        createGrid(svg.node(), clientBBox);
+        grid(svg, blocks.value);
 
       });
 
-      window.addEventListener('resize', function () {
-        image.src ? image.dispatchEvent(new Event('load')) : undefined;
+      text.addEventListener('click', function (e) {
+        file.click();
+      });
+
+      blocks.addEventListener('input', function (e) {
+        img.src ? img.dispatchEvent(new Event('load')) : undefined;
+      });
+
+      color.addEventListener('input', function (e) {
+        svg.setAttribute('fill', this.value);
+      });
+
+      window.addEventListener('resize', function (e) {
+        img.src ? img.dispatchEvent(new Event('load')) : undefined;
       });
 
       document.addEventListener('paste', function (e) {
         e.clipboardData.files.length ? reader.readAsDataURL(e.clipboardData.files[0]) : undefined;
       });
 
-      reader.addEventListener('load', function () {
-        image.setAttribute('src', this.result);
+      document.querySelector('footer').addEventListener('click', function (e) {
+        /footer/i.test(e.target.nodeName) ? e.target.classList.toggle('disclose') : undefined;
       });
 
-      file.on('change', function () {
-        this.files.length ? reader.readAsDataURL(this.files[0]) : undefined;
-      });
-
-      grids.on('input', function () {
-        image.src && this.value == +this.value ? createGrid(svg.node(), canvas.node().getBoundingClientRect(), this.value) : undefined;
-      });
-
-      color.on('input', function () {
-        svg.selectAll('circle.marker').style('fill', this.value);
-      });
-
-      slider.on('click', function () {
-
-        if (/block/.test(footer.style('display'))) {
-          slider.style('transform', 'initial').html('&#8882;');
-          footer.style('display', 'none');
-          return this;
-        }
-
-        slider.style('transform', 'translateX(-25vw)').html('&#8883;');
-        footer.style('display', 'block');
-
-      });
-
-      auxiliary.on('click', function () {
-        file.node().click();
-      });
+      svg.addEventListener('mouseover', label);
+      svg.addEventListener('click', label);
 
     };
 
@@ -295,25 +281,27 @@ keywords: ashen, gunaratne, ashen m. gunaratne, grid, guidelines
   <main>
     <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
       <text class="input" x="50%" y="50%">Choose Image</text>
-      <image width="0" height="0" style="height: auto; width: auto;" />
+      <image height="0" width="0" style="width: auto; height: auto;" />
     </svg>
+    <output></output>
   </main>
   <footer>
     <div class="input">
-      <input type="file" accept="image/*" />
-    </div>
-    <div class="input">
       <label>
-        Grid # <input type="number" min="0" value="16" />
+        Image <input id="file" type="file" accept="image/*" />
       </label>
     </div>
     <div class="input">
       <label>
-        Color <input type="color" value="#FFFFFF" />
+        Grid # <input id="blocks" type="number" min="0" max="128" value="16" />
+      </label>
+    </div>
+    <div class="input">
+      <label>
+        Color <input id="color" type="color" value="#FFFFFF" />
       </label>
     </div>
   </footer>
-  <div id="slider">&#8882;</div>
 {%- endcapture -%}
 
 {%- include base.html -%}
