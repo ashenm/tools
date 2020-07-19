@@ -107,7 +107,7 @@ keywords: ashen, gunaratne, ashen gunaratne, tools, html, editor
         }
 
         window.editor = ace.edit('editor',
-          { mode: 'ace/mode/html', behavioursEnabled: false, value: template }
+          { mode: 'ace/mode/html', behavioursEnabled: false, value: template, useSoftTabs: true, tabSize: 2 }
         );
 
         window.preview = document.getElementById('preview');
