@@ -2,7 +2,7 @@
 lang: en
 title: LiveFeed
 desc: A webcam viewer
-keywords: mediastream, preview, webcam
+keywords: ashen, gunaratne, ashen m. gunaratne, mediastream, preview, webcam
 ---
 
 {%- capture metadata -%}
@@ -18,19 +18,36 @@ keywords: mediastream, preview, webcam
 
     body {
       margin: 0;
-      height: 100vh;
       overflow: hidden;
-      width: 100vw;
     }
 
     video {
-      height: 100vh;
-      transform: scale(-1, 1);
-      width: auto;
+      height: 100%;
+      object-fit: cover;
+      width: 100%;
     }
 
-    @media (orientation: landscape) {
-      video { height: auto; width: 100vw; }
+    div#player {
+      height: 100vh;
+      width: 100vw;
+    }
+
+    div#controls {
+      opacity: 0.5;
+      display: flex;
+      justify-content: center;
+      position: absolute;
+      bottom: 1rem;
+      right: 0;
+      left: 0;
+    }
+
+    button {
+      margin: 0 0.125rem;
+    }
+
+    .flip {
+      transform: scale(-1, 1);
     }
 
   </style>
@@ -46,8 +63,22 @@ keywords: mediastream, preview, webcam
         return window.alert('Unsupported Media Capture and Streams!');
       }
 
+      window.view = document.querySelector('video');
+
       navigator.mediaDevices.getUserMedia({ audio: true, video: true })
-        .then(stream => document.querySelector('video').srcObject = stream);
+        .then(stream => window.view.srcObject = stream);
+
+      document.getElementById('flip').addEventListener('click', function (e) {
+        window.view.classList.toggle('flip');
+      }, { passive: true });
+
+      document.getElementById('play').addEventListener('click', function (e) {
+        window.view.paused ? window.view.play() : window.view.pause();
+      }, { passive: true });
+
+      document.getElementById('mute').addEventListener('click', function (e) {
+        window.view.muted = !window.view.muted;
+      }, { passive: true });
 
     });
 
@@ -58,7 +89,14 @@ keywords: mediastream, preview, webcam
   <header>
   </header>
   <main>
-    <video autoplay="autoplay"></video>
+    <div id="player">
+      <video class="flip" autoplay="autoplay"></video>
+    </div>
+    <div id="controls">
+      <button id="play" title="Play">&#8885;</button>
+      <button id="flip" title="Flip">&#8644;</button>
+      <button id="mute" title="Mute">&#10687;</button>
+    </div>
   </main>
   <footer>
   </footer>
