@@ -126,15 +126,16 @@ keywords: ashen, gunaratne, ashen m. gunaratne, two's complement, converter, bin
         return e.target.classList.add('invalid');
       }
 
-      const absolute = Math.abs(value);
+      const absolute = bin = Math.abs(value);
 
       if (absolute !== value) {
-        bin = ((~absolute & (Math.pow(2, window.register.heads.length) - 1)) + 1).toString(2);
+        bin = (Math.pow(2, window.register.heads.length) - absolute).toString(2);
         window.register.sign.classList.add('occupy');
       } else {
-        bin = value.toString(2).padStart(window.register.heads.length, 0);
         window.register.sign.classList.remove('occupy');
       }
+
+      bin = bin.toString(2).padStart(window.register.heads.length, 0);
 
       for (let index = 0; index < bin.length; index++) {
         +bin[index] ? window.register.heads[index].classList.add('occupy') : window.register.heads[index].classList.remove('occupy');
