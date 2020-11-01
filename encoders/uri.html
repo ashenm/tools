@@ -76,7 +76,7 @@ keywords: ashen, gunaratne, ashen m. gunaratne, encoder, percent encoding, uri, 
       let fragment;
 
       try {
-        fragment = encodeURI(new URL(e.target.value));
+        fragment = (new URL(e.target.value)).href;
       } catch (exception) {
         fragment = encodeURIComponent(e.target.value);
       }
