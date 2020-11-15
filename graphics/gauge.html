@@ -81,22 +81,22 @@ keywords: ashen, gunaratne, ashen m. gunaratne, bit depth, dpi, resolution
 
       if (e.target === window.form.dimension.width) {
         window.form.resolution.width.value = Math.roundN(e.target.value * window.form.dpi.value);
-        return window.output.innerText = filesize(approximatePhysical());
+        return window.output.innerText = filesize(approximatePhysical(), { base: 10 });
       }
 
       if (e.target === window.form.dimension.height) {
         window.form.resolution.height.value = Math.roundN(e.target.value * window.form.dpi.value);
-        return window.output.innerText = filesize(approximatePhysical());
+        return window.output.innerText = filesize(approximatePhysical(), { base: 10 });
       }
 
       if (e.target === window.form.resolution.width) {
         window.form.dimension.width.value = Math.roundN(e.target.value / window.form.dpi.value);
-        return window.output.innerText = filesize(approximateDigital());
+        return window.output.innerText = filesize(approximateDigital(), { base: 10 });
       }
 
       if (e.target === window.form.resolution.height) {
         window.form.dimension.height.value = Math.roundN(e.target.value / window.form.dpi.value);
-        return window.output.innerText = filesize(approximateDigital());
+        return window.output.innerText = filesize(approximateDigital(), { base: 10 });
       }
 
       if (e.target === window.form.dpi) {
@@ -105,7 +105,7 @@ keywords: ashen, gunaratne, ashen m. gunaratne, bit depth, dpi, resolution
       }
 
       if (e.target === window.form.bitDepth) {
-        return window.output.innerText = filesize(approximateDigital());
+        return window.output.innerText = filesize(approximateDigital(), { base: 10 });
       }
 
       return false;
