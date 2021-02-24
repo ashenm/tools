@@ -26,8 +26,11 @@ excludes = ('catalogue.html', 'index.html', '404.html')
 # front matter RegEx
 reFrontMatter = compile(r'---\n(.*)\n---', DOTALL)
 
+# path sanitisation RegEx
+rePath = compile(r'^src/')
+
 # group index entries
-for file in sorted(iglob('**', recursive=True)):
+for file in sorted(iglob('src/**', recursive=True)):
 
   if file.startswith('_'):
     continue
@@ -44,12 +47,15 @@ for file in sorted(iglob('**', recursive=True)):
   if not frontmatter:
     continue
 
-  group = dirname(file) or 'generic'
+  print(f'Indexing file {file}')
+
+  fpath = rePath.sub('', file)
+  group = dirname(fpath) or 'generic'
   frontmatter = load(stream=frontmatter.group(1), Loader=FullLoader)
 
   groups[group].append(newline.join([
     f'{spacer * offset}<tr>',
-    f'{spacer * offset}{spacer * width}<td headers="{group}"><a href="{file.replace(".html", "")}">{escape(frontmatter["title"])}</a></td>',
+    f'{spacer * offset}{spacer * width}<td headers="{group}"><a href="{fpath.replace(".html", "")}">{escape(frontmatter["title"])}</a></td>',
     f'{spacer * offset}{spacer * width}<td headers="{group}">{escape(frontmatter.get("desc", "<em>No description available<em>"))}</td>',
     f'{spacer * offset}</tr>'
   ]))
@@ -66,7 +72,7 @@ for group in sorted(groups.keys()):
   tbody.append(newline.join(groups[group]))
 
 # write index doc
-with open(file='catalogue.html', mode='wt', encoding='utf_8', newline=newline) as document:
+with open(file='src/catalogue.html', mode='wt', encoding='utf_8', newline=newline) as document:
   document.write(newline.join([
 
     '---',

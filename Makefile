@@ -29,3 +29,7 @@ list: index ## show tools catalogue
 .PHONY: serve
 serve: build ## locally serve site
 	./scripts/serve.py
+
+.PHONY: tarball
+tarball: build ## package site
+	./scripts/tarball.py

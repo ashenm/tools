@@ -11,7 +11,7 @@ from os.path import join, splitext
 from PIL import Image
 from cairosvg import svg2png
 
-for icon in iglob('icons/*.svg'):
+for icon in iglob('src/icons/*.svg'):
 
   root, ext = splitext(icon)
 
