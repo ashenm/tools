@@ -1,0 +1,68 @@
+on:
+  - push
+  - pull_request
+
+jobs:
+  build:
+    if: ${{ !startsWith(github.event.head_commit.message, '[Skip CI]') }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.x
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+      - run: pip3 install --requirement requirements.txt
+      - run: make build
+      - run: make tarball
+      - run: |-
+          find _site -type f -printf 'https://tools.ashenm.ml/%P\n' | \
+            jq --raw-input --slurp 'split("\n") | { files: .[:-1] }' | tee artifacts.list
+      - uses: actions/upload-artifact@v2
+        with:
+          name: artifacts
+          path: |-
+            artifacts.tar.bz2
+            artifacts.list
+    runs-on: ubuntu-latest
+  deploy:
+    needs:
+      - build
+    if: ${{ github.event_name != 'pull_request' && !startsWith(github.event.head_commit.message, '[Skip Deploy]') }}
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: artifacts
+      - run: |-
+          mkdir --parent /tmp/build
+          tar --bzip --extract --file artifacts.tar.bz2 --directory /tmp/build
+      - run: |-
+          git init
+          git checkout --orphan gh-pages
+          git config user.email "mail@ashenm.ml"
+          git config user.name "Ashen Gunaratne"
+          echo "tools.ashenm.ml" | tee CNAME
+          git add --all .
+          git commit --quiet --message "Deploy tools.ashenm.ml to github.com/${GITHUB_REPOSITORY}.git:gh-pages"
+          git push --force --quiet "https://${{ secrets.OCTOCAT_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git" "gh-pages:gh-pages"
+          git show --stat-count=10 HEAD
+        working-directory: /tmp/build
+    runs-on: ubuntu-latest
+  culminate:
+    needs:
+      - deploy
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: artifacts
+      - run: curl --silent --fail --show-error --location --output - 'https://raw.githubusercontent.com/ashenm/tools/gh-actions/.github/scripts/culminate.sh' | sh -
+        env:
+          CLOUDFLARE_USER: ${{ secrets.CLOUDFLARE_USER }}
+          CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
+          CLOUDFLARE_ZONE_ID: ${{ secrets.CLOUDFLARE_ZONE_ID }}
+    runs-on: ubuntu-latest
+
+# vim: set expandtab shiftwidth=2 syntax=yaml:

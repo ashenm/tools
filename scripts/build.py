@@ -11,7 +11,7 @@ try:
 except CalledProcessError:
   sha256 = ''
 
-with open('_includes/base.html', mode='r+t') as conffile:
+with open('src/_includes/base.html', mode='r+t') as conffile:
 
   configuration = conffile.read()
 
@@ -21,4 +21,4 @@ with open('_includes/base.html', mode='r+t') as conffile:
   conffile.seek(0)
   conffile.write(configuration)
 
-spawnlp(P_WAIT, 'jekyll', 'jekyll', 'build', '--profile')
+spawnlp(P_WAIT, 'bundle', 'bundle', 'exec', 'jekyll', 'build', '--profile')

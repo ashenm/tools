@@ -10,6 +10,8 @@ email: "mail@ashenm.ml"
 keywords: "ashen, gunaratne, ashen m. gunaratne, educational, tools, materials"
 desc: "A collection of miscellanies instructional tools and materials"
 
+source: ./src
+
 exclude:
   - CNAME
   - Makefile

@@ -5,7 +5,7 @@ from re import DOTALL, search
 from xml.dom.minidom import parseString
 from sys import exit
 
-with open('catalogue.html', 'rt') as stream:
+with open('src/catalogue.html', 'rt') as stream:
   markup = stream.read()
 
 markup = search(r'<tbody>.*</tbody>', markup, flags=DOTALL)
