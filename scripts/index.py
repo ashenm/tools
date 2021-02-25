@@ -21,7 +21,7 @@ spacer = ' '
 newline = '\n'
 
 # index excludes
-excludes = ('catalogue.html', 'index.html', '404.html')
+excludes = ('/catalogue.html', '/index.html', '/404.html')
 
 # front matter RegEx
 reFrontMatter = compile(r'---\n(.*)\n---', DOTALL)
@@ -32,7 +32,7 @@ rePath = compile(r'^src/')
 # group index entries
 for file in sorted(iglob('src/**', recursive=True)):
 
-  if file.startswith('_'):
+  if file.startswith('src/_'):
     continue
 
   if file.endswith(excludes):
