@@ -12,12 +12,6 @@ desc: "A collection of miscellanies instructional tools and materials"
 
 source: ./src
 
-exclude:
-  - CNAME
-  - Makefile
-  - requirements.txt
-  - scripts
-
 defaults:
   scope:
     path: ""
