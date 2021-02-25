@@ -58,7 +58,7 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           name: artifacts
-      - run: curl --silent --fail --show-error --location --output - 'https://raw.githubusercontent.com/ashenm/tools/gh-actions/.github/scripts/culminate.sh' | sh -
+      - run: curl --silent --fail --show-error --location --output - 'https://raw.githubusercontent.com/ashenm/tools/master/.github/scripts/culminate.sh' | sh -
         env:
           CLOUDFLARE_USER: ${{ secrets.CLOUDFLARE_USER }}
           CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
