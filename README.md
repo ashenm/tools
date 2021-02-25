@@ -1,3 +1,3 @@
 # Demonstration Tools #
 ###### A collection of miscellanies instructional tools and materials ######
-[![Build Status](https://travis-ci.org/ashenm/tools.svg?branch=master)](https://travis-ci.org/ashenm/tools)
+[![Build Status](https://github.com/ashenm/tools/actions/workflows/build.yml/badge.svg)](https://github.com/ashenm/tools/actions/workflows/build.yml)
