@@ -13,7 +13,7 @@ markup = search(r'<tbody>.*</tbody>', markup, flags=DOTALL)
 try:
   etree = parseString(markup.group())
 except:
-  sys.exit(1)
+  exit(1)
 
 tools = etree.getElementsByTagName('td')
 

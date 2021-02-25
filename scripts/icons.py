@@ -7,7 +7,7 @@
 #
 
 from glob import iglob
-from os.path import join, splitext
+from os.path import splitext
 from PIL import Image
 from cairosvg import svg2png
 

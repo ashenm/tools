@@ -20,7 +20,7 @@ for icon in iglob('src/icons/*'):
   remove(icon)
 
 # clean jekyll build cache
-spawnlp(P_WAIT, 'jekyll', 'jekyll', 'clean', '--quiet')
+spawnlp(P_WAIT, 'bundle', 'bundle', 'exec', 'jekyll', 'clean', '--quiet')
 
 # remove generated files
 spawnlp(P_WAIT, 'rm', 'rm', '--force', *artifacts)
