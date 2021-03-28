@@ -1,0 +1,182 @@
+---
+lang: en
+title: LaTeX
+desc: A TeX/LaTex typesetting renderer
+keywords: ashen, gunaratne, ashen m. gunaratne, mathematics, asciimath, latex, tex, mathml
+---
+
+{%- capture metadata -%}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <meta name="description" content="{{ page.desc }}" />
+  <meta name="keywords" content="{{ page.keywords }}" />
+  <meta name="author" content="{{ site.author }}" />
+
+  <title>{{ page.title }}</title>
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+    }
+
+    *:focus {
+      outline: none;
+    }
+
+    body {
+      margin: 0;
+      height: 100vh;
+      padding: 0.5rem;
+      width: 100vw;
+    }
+
+    main {
+      height: 100%;
+      width: 100%;
+    }
+
+    output#preview {
+      display: block;
+    }
+
+    textarea#raw {
+      height: 25%;
+      display: block;
+      border-radius: 0.125rem;
+      background: #DFDFDF;
+      resize: none;
+      width: 100%;
+    }
+
+    div#container {
+      height: 75%;
+      display: flex;
+      position: relative;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 0.25rem;
+      width: 100%;
+    }
+
+    div#controls {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+    }
+
+    button.control {
+      display: block;
+      font-family: monospace;
+      border: 1px solid #767676;
+      cursor: pointer;
+    }
+
+    button.control:first-of-type {
+      border-radius: 2.5px 2.5px 0 0;
+      border-bottom: none;
+    }
+
+    button.control:last-of-type {
+      border-radius: 0 0 2.5px 2.5px;
+    }
+
+    @media (min-width: 512px) {
+      output#preview { font-size: 1.5rem; }
+    }
+
+    @media (min-width: 768px) {
+      output#preview { font-size: 1.75rem; }
+    }
+
+    @media (min-width: 1024px) {
+      output#preview { font-size: 2rem; }
+    }
+
+  </style>
+{%- endcapture -%}
+
+{%- capture scripts -%}
+  <script>
+
+    var zoom = function manipulateFontSize (e) {
+      window.output.style.fontSize = 1 * getComputedStyle(window.output).fontSize.replace(/px$/, '') + (e.target.innerText !== '+' ? -10 : 10) + 'px';
+    };
+
+    var preview = function renderLatexExpression (e) {
+
+      MathJax.texReset();
+      MathJax.typesetClear();
+
+      window.output.innerHTML = e.target.value.trim();
+
+      MathJax.typeset([ window.output ]);
+
+    };
+
+    var onDOMReady = function onDOMContentLoaded (e) {
+
+      window.controls = {
+        increment: document.createElement('button'),
+        decrement: document.createElement('button')
+      };
+
+      window.input = document.getElementById('raw');
+      window.output = document.getElementById('preview');
+      window.container = document.getElementById('container');
+      window.container.controls = document.getElementById('controls');
+
+      window.input.addEventListener('input', preview);
+
+      window.controls.increment.addEventListener('click', zoom);
+      window.controls.decrement.addEventListener('click', zoom);
+
+      window.container.controls.appendChild(controls.increment);
+      window.container.controls.appendChild(controls.decrement);
+
+      window.controls.increment.innerText = '+';
+      window.controls.decrement.innerText = '-';
+
+      window.controls.increment.className = 'control';
+      window.controls.decrement.className = 'control';
+
+      window.input.dispatchEvent(new Event('input'));
+
+    };
+
+    window.MathJax = {
+
+      /* https://docs.mathjax.org/en/latest/options/index.html */
+
+      startup: {
+        pageReady: onDOMReady
+      },
+    
+      tex: {
+        processEscapes: true
+      }
+
+    };
+
+  </script>
+  <script src="//polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script async="async" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/3.0.5/es5/tex-mml-svg.js" integrity="sha256-cnqvWkWXokTEqN8jBbfsEiKxnFbC4O3twE2oTm2Ygag=" crossorigin="anonymous"></script>
+{%- endcapture -%}
+
+{%- capture body -%}
+  <header>
+  </header>
+  <main>
+    <div id="container">
+      <output id="preview">$$n!\approx\sqrt{2{\pi}n}(\frac{n}{e})^n$$</output>
+      <div id="controls"></div>
+    </div>
+    <textarea id="raw" autofocus="autofocus">$$n!\approx\sqrt{2{\pi}n}(\frac{n}{e})^n$$</textarea>
+  </main>
+  <footer>
+  </footer>
+{%- endcapture -%}
+
+{%- include base.html -%}
+
+{%- comment -%} vim: set expandtab shiftwidth=2 syntax=liquid: {%- endcomment -%}

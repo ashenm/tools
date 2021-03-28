@@ -1,0 +1,309 @@
+---
+lang: en
+title: GridSnap
+desc: An image gridline delineator
+keywords: ashen, gunaratne, ashen m. gunaratne, grid, guidelines
+---
+
+{%- capture metadata -%}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no" />
+  <meta name="description" content="{{ page.desc }}" />
+  <meta name="keywords" content="{{ page.keywords }}" />
+  <meta name="author" content="{{ site.author }}" />
+
+  <title>{{ page.title }}</title>
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      height: 100vh;
+      padding: 2.5vh 2.5vw;
+      width: 100vw;
+    }
+
+    main {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      max-width: 95vw;
+      max-height: 95vh;
+      width: 100%;
+    }
+
+    svg {
+      height: 100%;
+      display: block;
+      width: 100%;
+    }
+
+    text.input {
+      cursor: pointer;
+      dominant-baseline: middle;
+      text-anchor: middle;
+    }
+
+    output {
+      padding: 2.5px;
+      position: fixed;
+      transform: translate(0, -100%);
+      background-color: #DFDFDF;
+      border-radius: 2.5px;
+      display: none;
+      color: #000;
+    }
+
+    footer,
+    footer::before {
+      transition: bottom 0.5s;
+      position: fixed;
+      bottom: -100%;
+      right: 0.125rem;
+      left: 0.125rem;
+    }
+
+    footer {
+      background: #EEED;
+      border-radius: 5px;
+      margin: auto;
+    }
+
+    footer::before {
+      content: "△";
+      display: block;
+      text-align: center;
+      padding: 0.25rem;
+      cursor: pointer;
+      bottom: 0;
+    }
+
+    footer.disclose {
+      bottom: 0.125rem;
+    }
+
+    footer.disclose::before {
+      content: "▽";
+      position: static;
+    }
+
+    div.input {
+      padding: 0.25rem 0.5rem;
+    }
+
+    label {
+      display: grid;
+      grid-template-columns: 1fr 2.5fr;
+    }
+
+    input {
+      text-align: center;
+      width: 100%;
+    }
+
+    @media (min-width: 768px) {
+      footer { max-width: 75vw; }
+    }
+
+    @media (min-width: 1024px) {
+
+      body {
+        width: 75vw;
+      }
+
+      footer {
+        top: 0.125rem;
+        padding: 0.5rem;
+        width: 25vw;
+        left: unset;
+      }
+
+      footer::before {
+        display: none;
+      }
+
+    }
+
+  </style>
+{%- endcapture -%}
+
+{%- capture scripts -%}
+  <script>
+
+    window.SVGNS = 'http://www.w3.org/2000/svg';
+
+    var range = function createIterator (min, max) {
+      return Array.from(Array(max).keys()).slice(min);
+    };
+
+    var grid = function createGrid (c, b) {
+
+      var clone;
+
+      var radius = 1.75;
+      var offset = radius / 2;
+
+      var circle = document.createElementNS(window.SVGNS, 'circle');
+      var delineators = document.createElementNS(window.SVGNS, 'g');
+      var tier = document.createElementNS(window.SVGNS, 'g');
+
+      var bounds = c.getBoundingClientRect();
+      var spacing = Math.max(bounds.width, bounds.height) / b;
+
+      circle.setAttribute('r', radius);
+      circle.setAttribute('cx', -offset);
+      circle.setAttribute('cy', -offset);
+      circle.setAttribute('class', 'delineator');
+
+      for (var x of range(1, Math.ceil(bounds.width / spacing))) {
+        clone = circle.cloneNode(true);
+        clone.setAttribute('transform', 'translate(' + x * spacing + ',0)');
+        clone.setAttribute('data-coordX', x);
+        tier.appendChild(clone);
+      }
+
+      for (var y of range(1, Math.ceil(bounds.height / spacing))) {
+        clone = tier.cloneNode(true);
+        clone.setAttribute('transform', 'translate(0,' + y * spacing + ')');
+        clone.setAttribute('data-coordY', y);
+        delineators.appendChild(clone);
+      }
+
+      for (var delineator of c.querySelectorAll('.delineators')) {
+        delineator.remove();
+      }
+
+      delineators.setAttribute('class', 'delineators');
+      c.appendChild(delineators);
+
+    };
+
+    var label = function showDelineatorCoordinates (e) {
+
+      if (!e.target.classList.contains('delineator')) {
+        return window.output.style.display = 'none';
+      }
+
+      var bounds = e.target.getBoundingClientRect();
+
+      window.output.innerText = [ e.target.getAttribute('data-coordX'),
+        e.target.parentElement.getAttribute('data-coordY') ].join(', ');
+
+      window.output.style.top = bounds.top + 'px';
+      window.output.style.left = bounds.left + 'px';
+      window.output.style.display = 'block';
+
+    };
+
+    document.onreadystatechange = function onDOMContentLoaded () {
+
+      if (document.readyState !== 'interactive') {
+        return false;
+      }
+
+      var svg = document.querySelector('svg');
+      var file = document.getElementById('file');
+      var blocks = document.getElementById('blocks');
+      var color = document.getElementById('color');
+      var main = document.querySelector('main');
+
+      var reader = new FileReader();
+      var img = document.createElement('img');
+
+      var image = svg.querySelector('image');
+      var text = svg.querySelector('text');
+
+      window.output = document.querySelector('output');
+
+      file.addEventListener('change', function (e) {
+        this.files.length ? reader.readAsDataURL(this.files[0]) : undefined;
+      });
+
+      reader.addEventListener('load', function (e) {
+        img.setAttribute('src', this.result);
+      });
+
+      img.addEventListener('load', function (e) {
+
+        var bounds = main.getBoundingClientRect();
+        var scale = Math.min(bounds.width / this.width, bounds.height / this.height);
+
+        image.setAttribute('href', this.src);
+
+        image.style.transform = 'scale(' + scale + ')';
+        svg.style.height = this.height * scale + 'px';
+        svg.style.width = this.width * scale + 'px';
+
+        grid(svg, blocks.value);
+
+      });
+
+      text.addEventListener('click', function (e) {
+        file.click();
+      });
+
+      blocks.addEventListener('input', function (e) {
+        img.src ? img.dispatchEvent(new Event('load')) : undefined;
+      });
+
+      color.addEventListener('input', function (e) {
+        svg.setAttribute('fill', this.value);
+      });
+
+      window.addEventListener('resize', function (e) {
+        img.src ? img.dispatchEvent(new Event('load')) : undefined;
+      });
+
+      document.addEventListener('paste', function (e) {
+        e.clipboardData.files.length ? reader.readAsDataURL(e.clipboardData.files[0]) : undefined;
+      });
+
+      document.querySelector('footer').addEventListener('click', function (e) {
+        /footer/i.test(e.target.nodeName) ? e.target.classList.toggle('disclose') : undefined;
+      });
+
+      svg.addEventListener('mouseover', label);
+      svg.addEventListener('click', label);
+
+    };
+
+  </script>
+{%- endcapture -%}
+
+{%- capture body -%}
+  <header>
+  </header>
+  <main>
+    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+      <text class="input" x="50%" y="50%">Choose Image</text>
+      <image height="0" width="0" style="width: auto; height: auto;" />
+    </svg>
+    <output></output>
+  </main>
+  <footer>
+    <div class="input">
+      <label>
+        Image <input id="file" type="file" accept="image/*" />
+      </label>
+    </div>
+    <div class="input">
+      <label>
+        Grid # <input id="blocks" type="number" min="0" max="128" value="16" />
+      </label>
+    </div>
+    <div class="input">
+      <label>
+        Color <input id="color" type="color" value="#FFFFFF" />
+      </label>
+    </div>
+  </footer>
+{%- endcapture -%}
+
+{%- include base.html -%}
+
+{%- comment -%} vim: set expandtab shiftwidth=2 syntax=liquid: {%- endcomment -%}

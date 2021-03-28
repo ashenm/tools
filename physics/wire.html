@@ -1,0 +1,247 @@
+---
+lang: en
+title: Wire
+desc: A wire gauge and resistance calculator
+keywords: ashen, gunaratne, ashen m. gunaratne, awg, american wire gauge, diameter, resistance
+---
+
+{%- capture metadata -%}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no" />
+  <meta name="description" content="{{ page.desc }}" />
+  <meta name="keywords" content="{{ page.keywords }}" />
+  <meta name="author" content="{{ site.author }}" />
+
+  <title>{{ page.title }}</title>
+
+  <style>
+
+    body {
+      margin: 0;
+    }
+
+    main {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    fieldset {
+      border-radius: 5px;
+      margin: 0.5rem 0;
+    }
+
+    input {
+      border: 1px solid #AAA;
+      border-radius: 2.5px;
+      font-size: inherit;
+      text-align: right;
+      margin: 0.125rem 0;
+    }
+
+    input.invalid {
+      background-color: #EA4335;
+    }
+
+    select {
+      padding: 0.125rem;
+      background: #EAEAEA;
+      border-radius: 5px;
+      margin: 0.125rem 0;
+      width: 100%;
+    }
+
+    @media (min-width: 720px) {
+      :root { font-size: 1.25rem; }
+    }
+
+  </style>
+{%- endcapture -%}
+
+{%- capture scripts -%}
+  <script>
+
+    window.AWG = {
+
+      _awg: NaN,
+      _diameter: NaN,
+      _csa: NaN,
+
+      _resistivity: 58,
+
+      setCSA: function (value) {
+        this.setDiameter(2 * Math.sqrt(value / Math.PI));
+      },
+
+      setDiameter: function (value) {
+        this._diameter = value;
+        this._csa = Math.PI * Math.pow(value / 2, 2);
+        this._awg = -39 * Math.log(value / 0.127) / Math.log(92) + 36;
+        this._resistance = 1 / this._resistivity / this._csa;
+      },
+
+      setDiameterIn: function (value) {
+        this.setDiameter(this.getMillimetres(value));
+      },
+
+      setResistivity: function (value) {
+        this._resistivity = value;
+        this._resistance = 1 / value / this._csa;
+      },
+
+      setAWG: function (value) {
+        this.setDiameter(0.127 * Math.pow(92, (36 - value) / 39));
+      },
+
+      getResistance: function () {
+        return +this._resistance.toFixed(this.EXPRECISION);
+      },
+
+      getResistanceFt: function () {
+        return +(0.3048 * this._resistance).toFixed(this.EXPRECISION);
+      },
+
+      getResistivity: function () {
+        return +this._resistivity.toFixed(this.EXPRECISION);
+      },
+
+      getDiameterIn: function () {
+        return +this.getInches(this._diameter).toFixed(this.PRECISION);
+      },
+
+      getDiameter: function () {
+        return +this._diameter.toFixed(this.PRECISION);
+      },
+
+      getCSAIn: function () {
+        return +(Math.PI * Math.pow(this.getInches(this._diameter) / 2, 2)).toFixed(this.PRECISION);
+      },
+
+      getCSA: function () {
+        return +this._csa.toFixed(this.PRECISION);
+      },
+
+      getAWG: function () {
+        return +this._awg.toFixed(this.PRECISION);
+      },
+
+      getMillimetres: function (inches) {
+        return inches * 25.4;
+      },
+
+      getInches: function (mm) {
+        return mm / 25.4;
+      },
+
+      EXPRECISION: 6,
+      PRECISION: 4
+
+    };
+
+    var coerce = function computeAWGParamters (e) {
+
+      if (!e.target.value) {
+        return false;
+      }
+
+      var crude = e.target.value;
+      var value = +crude;
+
+      if (value !== value) {
+        e.target.classList.add('invalid');
+        return false;
+      }
+
+      if (!e.target.hasAttribute('data-setter')) {
+        return false;
+      }
+
+      window.AWG[e.target.dataset.setter](value);
+
+      for (var getter of window.form.getters) {
+        getter.value = window.AWG[getter.dataset.getter]();
+      }
+
+      e.target.value = crude;
+
+      e.target.classList.remove('invalid');
+
+      return true;
+
+    };
+
+    document.onreadystatechange = function onDOMContentLoaded () {
+
+      if (document.readyState !== 'interactive') {
+        return false;
+      }
+
+      window.form = document.querySelector('form');
+      window.form.getters = window.form.querySelectorAll('[data-getter]');
+
+      window.form.addEventListener('input', coerce, { passive: true });
+
+      window.form.querySelector('input').dispatchEvent(new Event('input', { bubbles: true }));
+
+    };
+
+    window.AWG.setAWG(0);
+
+  </script>
+{%- endcapture -%}
+
+{%- capture body -%}
+  <header>
+  </header>
+  <main>
+    <form>
+      <fieldset>
+        <legend>Guage</legend>
+        <div>
+          <input type="number" autofocus="autofocus" data-getter="getAWG" data-setter="setAWG" value="0" /> AWG
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Diameter</legend>
+        <div>
+          <input type="number" step="0.0001" data-getter="getDiameter" data-setter="setDiameter" /> mm
+        </div>
+        <div>
+          <input type="number" step="0.0001" data-getter="getDiameterIn" data-setter="setDiameterIn" /> in
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Cross Section Area</legend>
+        <div>
+          <input type="number" step="0.0001" data-getter="getCSA" data-setter="setCSA" /> mm<sup>2</sup>
+        </div>
+        <div>
+          <input type="number" step="0.0001" data-getter="getCSAIn" /> in<sup>2</sup>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Resistance</legend>
+        <div>
+          <select data-setter="setResistivity">
+            <option selected="selected" value="58">Copper</option>
+            <option value="38">Aluminum</option>
+            <option value="18">Tungsten</option>
+          </select>
+        </div>
+        <div>
+          <input type="number" data-getter="getResistance" disabled="disabled" /> &#937;/m
+        </div>
+        <div>
+          <input type="number" data-getter="getResistanceFt" disabled="disabled" /> &#937;/ft
+        </div>
+      </fieldset>
+    </form>
+  </main>
+  <footer>
+  </footer>
+{%- endcapture -%}
+
+{%- include base.html -%}
+
+{%- comment -%} vim: set expandtab shiftwidth=2 syntax=liquid: {%- endcomment -%}

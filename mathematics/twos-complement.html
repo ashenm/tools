@@ -1,0 +1,256 @@
+---
+lang: en
+title: Two's Complement
+desc: A two's complement calculator
+keywords: ashen, gunaratne, ashen m. gunaratne, two's complement, converter, binary, decimal, hexadecimal
+---
+
+{%- capture metadata -%}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no" />
+  <meta name="description" content="{{ page.desc }}" />
+  <meta name="keywords" content="{{ page.keywords }}" />
+  <meta name="author" content="{{ site.author }}" />
+
+  <title>{{ page.title }}</title>
+
+  <style>
+
+    :root {
+      font-size: xxx-large;
+      font-family: monospace;
+    }
+
+    body {
+      margin: 0;
+    }
+
+    main {
+      display: flex;
+      min-width: 100vw;
+      min-height: 100vh;
+      box-sizing: border-box;
+      justify-content: center;
+      align-items: center;
+      padding: min(2.5vh, 2.5vw);
+    }
+
+    form {
+      height: 100%;
+      margin: auto;
+      max-width: 768px;
+      width: 100%;
+    }
+
+    hr {
+      margin: 0.25rem;
+    }
+
+    label {
+      display: block;
+      font-size: large;
+      text-align: center;
+      margin: 0.125rem 0;
+    }
+
+    input {
+      border: none;
+      font-size: inherit;
+      text-align: right;
+      border-radius: 5px;
+      background: #DADADA;
+      padding: 2.5px 7.5px;
+    }
+
+    #register {
+      display: flex;
+    }
+
+    .bit {
+      flex: 1 1 100%;
+      text-align: center;
+      margin: 0;
+    }
+
+    .head {
+      cursor: pointer;
+      margin: 0;
+    }
+
+    .head::after {
+      content: "0";
+    }
+
+    .head.occupy::after {
+      content: "1";
+    }
+
+    .caption {
+      font-size: 0.25em;
+    }
+
+    .index {
+      vertical-align: super;
+      font-size: 0.75em;
+    }
+
+    .invalid {
+      background: #EA4335;
+    }
+    
+    @media (min-width: 768px) {
+      :root { font-size: 7.5rem; }
+    }
+
+  </style>
+{%- endcapture -%}
+
+{%- capture scripts -%}
+  <script>
+
+    const coerce = function populateRegister (e) {
+
+      let bin;
+
+      if (!e.target.dataset.base) {
+        return false;
+      }
+
+      const value = parseInt(e.target.value, e.target.dataset.base);
+
+      if (value !== value) {
+        return e.target.classList.add('invalid');
+      }
+
+      if (value > window.register.max || value < window.register.min) {
+        return e.target.classList.add('invalid');
+      }
+
+      const absolute = bin = Math.abs(value);
+
+      if (absolute !== value) {
+        bin = (Math.pow(2, window.register.heads.length) - absolute).toString(2);
+        window.register.sign.classList.add('occupy');
+      } else {
+        window.register.sign.classList.remove('occupy');
+      }
+
+      bin = bin.toString(2).padStart(window.register.heads.length, 0);
+
+      for (let index = 0; index < bin.length; index++) {
+        +bin[index] ? window.register.heads[index].classList.add('occupy') : window.register.heads[index].classList.remove('occupy');
+      }
+
+      for (let input of window.inputs) {
+        input.value = value.toString(input.dataset.base).toUpperCase();
+        input.classList.remove('invalid');
+      }
+
+      e.target.classList.remove('invalid');
+
+      return true;
+
+    };
+
+    const invert = function populateNumerals (e) {
+
+      let value = 0;
+
+      if (!e.target.classList.contains('head')) {
+        return false;
+      }
+
+      e.target.classList.toggle('occupy');
+
+      for (let head of window.register.heads) {
+
+        if (head.classList.contains('occupy')) {
+          continue;
+        }
+
+        value += Math.pow(2, head.parentElement.dataset.magnitude);
+
+      }
+
+      value = window.register.sign.classList.contains('occupy')
+        ? -1 * (value + 1) : Math.pow(2, window.register.heads.length) - value - 1;
+
+      for (let input of window.inputs) {
+        input.value = value.toString(input.dataset.base);
+      }
+
+    };
+
+    document.onreadystatechange = function onDOMContentLoaded () {
+
+      if (document.readyState !== 'interactive') {
+        return false;
+      }
+
+      window.form = document.getElementById('numerals');
+
+      window.register = {
+        _: document.getElementsByClassName('head'),
+        container: document.getElementById('register')
+      };
+
+      window.inputs = window.form.querySelectorAll('input[data-base]');
+
+      window.register.sign = window.register._[0];
+      window.register.heads = Array.prototype.concat.apply([], window.register._).slice(1);
+
+      window.register.min = -Math.pow(2, window.register.heads.length);
+      window.register.max = -window.register.min - 1;
+
+      window.register.container.addEventListener('click', invert, { passive: true });
+      window.form.addEventListener('input', coerce, { passive: true });
+
+    };
+
+  </script>
+{%- endcapture -%}
+
+{%- capture body -%}
+  <header>
+  </header>
+  <main>
+    <form>
+      <div id="register">
+
+        <figure class="bit">
+          <pre class="head"></pre>
+          <figcaption class="caption">&#177;</figcaption>
+        </figure>
+
+        {%- for index in (1..7) -%}
+
+          {%- assign magnitude = 7 | minus: index -%}
+
+          <figure class="bit" data-magnitude="{{ magnitude }}">
+            <pre class="head"></pre>
+            <figcaption class="caption">
+              <span class="base">2</span><span class="index">{{ magnitude }}</span>
+            </figcaption>
+          </figure>
+
+        {%- endfor -%}
+
+      </div>
+      <hr />
+      <div id="numerals">
+        <label>
+          <input type="text" autofocus="autofocus" value="0" data-base="10" /><sub>10</sub>
+        </label>
+        <label>
+          <input type="text" value="0" data-base="16" /><sub>16</sub>
+        </label>
+      </div>
+    </form>
+  </main>
+  <footer>
+  </footer>
+{%- endcapture -%}
+
+{%- include base.html -%}
+
+{%- comment -%} vim: set expandtab shiftwidth=2 syntax=liquid: {%- endcomment -%}

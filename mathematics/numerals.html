@@ -1,0 +1,134 @@
+---
+lang: en
+title: Numerals
+desc: A numeral base converter
+keywords: ashen, gunaratne, ashen m. gunaratne, binary, decimal, denary, octal, hexadecimal, conversion
+---
+
+{%- capture metadata -%}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no" />
+  <meta name="description" content="{{ page.desc }}" />
+  <meta name="keywords" content="{{ page.keywords }}" />
+  <meta name="author" content="{{ site.author }}" />
+
+  <title>{{ page.title }}</title>
+
+  <style>
+
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
+
+    main {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      max-width: 320px;
+      margin: auto;
+    }
+
+    label, input {
+      font-size: large;
+    }
+
+    label {
+      display: grid;
+      font-family: monospace;
+      grid-template-columns: 1fr 5fr;
+      grid-column-gap: 0.5rem;
+      align-items: center;
+      margin: 0.5rem 0;
+    }
+
+    input {
+      border: none;
+      padding: 2.5px 5px;
+      font-size: inherit;
+      border-radius: 5px;
+      background: #DADADA;
+      text-align: right;
+    }
+
+    input.invalid {
+      background: #EA4335;
+    }
+
+    @media (min-width: 768px) {
+      html { font-size: 1.5rem; transform: scale(1.5); }
+    }
+
+  </style>
+{%- endcapture -%}
+
+{%- capture scripts -%}
+  <script>
+
+    var converse = function converseNumeralBases (e) {
+
+      var crude = e.target.value;
+      var radix = e.target.dataset.base;
+      var value = parseInt(crude, radix);
+
+      if (value !== value) {
+        return e.target.classList.add('invalid');
+      }
+
+      for (var base of window.form.inputs) {
+        base.value = value.toString(base.dataset.base);
+        base.classList.remove('invalid');
+      }
+
+      e.target.value = crude.replace(/(^0*)(.*)/, '$1')
+        .concat(value.toString(radix).replace(/^0+/, ''));
+
+    };
+
+    document.onreadystatechange = function onDOMContentLoaded () {
+
+      if (document.readyState !== 'interactive') {
+        return false;
+      }
+
+      window.form = document.querySelector('form');
+      window.form.inputs = window.form.querySelectorAll('input[data-base]');
+
+      window.form.addEventListener('input', converse, { passive: true });
+
+    };
+
+  </script>
+{%- endcapture -%}
+
+{%- capture body -%}
+  <header></header>
+  <main>
+    <form>
+      <label>
+        BIN <input type="text" value="0" data-base="2" />
+      </label>
+      <label>
+        QUA <input type="text" value="0" data-base="4" />
+      </label>
+      <label>
+        SEN <input type="text" value="0" data-base="6" />
+      </label>
+      <label>
+        OCT <input type="text" value="0" data-base="8" />
+      </label>
+      <label>
+        DEC <input type="text" value="0" data-base="10" />
+      </label>
+      <label>
+        HEX <input type="text" value="0" data-base="16" />
+      </label>
+    </form>
+  </main>
+  <footer></footer>
+{%- endcapture -%}
+
+{%- include base.html -%}
+
+{%- comment -%} vim: set expandtab shiftwidth=2 syntax=liquid: {%- endcomment -%}

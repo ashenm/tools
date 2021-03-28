@@ -1,0 +1,231 @@
+---
+lang: en
+title: UTC
+desc: A UTC, EST, UNIX, and local time converter
+keywords: ashen, gunaratne, ashen m. gunaratne, convert, time, utc, est, unix
+---
+
+{%- capture metadata -%}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <meta name="description" content="{{ page.desc }}" />
+  <meta name="keywords" content="{{ page.keywords }}" />
+  <meta name="author" content="{{ site.author }}" />
+
+  <title>{{ page.title }}</title>
+
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap-reboot.min.css" integrity="sha256-xYVniYXUBtVTE4ja+KwHMJju/nGqmLCOJxoKGhnkspU=" crossorigin="anonymous" />
+  <style>
+
+    body {
+      display: flex;
+      text-align: center;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    main {
+      width: 100%;
+    }
+
+    time,
+    output {
+      font-family: 'Consolas', 'Lucida Console', 'Monaco';
+    }
+
+    time {
+      font-size: 1.125rem;
+    }
+
+    div.originator {
+      margin: 0.75rem;
+    }
+
+    div.translation {
+      display: table;
+      table-layout: fixed;
+      visibility: hidden;
+      margin: auto;
+    }
+
+    div.gloss {
+      display: table-row;
+    }
+
+    div.gloss > label,
+    div.gloss > output {
+      display: table-cell;
+    }
+
+    div.gloss > label {
+      border-left: 0.5rem solid transparent;
+      text-align: right;
+    }
+
+    input {
+      border: 1px solid #CED4DA;
+      border-radius: 0.25rem;
+      padding: 0.375rem 0.75rem;
+      text-align: center;
+      max-width: 320px;
+      width: 100%;
+    }
+
+    input.invalid {
+      background: #DC3545;
+    }
+
+    label {
+      color: #868e96;
+      display: block;
+      font-size: small;
+      text-transform: uppercase;
+    }
+
+  </style>
+{%- endcapture -%}
+
+{%- capture scripts -%}
+  <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.25.3/moment.min.js" integrity="sha256-C66CaAImteEKZPYvgng9j10J/45e9sAuZyfPYCwp4gE=" crossorigin="anonymous"></script>
+  <script>
+
+    window.timer = {
+      RFC2822: 'ddd, DD MMM YYYY HH:mm:ss ZZ'
+    };
+
+    class UTC {
+
+      constructor (element, format) {
+
+        this.container = element;
+        this.format = format || 'ddd, MMMM D, YYYY hh:mm:ss';
+        this.moment = this.refresh();
+
+        this.butler = window.setInterval(UTC.__butler__, 1000, this);
+
+        this.populate();
+
+      }
+
+      populate () {
+        this.container.innerText = this.refresh().format(this.format);
+        this.container.dateTime = this.moment.toISOString();
+      }
+
+      refresh () {
+        return this.moment = moment.utc();
+      }
+
+      static __butler__ (instance) {
+        instance.populate();
+      }
+
+    }
+
+    class EST extends UTC {
+
+      constructor (element) {
+        super(element, window.timer.RFC2822);
+      }
+
+      refresh () {
+        return this.moment = moment.utc().utcOffset('-05:00');
+      }
+
+    }
+
+    class Local extends EST {
+
+      refresh () {
+        return this.moment = moment().local();
+      }
+
+    }
+
+    const convert = function convertTextInput (e) {
+
+      e.target.classList.remove('invalid');
+
+      if (!e.target.value) {
+        return window.output.innerText = window.translation.style.visibility = '';
+      }
+
+      const input = moment(e.target.value, 'D-M-YYYY hh:mm ZZ');
+
+      if (!input.isValid()) {
+        return e.target.classList.add('invalid');
+      }
+
+      window.translation.style.visibility = 'visible';
+
+      window.output[0].innerText = input.utc().format();
+      window.output[1].innerText = input.utcOffset('-05:00').format();
+      window.output[2].innerText = +input;
+
+    };
+
+    document.onreadystatechange = function onDOMContentLoaded () {
+
+      if (document.readyState !== 'interactive') {
+        return false;
+      }
+
+      window.output = document.getElementsByTagName('output');
+      window.timer.timers = document.getElementsByTagName('time');
+
+      window.translation = document.querySelector('div.translation');
+
+      window.timer.utc = new UTC(window.timer.timers[0]);
+      window.timer.est = new EST(window.timer.timers[1]);
+      window.timer.local = new Local(window.timer.timers[2]);
+
+      document.querySelector('input').addEventListener('input', convert, { passive: true });
+
+    };
+
+  </script>
+{%- endcapture -%}
+
+{%- capture body -%}
+  <header>
+    <div class="timer">
+      <time datetime="1970-01-01T00:00:00.000Z">Thursday, January 1, 1970 12:00:00 AM</time>
+      <label>utc</label>
+    </div>
+    <div class="timer">
+      <time datetime="1969-12-31T19:00:00.000-05:00">Wednesday, December 31, 1969 07:00:00 PM</time>
+      <label>est</label>
+    </div>
+    <div class="timer">
+      <time datetime="1970-01-01T00:00:00.000Z">Thursday, January 1, 1970 12:00:00 AM +0000</time>
+      <label>local</label>
+    </div>
+  </header>
+  <main>
+    <div class="originator">
+      <input type="text" autofocus="autofocus" placeholder="DD/MM/YYY HH:MM [UTC Offset]" />
+    </div>
+    <div class="translation">
+      <div class="gloss">
+        <output></output>
+        <label>utc</label>
+      </div>
+      <div class="gloss">
+        <output></output>
+        <label>est</label>
+      </div>
+      <div class="gloss">
+        <output></output>
+        <label>unix</label>
+      </div>
+    </div>
+  </main>
+  <footer>
+  </footer>
+{%- endcapture -%}
+
+{%- include base.html -%}
+
+{%- comment -%} vim: set expandtab shiftwidth=2 syntax=liquid: {%- endcomment -%}

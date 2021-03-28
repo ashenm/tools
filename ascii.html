@@ -1,0 +1,138 @@
+---
+lang: en
+title: ASCII
+desc: An ASCII lookup table
+keywords: ashen, gunaratne, ashen m. gunaratne, ascii, mapping
+---
+
+{%- capture metadata -%}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <meta name="description" content="{{ page.desc }}" />
+  <meta name="keywords" content="{{ page.keywords }}" />
+  <meta name="author" content="{{ site.author }}" />
+
+  <title>{{ page.title }}</title>
+
+  <style>
+
+    body {
+      display: flex;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+
+    main {
+      column-count: 2;
+      font-family: monospace;
+      font-size: large;
+      margin: 1rem;
+    }
+
+    table {
+      table-layout: fixed;
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    thead {
+      display: none;
+    }
+
+    tr {
+      border: 1px solid #222;
+      break-inside: avoid-column;
+    }
+
+    td.dec, td.hex {
+      background-color: #DDD;
+      border-right: 1px solid #AAA;
+      text-align: right;
+      padding: 2.5px;
+    }
+
+    td.hex {
+      background-color: #EEE;
+      text-transform: uppercase;
+    }
+
+    td.char {
+      text-align: center;
+    }
+
+    @media(min-width: 520px) {
+      main { column-count: 4; }
+    }
+
+    @media(min-width: 768px) {
+      main { column-count: 6; }
+    }
+
+    @media(min-width: 1024px) {
+      main { column-count: 8; }
+    }
+
+  </style>
+{%- endcapture -%}
+
+{%- capture scripts -%}
+  <script>
+
+    document.onreadystatechange = function onDOMContentLoaded () {
+
+      if (document.readyState !== 'interactive') {
+        return false;
+      }
+
+      const tbody = document.querySelector('tbody');
+
+      for (let i = 0; i < 128; i++) {
+
+        const tr = tbody.insertRow(-1);
+
+        const dec = tr.insertCell(-1);
+        const hex = tr.insertCell(-1);
+        const str = tr.insertCell(-1);
+
+        str.innerText = String.fromCharCode(i);
+
+        dec.innerText = i.toString(10);
+        hex.innerText = i.toString(16);
+
+        str.className = 'char';
+        dec.className = 'dec';
+        hex.className = 'hex';
+
+      }
+
+    };
+
+  </script>
+{%- endcapture -%}
+
+{%- capture body -%}
+  <header>
+  </header>
+  <main>
+    <table>
+      <thead>
+        <tr>
+          <th class="dec">DEC</th>
+          <th class="hex">HEX</th>
+          <th class="char">CHAR</th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+      <tfoot>
+      </tfoot>
+    </table>
+  </main>
+  <footer>
+  </footer>
+{%- endcapture -%}
+
+{%- include base.html -%}
+
+{%- comment -%} vim: set expandtab shiftwidth=2 syntax=liquid: {%- endcomment -%}
