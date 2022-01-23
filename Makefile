@@ -21,6 +21,11 @@ help:  ## list make targets
 index: ## build catalogue
 	./scripts/index.py
 
+.PHONY: install
+install: ## install dependecies
+	bundle install
+	pip3 install --requirement requirements.txt
+
 .PHONY: list
 .SILENT: list
 list: index ## show tools catalogue
