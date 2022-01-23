@@ -24,7 +24,7 @@ keywords: ashen, gunaratne, ashen m. gunaratne, binary, number representation
   <link rel="icon" href="/icons/bulbs.ico" type="image/ico" />
   <link rel="apple-touch-icon" href="/icons/bulbs.png" />
 
-  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha256-L/W5Wfqfa0sdBNIKN9cG6QA5F2qx4qICmU2VgLruv9Y=" crossorigin="anonymous" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/css/bootstrap.min.css" integrity="sha512-T584yQ/tdRR5QwOpfvDfVQUidzfgc2339Lc8uBDtcp/wYu80d7jwBgAxbyMh0a9YM9F8N3tdErpFI8iaGx6x5g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
   <style>
 
@@ -32,7 +32,7 @@ keywords: ashen, gunaratne, ashen m. gunaratne, binary, number representation
       display: flex;
       min-height: 100vh;
       flex-direction: column;
-      justify-content: space-between;
+      justify-content: center;
       user-select: none;
     }
 
@@ -269,7 +269,7 @@ keywords: ashen, gunaratne, ashen m. gunaratne, binary, number representation
   <header>
   </header>
   <main class="container text-center">
-    <div class="row flex-nowrap">
+    <div class="row">
     {%- for _ in (1..8) reversed -%}
 
       {%- assign value = 1 -%}
@@ -299,7 +299,7 @@ keywords: ashen, gunaratne, ashen m. gunaratne, binary, number representation
       </svg>
     </div>
   </main>
-  <footer class="text-center text-xl-right">
+  <footer class="fixed-bottom text-center">
     <div class="custom-control custom-control-inline custom-switch">
       <input id="bulbs" class="custom-control-input" type="checkbox" checked="checked" />
       <label for="bulbs" class="custom-control-label">bulbs</label>
