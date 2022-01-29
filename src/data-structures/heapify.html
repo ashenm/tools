@@ -43,7 +43,7 @@ keywords: ashen, gunaratne, ashen m. gunaratne, adt, data structures, heap
       text-align: center;
     }
 
-    g.node, g.item {
+    g.node, g.index, g.item {
       cursor: pointer;
     }
 
@@ -57,7 +57,7 @@ keywords: ashen, gunaratne, ashen m. gunaratne, adt, data structures, heap
       stroke: #555;
     }
 
-    text.node, text.item {
+    text.node, text.index, text.item {
       dominant-baseline: central;
       text-anchor: middle;
     }
@@ -68,18 +68,23 @@ keywords: ashen, gunaratne, ashen m. gunaratne, adt, data structures, heap
       stroke: #555;
     }
 
-    rect.item {
+    rect.index, rect.item {
       fill: #FFF;
       stroke-width: 0.25px;
       stroke: #444;
     }
 
-    text.item {
+    svg {
+      margin: 0.5rem;
+    }
+
+    text.index, text.item {
       font-size: 2.5px;
       opacity: 0.5;
     }
 
     g.node.selected > circle.node,
+    g.index.selected > rect.index,
     g.item.selected > rect.item {
       fill: #EA4335;
     }
@@ -161,32 +166,53 @@ keywords: ashen, gunaratne, ashen m. gunaratne, adt, data structures, heap
 
       const rectWidth = 100 / seeds.length;
 
+      window.canvas.indexes.$ = window.canvas.indexes
+        .selectAll('g.item')
+        .data(seeds)
+        .join('g')
+        .attr('class', 'index')
+        .attr('transform', (d, i) => `translate(${i * rectWidth}, 86.5)`)
+        .html('');
+
+      window.canvas.indexes.$.append('rect')
+        .attr('class', 'index')
+        .attr('width', rectWidth)
+        .attr('height', 6.5);
+
+      window.canvas.indexes.$.append('text')
+        .attr('class', 'index')
+        .attr('x', rectWidth / 2)
+        .attr('y', 3.25)
+        .text((d, i) => i);
+
       window.canvas.items.$ = window.canvas.items
         .selectAll('g.item')
         .data(seeds)
         .join('g')
         .attr('class', 'item')
-        .attr('transform', (d, i) => `translate(${i * rectWidth}, 89)`)
+        .attr('transform', (d, i) => `translate(${i * rectWidth}, 93.5)`)
         .html('');
 
       window.canvas.items.$.append('rect')
         .attr('class', 'item')
         .attr('width', rectWidth)
-        .attr('height', 7.5);
+        .attr('height', 6.5);
 
       window.canvas.items.$.append('text')
         .attr('class', 'item')
         .attr('x', rectWidth / 2)
-        .attr('y', 3.5)
-        .text((d, i) => i);
+        .attr('y', 3.25)
+        .text((d) => d);
 
       window.canvas.nodes.$.on('click mouseenter mouseleave', illuminate, { passive: true });
+      window.canvas.indexes.$.on('click mouseenter mouseleave', illuminate, { passive: true });
       window.canvas.items.$.on('click mouseenter mouseleave', illuminate, { passive: true });
 
     };
 
     const illuminate = function highlightNodeSelection (d, i) {
       window.canvas.nodes.$.nodes()[i].classList.toggle('selected');
+      window.canvas.indexes.$.nodes()[i].classList.toggle('selected');
       window.canvas.items.$.nodes()[i].classList.toggle('selected');
     };
 
@@ -197,12 +223,13 @@ keywords: ashen, gunaratne, ashen m. gunaratne, adt, data structures, heap
       window.canvas = {
         nodes: window.svg.select('g.nodes'),
         links: window.svg.select('g.links'),
+        indexes: window.svg.select('g.indexes'),
         items: window.svg.select('g.items')
       };
 
       d3.select('#elements')
         .on('input', visualise, { passive: true })
-        .attr('value', Array.from((new Array(window.innerWidth >= 768 ? 32 : 16)).keys()).slice(1).join(', '))
+        .attr('value', Array.from((new Array((window.innerWidth >= 768 ? 32 : 16) - 1)).keys()).map(e => String.fromCharCode(e + 65)).join(', '))
         .dispatch('input');
 
     });
@@ -217,6 +244,7 @@ keywords: ashen, gunaratne, ashen m. gunaratne, adt, data structures, heap
     <svg viewBox="0 0 100 100">
       <g class="links"></g>
       <g class="nodes"></g>
+      <g class="indexes"></g>
       <g class="items"></g>
     </svg>
     <form>
