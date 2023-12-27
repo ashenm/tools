@@ -3,7 +3,7 @@
 # Generates favicon.ico from favicon.svg
 #
 # Ashen Gunaratne
-# mail@ashenm.ml
+# mail@ashenm.dev
 #
 
 from glob import iglob
