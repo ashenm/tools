@@ -1,0 +1,198 @@
+---
+lang: en
+title: Bytes
+desc: A binary prefix calculator
+keywords: ashen, gunaratne, ashen m. gunaratne, binary prefixes, iec, iso, metric, si
+---
+
+{%- capture metadata -%}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no" />
+  <meta name="description" content="{{ page.desc }}" />
+  <meta name="keywords" content="{{ page.keywords }}" />
+  <meta name="author" content="{{ site.author }}" />
+
+  <title>{{ page.title }}</title>
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+
+    fieldset {
+      border-radius: 5px;
+      margin: 0.5rem 0;
+    }
+
+    fieldset > div {
+      display: grid;
+      border-radius: 5px;
+      font-family: monospace;
+      grid-template-columns: 1fr 3ch;
+      grid-column-gap: 0.25rem;
+      margin: 0.25rem 0;
+    }
+
+    fieldset > div.x-bits {
+      background: #F4B400;
+    }
+
+    fieldset > div.hidden {
+      display: none;
+    }
+
+    fieldset > div > input {
+      text-align: right;
+    }
+
+    fieldset > div > input.invalid {
+      outline: 1px auto #DB4437;
+    }
+
+    legend {
+      color: #FFF;
+      background: #888;
+      border-radius: 5px;
+      padding: 0 0.25rem;
+      font-size: small;
+      width: 100%;
+    }
+
+    footer {
+      font-size: initial;
+      position: absolute;
+      bottom: 0.5rem;
+      right: 0.5rem;
+    }
+
+    footer > label {
+      display: flex;
+    }
+
+    @media (orientation: portrait) {
+      :root { font-size: 1.25rem; }
+    }
+
+    @media (min-width: 768px) {
+      :root { font-size: 2rem; }
+    }
+
+  </style>
+{%- endcapture -%}
+
+{%- capture scripts -%}
+  <script>
+
+    var handler = function populateMagnitudes (e) {
+
+      var bits = e.target.value * e.target.dataset.magnitude;
+
+      if (bits !== bits) {
+        e.target.classList.add('invalid');
+        return false;
+      }
+
+      for (var input of window.inputs) {
+        input.value = bits / input.dataset.magnitude;
+        input.classList.remove('invalid');
+      }
+
+      return true;
+
+    };
+
+    var xhandler = function toggleBitMultiples (e) {
+
+      for (var xbit of window.xbits) {
+        xbit.classList.toggle('hidden');
+      }
+
+    };
+
+    document.onreadystatechange = function onDOMContentLoaded () {
+
+      if (document.readyState !== 'interactive') {
+        return false;
+      }
+
+      document.querySelector('form')
+        .addEventListener('input', handler, { passive: true });
+
+      document.getElementById('x-bits')
+        .addEventListener('input', xhandler, { passive: true });
+
+      window.inputs = document.getElementsByTagName('input');
+      window.xbits = document.getElementsByClassName('x-bits');
+
+    };
+
+  </script>
+{%- endcapture -%}
+
+{%- capture body -%}
+  <header>
+  </header>
+  <main>
+    <form>
+      <fieldset>
+        <div>
+          <input type="number" data-magnitude="1" /> b
+        </div>
+        <div>
+          <input type="number" autofocus="autofocus" data-magnitude="8" /> B
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>SI (Metric)</legend>
+        <div class="x-bits hidden">
+          <input class="metric" type="number" data-magnitude="1000" /> kb
+        </div>
+        <div>
+          <input class="metric" type="number" data-magnitude="8000" /> kB
+        </div>
+        <div class="x-bits hidden">
+          <input class="metric" type="number" data-magnitude="1000000" /> Mb
+        </div>
+        <div>
+          <input class="metric" type="number" data-magnitude="8000000" /> MB
+        </div>
+        <div class="x-bits hidden">
+          <input class="metric" type="number" data-magnitude="1000000000" /> Gb
+        </div>
+        <div>
+          <input class="metric" type="number" data-magnitude="8000000000" /> GB
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>IEC 80000</legend>
+        <div>
+          <input class="iec" type="number" data-magnitude="8192" /> KiB
+        </div>
+        <div>
+          <input class="iec" type="number" data-magnitude="8388608" /> MiB
+        </div>
+        <div>
+          <input class="iec" type="number" data-magnitude="8589934592" /> GiB
+        </div>
+      </fieldset>
+    </form>
+  </main>
+  <footer>
+    <label>
+      *-bits <input id="x-bits" type="checkbox" />
+    </label>
+  </footer>
+{%- endcapture -%}
+
+{%- include base.html -%}
+
+{%- comment -%} vim: set expandtab shiftwidth=2 syntax=liquid: {%- endcomment -%}

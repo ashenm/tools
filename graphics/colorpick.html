@@ -1,0 +1,204 @@
+---
+lang: en
+title: ColorPick
+desc: A RGBA color picker
+keywords: ashen, gunaratne, ashen m. gunaratne, image, colour, picker
+---
+
+{%- capture metadata -%}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <meta name="description" content="{{ page.desc }}" />
+  <meta name="keywords" content="{{ page.keywords }}" />
+  <meta name="author" content="{{ site.author }}" />
+
+  <title>{{ page.title }}</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css" integrity="sha256-3iu9jgsy9TpTwXKb7bNQzqWekRX7pPK+2OLj3R922fo=" crossorigin="anonymous" />
+
+  <style type="text/css">
+
+    body {
+      display: flex;
+      margin-top: 0px;
+      min-height: 100vh;
+      margin-bottom: 0px;
+      align-items: center;
+    }
+
+    canvas {
+      max-width: 76vw;
+      max-height: 56vh;
+    }
+
+    figcaption {
+      margin-top: 8px;
+      font-family: 'Consolas', 'Monaco', 'Lucida Console';
+    }
+
+    footer {
+      right: 1%;
+      bottom: 1%;
+      position: absolute;
+    }
+
+    .ionicons {
+      font-size: 21px;
+    }
+
+    .container {
+      margin-left: auto;
+      margin-right: auto;
+      text-align: center;
+    }
+
+    .file-label {
+      cursor: pointer;
+      border: 1.5px solid #2e2e2e;
+      padding: 3px 24px 1.25px 24px;
+      border-radius: 9px;
+    }
+
+    .file-input {
+      width: .1px;
+      height: .1px;
+      opacity: 0;
+      z-index: -1;
+      overflow: hidden;
+      position: absolute;
+    }
+
+    .pRGBA,
+    .vRGBA {
+      margin: 4px;
+      font-size: 24px;
+      min-width: 32px;
+      min-height: 32px;
+      visibility: hidden;
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    .vRGBA {
+      min-width: 15ch;
+      text-align: right;
+    }
+
+  </style>
+{%- endcapture -%}
+
+{%- capture scripts -%}
+  <script type="text/javascript">
+
+    // DOM references
+    const node = {
+      image: document.createElement('img'),
+      input: document.createElement('input'),
+      canvas: document.createElement('canvas'),
+      figure: document.createElement('figure'),
+      cInput: document.createElement('label'),
+      lInput: document.createElement('i'),
+      cRGBA: document.createElement('figcaption'),
+      pRGBA: document.createElement('span'),
+      vRGBA: document.createElement('span')
+    };
+
+    // FileReader for runtime upload preview
+    const reader = new FileReader();
+
+    // drawing context for canvas
+    const context = node.canvas.getContext('2d');
+
+    // load default image
+    node.image.setAttribute('src', '../images/image-2.jpg');
+    node.image.setAttribute('alt', 'the image being colour picked');
+
+    // construct colour code gauge
+    node.pRGBA.classList.add('pRGBA');
+    node.vRGBA.classList.add('vRGBA');
+
+    // construct file selector elements
+    node.input.setAttribute('type', 'file');
+    node.input.setAttribute('accept', 'image/jpeg, image/png');
+    node.input.classList.add('file-input');
+    node.cInput.classList.add('file-label');
+    node.lInput.classList.add('ionicons', 'ion-images');
+
+    // concatenate colour code gauge
+    // child elements onto parent node
+    node.cRGBA.appendChild(node.pRGBA);
+    node.cRGBA.appendChild(node.vRGBA);
+    node.figure.appendChild(node.canvas);
+    node.figure.appendChild(node.cRGBA);
+
+    // concatenate file selector
+    // child elements onto parent node
+    node.cInput.appendChild(node.input);
+    node.cInput.appendChild(node.lInput);
+
+    // change image on upload completion
+    reader.addEventListener('load', function(e) {
+      node.image.src = reader.result;
+    });
+
+    // map HTMLImageElement onto HTMLCanvasElement
+    // once image resources have been loaded
+    node.image.addEventListener('load', function(e) {
+      node.canvas.setAttribute('width', this.width);
+      node.canvas.setAttribute('height', this.height);
+      context.drawImage(this, 0, 0);
+    });
+
+    // populate pixel colour codes on pointing
+    node.canvas.addEventListener('mousemove', function(e) {
+
+      const dPixel = context.getImageData(
+        e.layerX / node.canvas.clientWidth * node.canvas.width,
+        e.layerY / node.canvas.clientHeight * node.canvas.height, 1, 1);
+
+      node.pRGBA.style.backgroundColor = `rgba(${dPixel.data})`;
+      node.vRGBA.innerText = dPixel.data;
+
+    });
+
+    // hide colour code details on pointer move off
+    node.canvas.addEventListener('mouseout', function(e) {
+      node.cRGBA.childNodes.forEach(child => {
+        child.style.visibility = 'hidden';
+      });
+    });
+
+    // expose colour code details on pointer move in
+    node.canvas.addEventListener('mouseover', function(e) {
+      node.cRGBA.childNodes.forEach(child => {
+        child.style.visibility = 'visible';
+      })
+    });
+
+    // initiate image change on custom file input
+    node.input.addEventListener('change', function(e) {
+      reader.readAsDataURL(node.input.files[0]);
+    });
+
+    // insert node on DOM ready
+    document.onreadystatechange = function() {
+      if (document.readyState === 'interactive') {
+        document.querySelector('main').appendChild(node.figure);
+        document.querySelector('footer').appendChild(node.cInput);
+      }
+    };
+
+  </script>
+{%- endcapture -%}
+
+{%- capture body -%}
+  <div class="container">
+    <header></header>
+    <main></main>
+    <footer></footer>
+  </div>
+{%- endcapture -%}
+
+{%- include base.html -%}
+
+{%- comment -%} vim: set expandtab shiftwidth=2 syntax=liquid: {%- endcomment -%}

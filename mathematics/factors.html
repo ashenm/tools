@@ -1,0 +1,205 @@
+---
+lang: en
+title: Factors
+desc: A LCM/GCD calculator
+keywords: ashen, gunaratne, ashen m. gunaratne, factors, gcd, gcf, lcm
+---
+
+{%- capture metadata -%}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <meta name="description" content="{{ page.desc }}" />
+  <meta name="keywords" content="{{ page.keywords }}" />
+  <meta name="author" content="{{ site.author }}" />
+
+  <title>{{ page.title }}</title>
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      min-height: 100vh;
+      min-width: 100vw;
+      margin: 0;
+    }
+
+    main {
+      margin-top: 1rem;
+      margin-left: auto;
+      margin-right: auto;
+      margin-bottom: 1rem;
+      max-width: 320px;
+    }
+
+    table {
+      table-layout: fixed;
+      margin-bottom: 0.5rem;
+      width: 100%;
+    }
+
+    input.control {
+      border: none;
+      display: block;
+      font-weight: bold;
+      border-radius: 1rem;
+      margin-top: 0.25rem;
+      margin-right: auto;
+      margin-bottom: 0.25rem;
+      margin-left: auto;
+      cursor: pointer; 
+      color: #5A5A5A;
+    }
+
+    input.control:focus {
+      outline: none;
+    }
+
+    input.operand {
+      text-align: center;
+      width: 100%;
+    }
+
+    input.operand.invalid {
+      background-color: #DC3545;
+    }
+
+    td.value {
+      text-align: right;
+    }
+
+  </style>
+{%- endcapture -%}
+
+{%- capture scripts -%}
+  <script>
+
+    const lcm = function computerLeastCommonMultiple (x, y) {
+      return x * y / gcd(x, y);
+    };
+
+    const gcd = function computeGreatestCommonDivisor (x, y) {
+
+      let a = Math.max(x, y);
+      let b = Math.min(x, y);
+
+      while (b !== 0) {
+        [ a, b ] = [ b, a % b ];
+      }
+
+      return a;
+
+    };
+
+    const extend = function addOperandContainer (e) {
+
+      if (e.target.name !== 'extend') {
+        return false;
+      }
+
+      const root = window.operands[0].parentElement.parentElement;
+      const clone = root.parentElement.appendChild(root.cloneNode(true));
+
+      Array.prototype.push.apply(window.operands, clone.querySelectorAll('.operand'));
+
+    };
+
+    const populate = function populateComputations (e) {
+
+      let operand;
+
+      if (+e.target.value !== +e.target.value) {
+        e.target.classList.add('invalid');
+        return false;
+      }
+
+      const cumulate = {
+        gcd: window.operands[0].value,
+        lcm: window.operands[1].value
+      };
+
+      for (operand of window.operands.slice(1)) {
+
+        if (!operand.value) {
+          continue;
+        }
+
+        cumulate.gcd = gcd(cumulate.gcd, operand.value);
+        cumulate.lcm = lcm(cumulate.lcm, operand.value);
+
+      }
+
+      window.output[0].innerText = cumulate.gcd;
+      window.output[1].innerText = cumulate.lcm;
+
+      e.target.classList.remove('invalid');
+
+    };
+
+    document.onreadystatechange = function onDOMContentLoaded () {
+
+      if (document.readyState !== 'interactive') {
+        return false;
+      }
+
+      window.form = document.querySelector('table.input');
+
+      window.operands = Array.prototype.concat.apply([], document.querySelectorAll('.operand'));
+      window.output = Array.prototype.concat.apply([], document.querySelectorAll('.value'));
+
+      window.form.addEventListener('input', populate);
+      window.form.addEventListener('click', extend);
+
+    };
+
+  </script>
+{%- endcapture -%}
+
+{%- capture body -%}
+  <header>
+  </header>
+  <main>
+    <table class="input">
+      <tbody>
+        <tr class="input">
+          <td>
+            <input class="operand" type="number" value="123" />
+          </td>
+          <td>
+            <input class="operand" type="number" value="321" />
+          </td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="2">
+            <input class="control" name="extend" type="button" value="+" />
+          </td>
+        </tr>
+      </tfoot>
+    </table>
+    <hr />
+    <table class="output">
+      <tbody>
+        <tr>
+          <td class="label">GCD</td>
+          <td class="value">3</td>
+        </tr>
+        <tr>
+          <td class="label">LCM</td>
+          <td class="value">13161</td>
+        </tr>
+      </tbody>
+    </table>
+  </main>
+  <footer>
+  </footer>
+{%- endcapture -%}
+
+{%- include base.html -%}
+
+{%- comment -%} vim: set expandtab shiftwidth=2 syntax=liquid: {%- endcomment -%}

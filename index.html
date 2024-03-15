@@ -1,0 +1,73 @@
+---
+---
+
+{%- capture metadata -%}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <meta name="description" content="{{ site.desc }}" />
+  <meta name="keywords" content="{{ site.keywords }}" />
+  <meta name="author" content="{{ site.author }}" />
+
+  <title>{{ site.title }}</title>
+
+  <style type="text/css">
+
+    body {
+      margin: 0px;
+    }
+
+    main {
+      display: flex;
+      min-height: 100vh;
+      align-items: center;
+      font-family: "Segoe UI", "Helvetica", "Arial";
+    }
+
+    h1 {
+      font-size: 40px;
+      padding-bottom: 4.7px;
+      border-bottom: 1px solid #eaecef;
+    }
+
+    h2 {
+      color: #555;
+      font-size: 20px;
+    }
+
+    h1,
+    h2 {
+      font-weight: 500;
+      line-height: 1.2;
+      margin: 0px 0px 8px 0px;
+    }
+
+    a,
+    a:hover {
+      color: #000;
+      text-decoration: none;
+    }
+
+    .container {
+      width: 100%;
+      margin-left: 5.75vw;
+      margin-right: 5.75vw;
+    }
+
+  </style>
+{%- endcapture -%}
+
+{%- capture scripts -%}
+{%- endcapture -%}
+
+{%- capture body -%}
+  <main>
+    <div class="container">
+      <h1><a href="catalogue" rel="next">Demonstration Tools</a></h1>
+      <h2>A collection of miscellanies instructional tools and materials</h2>
+    </div>
+  </main>
+{%- endcapture -%}
+
+{%- include base.html -%}
+
+{%- comment -%} vim: set expandtab shiftwidth=2 syntax=liquid: {%- endcomment -%}

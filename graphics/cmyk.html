@@ -1,0 +1,193 @@
+---
+lang: en
+title: CMYK Explorer
+desc: A CMYK colour scheme explorer
+keywords: ashen, gunaratne, ashen m. gunaratne, cmyk, color, color gauge
+---
+
+{%- capture metadata -%}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no" />
+  <meta name="description" content="{{ page.desc }}" />
+  <meta name="keywords" content="{{ page.keywords }}" />
+  <meta name="author" content="{{ site.author }}" />
+
+  <title>{{ page.title }}</title>
+
+  <style>
+
+    body {
+      margin: 0;
+    }
+
+    main {
+      display: flex;
+      max-width: 320px;
+      min-height: 100vh;
+      justify-content: center;
+      align-items: center;
+      user-select: none;
+      margin: auto;
+    }
+
+    output#blend {
+      display: block;
+      padding-top: 37.5%;
+      padding-bottom: 37.5%;
+      background-color: #FFFFFF;
+      margin: 0.5rem auto;
+      width: 75%;
+    }
+
+    div.beam {
+      display: grid;
+      grid-template-columns: 1ch 5fr 1fr;
+      grid-column-gap: 2.5px;
+      align-items: center;
+    }
+
+    output.beam {
+      width: 1ch;
+      border-radius: 1ch;
+      background-color: #FFFFFF;
+      margin-bottom: 0.5rem;
+      margin-top: 0.5rem;
+      height: 1ch;
+    }
+
+    label.slider {
+      display: grid;
+      grid-template-columns: 1fr 2.5fr;
+      align-items: center;
+    }
+
+    label.intensity {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      align-items: center;
+    }
+
+    input.intensity {
+      text-align: right;
+      border: none;
+    }
+
+  </style>
+{%- endcapture -%}
+
+{%- capture scripts -%}
+  <script>
+
+    var blend = function blendCMYKColors (e) {
+
+      var key = Math.max(window.form._sliders.indexOf(e.target),
+        window.form._intensities.indexOf(e.target));
+
+      window.form._intensities[key].value = window.form._sliders[key].value = +e.target.value;
+
+      var rgb = [ 255 * (1 - window.form.cyan.slider.value / 100) * (1 - window.form.key.slider.value / 100),
+        255 * (1 - window.form.magenta.slider.value / 100) * (1 - window.form.key.slider.value / 100),
+        255 * (1 - window.form.yellow.slider.value / 100) * (1 - window.form.key.slider.value / 100) ];
+
+      key !== 3 ? window.form._beams[key].style.backgroundColor = 'rgb('.concat('255,'.repeat(key).concat(rgb[key]), ',255'.repeat(2 - key), ')')
+        : window.form._beams[key].style.backgroundColor = 'rgba('.concat((255 * (1 - window.form.key.slider.value / 100)).toString().concat(',').repeat(3), '1)');
+      window.form.blend.style.backgroundColor = 'rgb(' + rgb.join() + ')';
+
+      return true;
+
+    };
+
+    document.onreadystatechange = function onDOMContentLoaded () {
+
+      if (document.readyState !== 'interactive') {
+        return false;
+      }
+
+      window.form = document.querySelector('form');
+      window.form.blend = document.querySelector('output#blend');
+
+      window.form._sliders = Array.prototype.concat.apply([], document.querySelectorAll('input.slider'));
+      window.form._intensities = Array.prototype.concat.apply([], document.querySelectorAll('input.intensity'));
+      window.form._beams = Array.prototype.concat.apply([], document.querySelectorAll('output.beam'));
+
+      window.form.cyan = {
+        beam: window.form._beams[0],
+        intensity: window.form._intensities[0],
+        slider: window.form._sliders[0]
+      };
+
+      window.form.magenta = {
+        beam: window.form._beams[1],
+        intensity: window.form._intensities[1],
+        slider: window.form._sliders[1]
+      };
+
+      window.form.yellow = {
+        beam: window.form._beams[2],
+        intensity: window.form._intensities[2],
+        slider: window.form._sliders[2]
+      };
+
+      window.form.key = {
+        beam: window.form._beams[3],
+        intensity: window.form._intensities[3],
+        slider: window.form._sliders[3]
+      };
+
+      window.form.addEventListener('input', blend, { passive: true });
+
+    };
+
+  </script>
+{%- endcapture -%}
+
+{%- capture body -%}
+  <header></header>
+  <main>
+    <form>
+      <output id="blend"></output>
+      <hr />
+      <div class="beam">
+        <output class="beam"></output>
+        <label class="slider">
+          Cyan <input class="slider" type="range" min="0" max="100" value="0" />
+        </label>
+        <label class="intensity">
+          <input class="intensity" type="number" min="0" max="100" value="0" /> %
+        </label>
+      </div>
+      <div class="beam">
+        <output class="beam"></output>
+        <label class="slider">
+          Magenta <input class="slider" type="range" min="0" max="100" value="0" />
+        </label>
+        <label class="intensity">
+          <input class="intensity" type="number" min="0" max="100" value="0" /> %
+        </label>
+      </div>
+      <div class="beam">
+        <output class="beam"></output>
+        <label class="slider">
+          Yellow <input class="slider" type="range" min="0" max="100" value="0" />
+        </label>
+        <label class="intensity">
+          <input class="intensity" type="number" min="0" max="100" value="0" /> %
+        </label>
+      </div>
+      <div class="beam">
+        <output class="beam"></output>
+        <label class="slider">
+          Key <input class="slider" type="range" min="0" max="100" value="0" />
+        </label>
+        <label class="intensity">
+          <input class="intensity" type="number" min="0" max="100" value="0" /> %
+        </label>
+      </div>
+    </form>
+  </main>
+  <footer></footer>
+{%- endcapture -%}
+
+{%- include base.html -%}
+
+{%- comment -%} vim: set expandtab shiftwidth=2 syntax=liquid: {%- endcomment -%}

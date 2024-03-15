@@ -1,0 +1,174 @@
+---
+lang: en
+title: Random Password
+desc: A login page with a random password with prominent security vulnerabilities
+keywords: ashen, gunaratne, ashen m. gunaratne, random, pseudorandom, password, login, vulnerabilities
+---
+
+{%- capture metadata -%}
+<meta charset="UTF-8" />
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1, shrink-to-fit=no"
+/>
+<meta name="description" content="{{ page.desc }}" />
+<meta name="keywords" content="{{ page.keywords }}" />
+<meta name="author" content="{{ site.author }}" />
+
+<title>{{ page.title }}</title>
+
+<style>
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+  }
+
+  main {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    min-height: 100vh;
+    min-width: 100vw;
+  }
+
+  form,
+  output {
+    width: 75%;
+    text-align: center;
+  }
+
+  input#password,
+  input#login,
+  output {
+    font-family: monospace;
+    padding: 0.5rem 0.25rem;
+    text-align: center;
+  }
+
+  input#password,
+  input#login {
+    border: 1px solid #aaa;
+    border-radius: 0.5rem;
+    display: inline-block;
+  }
+
+  input#password {
+    width: 75%;
+  }
+
+  input#password:focus {
+    border: 1px solid #000;
+    outline: none;
+  }
+
+  output {
+    margin: 0.25rem 0;
+    overflow: auto;
+    color: #555;
+  }
+
+  @media (min-width: 720px) {
+    form,
+    output {
+      max-width: 512px;
+    }
+  }
+</style>
+{%- endcapture -%} {%- capture scripts -%}
+<script>
+  const random = function generateRandomPassword(length) {
+    if (Number(length) !== length) {
+      throw new RangeError();
+    }
+
+    const alpha = [
+      "a",
+      "b",
+      "c",
+      "d",
+      "e",
+      "f",
+      "g",
+      "h",
+      "i",
+      "j",
+      "k",
+      "l",
+      "m",
+      "n",
+      "o",
+      "p",
+      "q",
+      "r",
+      "s",
+      "t",
+      "u",
+      "v",
+      "w",
+      "x",
+      "y",
+      "z",
+    ];
+
+    const chars = [];
+
+    for (let i = 0; i < length; i++) {
+      const index = Math.floor(Math.random() * alpha.length);
+      chars.push(alpha[index]);
+    }
+
+    return chars.join("");
+  };
+
+  const validate = function validatePasswordOnSubmission(event) {
+    event.preventDefault();
+
+    if (window.PASSWORD_PLAINTEXT !== this.password.value) {
+      window.STDOUT.value = "INVALID PASSWORD :(";
+      return;
+    }
+
+    window.STDOUT.value = "HURRAY! :)";
+  };
+
+  document.onreadystatechange = function onDOMContentLoaded() {
+    if (document.readyState !== "interactive") {
+      return;
+    }
+
+    const url = new URL(window.location.href);
+    const length = Number(url.searchParams.get("length")) || 3;
+
+    console.log(`password length: ${length}`);
+
+    window.PASSWORD_PLAINTEXT = random(length);
+    window.STDOUT = document.querySelector("output");
+
+    document
+      .querySelector("form")
+      .addEventListener("submit", validate, { passive: false });
+  };
+</script>
+{%- endcapture -%} {%- capture body -%}
+<header></header>
+<main>
+  <form>
+    <input
+      id="password"
+      type="password"
+      autofocus="autofocus"
+      autocomplete="current-password"
+      inputmode="text"
+      spellcheck="false"
+    />
+    <input id="login" type="submit" value="Login" />
+  </form>
+  <output></output>
+</main>
+<footer></footer>
+{%- endcapture -%} {%- include base.html -%} {%- comment -%} vim: set expandtab
+shiftwidth=2 syntax=liquid: {%- endcomment -%}

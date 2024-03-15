@@ -1,0 +1,125 @@
+---
+lang: en
+title: URI Encoder
+desc: A percent-encoder
+keywords: ashen, gunaratne, ashen m. gunaratne, encoder, percent encoding, uri, url
+---
+
+{%- capture metadata -%}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <meta name="description" content="{{ page.desc }}" />
+  <meta name="keywords" content="{{ page.keywords }}" />
+  <meta name="author" content="{{ site.author }}" />
+
+  <title>{{ page.title }}</title>
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+      font-size: x-large;
+    }
+
+    body {
+      margin: 0;
+    }
+
+    main {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      min-height: 100vh;
+      min-width: 100vw;
+    }
+
+    form, output {
+      width: 75%;
+    }
+
+    input#uri, output {
+      font-family: monospace;
+      padding: 0.5rem 0.25rem;
+      text-align: center;
+    }
+
+    input#uri {
+      border: 1px solid #AAA;
+      border-radius: 0.5rem;
+      width: 100%;
+    }
+
+    input#uri:focus {
+      border: 1px solid #000;
+      outline: none;
+    }
+
+    output {
+      margin: 0.25rem 0;
+      overflow: auto;
+      color: #555;
+    }
+
+    @media (min-width: 720px) {
+      form, output { max-width: 512px; }
+    }
+
+  </style>
+{%- endcapture -%}
+
+{%- capture scripts -%}
+  <script>
+
+    const encode = function encodeTextInput (e) {
+
+      let fragment;
+
+      try {
+        fragment = (new URL(e.target.value)).href;
+      } catch (exception) {
+        fragment = encodeURIComponent(e.target.value);
+      }
+
+      return window.STDOUT.innerText = fragment;
+
+    };
+
+    document.onreadystatechange = function onDOMContentLoaded () {
+
+      if (document.readyState !== 'interactive') {
+        return;
+      }
+
+      window.STDOUT = document.querySelector('output');
+
+      document.getElementById('uri')
+        .addEventListener('input', encode, { passive: true });
+
+    };
+
+  </script>
+{%- endcapture -%}
+
+{%- capture body -%}
+  <header>
+  </header>
+  <main>
+    <form>
+      <input id="uri"
+        type="text"
+        autofocus="autofocus"
+        inputmode="url"
+        spellcheck="false"
+        value="https://terse.ashenm.dev/example"
+      />
+    </form>
+    <output>https://terse.ashenm.dev/example</output>
+  </main>
+  <footer>
+  </footer>
+{%- endcapture -%}
+
+{%- include base.html -%}
+
+{%- comment -%} vim: set expandtab shiftwidth=2 syntax=liquid: {%- endcomment -%}

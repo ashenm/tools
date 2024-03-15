@@ -1,0 +1,58 @@
+---
+lang: en
+title: Blink
+desc: An illustration of depreciated blink tag
+keywords: ashen, gunaratne, ashen m. gunaratne, blink, element, html
+---
+
+{%- capture metadata -%}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <meta name="description" content="{{ page.desc }}" />
+  <meta name="keywords" content="{{ page.keywords }}" />
+  <meta name="author" content="{{ site.author }}" />
+
+  <title>{{ page.title }}</title>
+
+  <style>
+
+    body {
+      margin: 0;
+      font-size: 1.5rem;
+    }
+
+    main {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    blink {
+      animation: 1s linear infinite blink;
+    }
+
+    @keyframes blink {
+      50% { visibility: hidden; }
+      100% { visibility: visible; }
+      0% { visibility: hidden; }
+    }
+
+    @media (min-width: 768px) {
+      body { font-size: 2.5rem; }
+    }
+
+  </style>
+{%- endcapture -%}
+
+{%- capture body -%}
+  <header></header>
+  <main>
+    <blink>Why would someone use this?</blink>
+  </main>
+  <footer></footer>
+{%- endcapture -%}
+
+{%- include base.html -%}
+
+{%- comment -%} vim: set expandtab shiftwidth=2 syntax=liquid: {%- endcomment -%}
