@@ -23,7 +23,7 @@ jobs:
       - run: |-
           find _site -type f -printf 'https://tools.ashenm.dev/%P\n' | \
             jq --raw-input --slurp 'split("\n") | { files: .[:-1] }' | tee artifacts.list
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v4.4.0
         with:
           name: artifacts
           path: |-
@@ -66,5 +66,4 @@ jobs:
           CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
           CLOUDFLARE_ZONE_ID: ${{ secrets.CLOUDFLARE_ZONE_ID }}
     runs-on: ubuntu-latest
-
 # vim: set expandtab shiftwidth=2 syntax=yaml:
