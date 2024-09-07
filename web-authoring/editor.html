@@ -1,0 +1,178 @@
+---
+lang: en
+title: HTMLEditor
+desc: A live HTML editor
+keywords: ashen, gunaratne, ashen gunaratne, tools, html, editor
+---
+
+{%- capture metadata -%}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <meta name="description" content="{{ page.desc }}" />
+  <meta name="keywords" content="{{ page.keywords }}" />
+  <meta name="author" content="{{ site.author }}" />
+
+  <title>{{ page.title }}</title>
+
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
+
+  <style type="text/css">
+
+    body {
+      margin: 0;
+      display: grid;
+      grid-template-rows: auto 1fr;
+      min-height: 100vh;
+      min-width: 100vw;
+    }
+
+    header,
+    main {
+      padding: 0.25rem;
+    }
+
+    header {
+      display: flex;
+      background-color: #F8F9FA;
+      justify-content: space-between;
+      flex: 0 0 100%;
+    }
+
+    main {
+      display: grid;
+      grid-template-rows: 1fr 1fr;
+      grid-gap: 0.25rem;
+    }
+
+    main > div {
+      border: 1px solid #DEE2E6;
+      border-radius: 2.5px;
+    }
+
+    iframe {
+      border: none;
+      height: 100%;
+      width: 100%;
+    }
+
+    button {
+      font-size: 1rem;
+      padding: 0.25rem 0.5rem;
+    }
+
+    button:focus {
+      outline: none;
+    }
+
+    button#clean {
+      background: none;
+      border: none;
+    }
+
+    button#run {
+      color: #FFF;
+      background-color: #28A745;
+      border-radius: 0.25rem;
+      padding: 0.25rem 0.75rem;
+      border: none;
+    }
+
+    @media (min-width: 768px) {
+      main { grid-template: 1fr / 1fr 1fr; }
+    }
+
+  </style>
+{%- endcapture -%}
+
+{%- capture scripts -%}
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.3/ace.js" integrity="sha256-gkWBmkjy/8e1QUz5tv4CCYgEtjR8sRlGiXsMeebVeUo=" crossorigin="anonymous"></script>
+
+  <script type="text/javascript">
+
+    (function () {
+
+      var template = [
+        '<!DOCTYPE html>',
+        '<html>',
+        '  <head></head>',
+        '  <body></body>',
+        '</html>',
+        ''
+      ].join('\n');
+
+      document.onreadystatechange = function onDOMReady () {
+
+        if (document.readyState !== 'interactive') {
+          return;
+        }
+
+        window.editor = ace.edit('editor',
+          { mode: 'ace/mode/html', behavioursEnabled: false, value: template, useSoftTabs: true, tabSize: 2 }
+        );
+
+        window.preview = document.getElementById('preview');
+
+        document.getElementById('run').addEventListener('click', function (e) {
+          window.preview.setAttribute('srcdoc', window.editor.getValue());
+        }, { passive: true });
+
+        document.getElementById('clean').addEventListener('click', function (e) {
+          window.preview.setAttribute('srcdoc', template);
+          window.editor.setValue(template, -1);
+        }, { passive: true });
+
+        window.editor.container.addEventListener('keydown', function (e) {
+
+          if (e.ctrlKey === true && e.key === '-') {
+            window.editor.setFontSize(window.editor.getFontSize() - 1);
+            return e.preventDefault();
+          }
+
+          if (e.ctrlKey === true && e.key === '+') {
+            window.editor.setFontSize(window.editor.getFontSize() + 1);
+            return e.preventDefault();
+          }
+
+        }, { passive: false });
+
+        window.editor.container.addEventListener('keydown', function (e) {
+          e.ctrlKey === true && e.key === 'Enter'
+            ? window.preview.setAttribute('srcdoc', window.editor.getValue()) : '';
+        }, { passive: true });
+
+        window.addEventListener('beforeunload', function (e) {
+          return e.returnValue = e.preventDefault() || '';
+        }, { passive: false });
+
+        window.editor.focus();
+
+      };
+
+    })();
+  
+  </script>
+{%- endcapture -%}
+
+{%- capture body -%}
+  <header>
+    <button id="clean" type="button">
+      <svg width="28px" height="28px" viewBox="0 0 18 16" xmlns="http://www.w3.org/2000/svg">
+        <path fill="#111" d="M 7 0 C 6.5 0 6.5 0 6.25 1 L 2.5 1 Q 2 1 2 1.5 L 2 2.5 Q 2 3 2.5 3 L 15.5 3 Q 16 3 16 2.5 L 16 1.5 Q 16 1 15.5 1 L 12 1 C 11.75 0 11.75 0 11 0 Z M 3 4 L 3 14.5 Q 3 16 4.5 16 L 13.5 16 Q 15 16 15 14.5 L 15 4 Z" />
+        <path fill="#FFF" d="M 5.5 6.5 L 5.5 13.5 C 5.5 14 6.5 14 6.5 13.5 L 6.5 6.5 C 6.5 6 5.5 6 5.5 6.5 M 8.5 6.5 L 8.5 13.5 C 8.5 14 9.5 14 9.5 13.5 L 9.5 6.5 C 9.5 6 8.5 6 8.5 6.5 M 11.5 6.5 L 11.5 13.5 C 11.5 14 12.5 14 12.5 13.5 L 12.5 6.5 C 12.5 6 11.5 6 11.5 6.5" />
+      </svg>
+    </button>
+    <button id="run" type="button">RUN</button>
+  </header>
+  <main>
+    <div id="editor"></div>
+    <div>
+      <iframe id="preview" name="preview"></iframe>
+    </div>
+  </main>
+  <footer>
+  </footer>
+{%- endcapture -%}
+
+{%- include base.html -%}
+
+{%- comment -%} vim: set expandtab shiftwidth=2 syntax=liquid: {%- endcomment -%}

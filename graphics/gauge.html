@@ -1,0 +1,201 @@
+---
+lang: en
+title: Image Gauge
+desc: An image file size calculator
+keywords: ashen, gunaratne, ashen m. gunaratne, bit depth, dpi, resolution
+---
+
+{%- capture metadata -%}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no" />
+  <meta name="description" content="{{ page.desc }}" />
+  <meta name="keywords" content="{{ page.keywords }}" />
+  <meta name="author" content="{{ site.author }}" />
+
+  <title>{{ page.title }}</title>
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+    }
+
+    main {
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100vw;
+    }
+
+    label {
+      display: grid;
+      column-gap: 1px;
+      grid-template-columns: 1fr 2.5fr 0.5fr;
+      margin: 0.5rem 0;
+    }
+
+    label > input {
+      text-align: right;
+    }
+
+    output {
+      bottom: 0;
+      position: fixed;
+      font-size: large;
+      background-color: #DFDFDF;
+      text-align: center;
+      padding: 0.5rem 0;
+      width: 100%;
+      left: 0;
+    }
+
+    @media (min-width: 768px) {
+
+      main {
+        justify-content: space-evenly;
+      }
+
+      output {
+        border-radius: 5px;
+        padding: calc(12.5vw - 0.5rem) 0;
+        position: static;
+        height: 25vw;
+        width: 25vw;
+      }
+
+    }
+
+  </style>
+{%- endcapture -%}
+
+{%- capture scripts -%}
+  <script src="//cdnjs.cloudflare.com/ajax/libs/filesize/6.1.0/filesize.min.js" integrity="sha256-tuhX0x+2JTJSBE+FPQAgscwfCLNvPBnEM/INIVFjpzo=" crossorigin="anonymous"></script>
+  <script>
+
+    var compute = function approximateImageSize (e) {
+
+      if (e.target === window.form.dimension.width) {
+        window.form.resolution.width.value = Math.roundN(e.target.value * window.form.dpi.value);
+        return window.output.innerText = filesize(approximatePhysical(), { base: 10 });
+      }
+
+      if (e.target === window.form.dimension.height) {
+        window.form.resolution.height.value = Math.roundN(e.target.value * window.form.dpi.value);
+        return window.output.innerText = filesize(approximatePhysical(), { base: 10 });
+      }
+
+      if (e.target === window.form.resolution.width) {
+        window.form.dimension.width.value = Math.roundN(e.target.value / window.form.dpi.value);
+        return window.output.innerText = filesize(approximateDigital(), { base: 10 });
+      }
+
+      if (e.target === window.form.resolution.height) {
+        window.form.dimension.height.value = Math.roundN(e.target.value / window.form.dpi.value);
+        return window.output.innerText = filesize(approximateDigital(), { base: 10 });
+      }
+
+      if (e.target === window.form.dpi) {
+        window.form.dimension.width.value = Math.roundN(window.form.resolution.width.value / window.form.dpi.value);
+        return window.form.dimension.height.value = Math.roundN(window.form.resolution.height.value / window.form.dpi.value);
+      }
+
+      if (e.target === window.form.bitDepth) {
+        return window.output.innerText = filesize(approximateDigital(), { base: 10 });
+      }
+
+      return false;
+
+    };
+
+    var approximateDigital = function computeDigitalImageEstimate () {
+      return window.form.resolution.width.value * window.form.resolution.height.value * window.form.bitDepth.value / 8;
+    };
+
+    var approximatePhysical = function computePhysicalImageEstimate () {
+      return window.form.dimension.width.value * window.form.dimension.height.value * window.form.bitDepth.value * Math.pow(window.form.dpi.value, 2) / 8;
+    };
+
+    window.Math.roundN = function roundToNDecimalPlaced (n, p) {
+      return Math.round((Number.EPSILON + n) * Math.pow(10, p || 2)) / Math.pow(10, p || 2);
+    };
+
+    document.onreadystatechange = function onDOMContentLoaded () {
+
+      if (document.readyState !== 'interactive') {
+        return false;
+      }
+
+      window.form = document.querySelector('form');
+      window.output = document.querySelector('output');
+
+      window.form.dimension = {
+        width: document.querySelector('input.dimension.width'),
+        height: document.querySelector('input.dimension.height')
+      };
+
+      window.form.resolution = {
+        width: document.querySelector('input.resolution.width'),
+        height: document.querySelector('input.resolution.height')
+      };
+
+      window.form.bitDepth = document.querySelector('select.bit-depth');
+      window.form.dpi = document.querySelector('select.dpi');
+
+      window.form.addEventListener('input', compute, { passive: true });
+
+    };
+
+  </script>
+{%- endcapture -%}
+
+{%- capture body -%}
+  <header></header>
+  <main>
+    <form>
+      <label>
+        Width <input class="dimension width" type="number" step="0.01" value="0" /> Inches
+      </label>
+      <label>
+        Height <input class="dimension height" type="number" step="0.01" value="0" /> Inches
+      </label>
+      <label>
+        Width <input class="resolution width" type="number" step="0.01" value="0" /> Pixels
+      </label>
+      <label>
+        Height <input class="resolution height" type="number" step="0.01" value="0" /> Pixels
+      </label>
+      <label>
+        DPI
+        <select class="dpi">
+          <option value="72" selected="selected">72</option>
+          <option value="100">100</option>
+          <option value="150">150 (Draft Print)</option>
+          <option value="200">200</option>
+          <option value="300">300 (Quality Print)</option>
+          <option value="600">600 (Archival Print)</option>
+        </select>
+      </label>
+      <label>
+        Bit Depth
+        <select class="bit-depth">
+          <option value="1">1 bit (Black and White)</option>
+          <option value="8">8 bit (256 colors)</option>
+          <option value="16">16 bit (65536 colors)</option>
+          <option value="24">24 bit RGB (16.7 million colors)</option>
+          <option value="32" selected="selected">32 bit CYMK (16.7 million colors)</option>
+        </select>
+      </label>
+    </form>
+    <output>0 B</output>
+  </main>
+  <footer></footer>
+{%- endcapture -%}
+
+{%- include base.html -%}
+
+{%- comment -%} vim: set expandtab shiftwidth=2 syntax=liquid: {%- endcomment -%}

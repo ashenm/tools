@@ -1,0 +1,163 @@
+---
+lang: en
+title: Caesar Cipher
+desc: A shift substitution cipher
+keywords: ashen, gunaratne, ashen m. gunaratne, cipher, encryption, shift cipher, substitution cipher
+---
+
+{%- capture metadata -%}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <meta name="description" content="{{ page.desc }}" />
+  <meta name="keywords" content="{{ page.keywords }}" />
+  <meta name="author" content="{{ site.author }}" />
+
+  <title>{{ page.title }}</title>
+
+  <style>
+
+    body {
+      margin: 0;
+    }
+
+    main {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      min-width: 100vw;
+    }
+
+    form {
+      border-collapse: separate;
+      border-spacing: 1ch;
+      display: table;
+      max-width: 1280px;
+      width: 75%;
+    }
+
+    label {
+      display: table-row;
+      padding-right: 1ch;
+    }
+
+    label > span,
+    label > input {
+      display: table-cell;
+    }
+
+    label > span {
+      font-family: monospace;
+      white-space: nowrap;
+    }
+
+    label > input {
+      width: 100%;
+    }
+
+    label > input.key {
+      text-align: right;
+    }
+
+    @media (min-width: 768px) {
+      * { font-size: large; }
+    }
+
+    @media (min-width: 1024px) {
+      * { font-size: x-large; }
+    }
+
+  </style>
+{%- endcapture -%}
+
+{%- capture scripts -%}
+  <script>
+
+    const REG_NONALPHA = /[^A-Za-z]/;
+
+    const caesar = function transformTextUsingCaesarCipher (opt, text, key) {
+
+      const cipher = [];
+      const plains = text.split('');
+
+      key = key || 0;
+
+      for (const plain of plains) {
+
+        if (REG_NONALPHA.test(plain)) {
+          cipher.push(plain);
+          continue;
+        }
+
+        // case-insensitive alphabatical index
+        const index = plain.toLowerCase().charCodeAt(0) % 97;
+
+        // wrap around rotation using distance
+        cipher.push(String.fromCharCode(((((index + key * opt) % 26) + 26) % 26) - index + plain.charCodeAt(0)));
+
+      }
+
+      return cipher.join('');
+
+    };
+
+    const decipher = caesar.bind(null, -1);
+    const cipher = caesar.bind(null, 1);
+
+    const handler = function transformInputText (e) {
+
+      if (e.target === this.plaintext) {
+        this.ciphertext.value = cipher(this.plaintext.value, +this.key.value);
+        return false;
+      }
+
+      if (e.target === this.ciphertext) {
+        this.plaintext.value = decipher(this.ciphertext.value, +this.key.value);
+        return false;
+      }
+
+      if (e.target === this.key) {
+        this.ciphertext.value = cipher(this.plaintext.value, +this.key.value);
+        return false;
+      }
+
+      return false;
+
+    };
+
+    document.onreadystatechange = function onDOMContentLoaded () {
+
+      if (document.readyState !== 'interactive') {
+        return false;
+      }
+
+      document.querySelector('form').addEventListener('input', handler);
+
+    };
+
+  </script>
+{%- endcapture -%}
+
+{%- capture body -%}
+  <header>
+  </header>
+  <main>
+    <form>
+      <label>
+        <span>Key</span><input class="key" name="key" type="number" min="1" max="25" value="1" />
+      </label>
+      <label>
+        <span>Plain Text</span><input name="plaintext" type="text" autofocus="autofocus" />
+      </label>
+      <label>
+        <span>Cipher Text</span><input name="ciphertext" type="text" />
+      </label>
+    </form>
+  </main>
+  <footer>
+  </footer>
+{%- endcapture -%}
+
+{%- include base.html -%}
+
+{%- comment -%} vim: set expandtab shiftwidth=2 syntax=liquid: {%- endcomment -%}

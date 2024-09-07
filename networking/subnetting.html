@@ -1,0 +1,340 @@
+---
+lang: en
+title: Subnetting
+desc: An IPv4 fixed-length network subdivisor
+keywords: ashen, gunaratne, ashen m. gunaratne, subnet, subnetting
+---
+
+{%- capture metadata -%}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <meta name="description" content="{{ page.desc }}" />
+  <meta name="keywords" content="{{ page.keywords }}" />
+  <meta name="author" content="{{ site.author }}" />
+
+  <title>{{ page.title }}</title>
+
+  <style type="text/css">
+
+    body {
+      display: flex;
+      min-height: 100vh;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      margin: 0;
+    }
+
+    #classifier {
+      margin: 0.5rem 0 2rem 0;
+    }
+
+    #bore:focus,
+    #netmask:focus {
+      outline: none;
+    }
+
+    #bore::-webkit-inner-spin-button,
+    #bore::-webkit-outer-spin-button {
+      margin-left: 0.25rem;
+      opacity: 1;
+    }
+
+    #gauge {
+      overflow: visible;
+    }
+
+    #gauge > path.plimsoll {
+      fill: none;
+      stroke-width: 0.25;
+      stroke: #AAA;
+    }
+
+    #gauge > text.plimsoll {
+      font-size: 1pt;
+      dominant-baseline: hanging;
+      text-anchor: middle;
+      fill: #BBB;
+    }
+
+    #stats > label {
+      display: flex;
+      justify-content: space-between;
+      margin: 0.5rem 0;
+    }
+
+    #stats > label > input {
+      background: none;
+      text-align: right;
+      border: none;
+    }
+
+    .invalid {
+      background-color: #EA4335!important;
+      border-radius: 1rem 0 0 1rem!important;
+    }
+
+  </style>
+{%- endcapture -%}
+
+{%- capture scripts -%}
+  <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
+
+  <script type="text/javascript">
+
+    (function () {
+
+      class Abacus {
+
+        constructor () {
+
+          // bits
+          this._max = 22;
+          this._host = 12;
+          this._subnet = 12;
+          this._network = 8;
+
+          // dot-decimal
+          this._netmask = '255.255.240.0';
+
+          // count
+          this._networks = 126;
+          this._subnets = 4096;
+          this._hosts = 4096;
+
+        }
+
+        static dotBinary (dotDecimal) {
+          return dotDecimal.split('.').map(function (value) { return (+value).toString(2).padStart(8, 0); }).join('.');
+        }
+
+        static dotDecimal (binary) {
+          return binary.toString().match(/\d{8}/g).map(function (value) { return parseInt(value, 2).toString(); }).join('.');
+        }
+
+        static prefixLength (dotDecimal) {
+          return this.dotBinary(dotDecimal).replace(/\./g, '').replace(/0.*$/, '').length;
+        }
+
+        get max () {
+          return this._max;
+        }
+
+        get host () {
+          return this._host;
+        }
+
+        get hosts () {
+          return this._hosts;
+        }
+
+        get subnet () {
+          return this._subnet;
+        }
+
+        get subnets () {
+          return this._subnets;
+        }
+
+        get network () {
+          return this._network;
+        }
+
+        get networks () {
+          return this._networks;
+        }
+
+        get netmask () {
+          return this._netmask;
+        }
+
+        set netmask (value) {
+          this.subnet = Abacus.prefixLength(value) - this._network;
+        }
+
+        set network (value) {
+
+          this._network = value;
+          this._networks = Math.pow(2, this._network - this._network / 8);
+          this._max = 32 - this._network - 2;
+
+          this.subnet = (32 - this._network) / 2;
+
+        }
+
+        set subnet (value) {
+
+          this._subnet = value;
+          this._host = 32 - this._network - this._subnet;
+
+          this._netmask = Abacus.dotDecimal('1'.repeat(this._network + this._subnet).padEnd(32, '0'));
+          this._subnets = this._subnet !== 0 ? Math.pow(2, this._subnet) : 0;
+          this._hosts = Math.pow(2, this._host) - 2;
+
+        }
+
+        set host (value) {
+          this.subnet = 32 - this._network - value;
+        }
+
+      }
+
+      var abacus = new Abacus();
+
+      document.addEventListener('DOMContentLoaded', function () {
+
+        var bore = document.getElementById('bore');
+        var gauge = document.getElementById('gauge');
+        var netmask = document.getElementById('netmask');
+
+        var subnet = document.getElementById('subnet');
+        var network = document.getElementById('network');
+        var classifier = document.getElementById('classification');
+
+        var networks = document.getElementById('networks');
+        var subnetworks = document.getElementById('subnetworks');
+        var hosts = document.getElementById('hosts');
+
+        classifier.addEventListener('change', function (e) {
+
+          abacus.network = +this.value;
+          subnet.setAttribute('x', abacus.network);
+          subnet.setAttribute('width', abacus.subnet);
+          network.setAttribute('width', abacus.network);
+          netmask.setAttribute('placeholder', Abacus.dotDecimal('1'.repeat(abacus.network).padEnd(32, 0)));
+          netmask.setAttribute('pattern', netmask.placeholder.replace('.', '\\.').replace(/\b0\b/g, '\\d{1,3}'));
+
+          networks.setAttribute('value', abacus.networks);
+          subnetworks.setAttribute('value', abacus.subnets);
+          hosts.setAttribute('value', abacus.hosts);
+          bore.setAttribute('max', abacus.max);
+
+          netmask.classList.remove('invalid');
+          bore.classList.remove('invalid');
+
+          netmask.value = abacus.netmask;
+          bore.value = abacus.subnet;
+
+        });
+
+        bore.addEventListener('input', function (e) {
+          
+          if (!this.checkValidity()) {
+            this.classList.add('invalid');
+            return;
+          }
+
+          this.classList.remove('invalid');
+          netmask.classList.remove('invalid');
+          subnet.setAttribute('width', abacus.subnet = +this.value || 0);
+          subnetworks.setAttribute('value', abacus.subnets);
+          hosts.setAttribute('value', abacus.hosts);
+          netmask.value = abacus.netmask;
+
+        });
+
+        netmask.addEventListener('input', function (e) {
+
+          if (!this.checkValidity()) {
+            this.classList.add('invalid');
+            return;
+          }
+
+          if (Abacus.prefixLength(this.value) > 30
+           || Abacus.dotBinary(this.value).match(/0.*1/)) {
+            this.classList.add('invalid');
+            return;
+          }
+
+          this.classList.remove('invalid');
+          bore.classList.remove('invalid');
+          abacus.netmask = this.value || this.placeholder;
+          subnet.setAttribute('width', bore.value = abacus.subnet);
+          subnetworks.setAttribute('value', abacus.subnets);
+          hosts.setAttribute('value', abacus.hosts);
+
+        });
+
+        interact(subnet).resizable({
+          edges: { top: false, right: true, bottom: false, left: false },
+          modifiers: [ interact.modifiers.restrictSize({ min: { width: 0, right: 1 }, max: function (x, y, e) { return { width: bore.max * gauge.width.baseVal.value / gauge.viewBox.baseVal.width }; } }),
+            interact.modifiers.snapSize({ targets: [ function (x, y, e) { return { width: Math.round(x / (gauge.width.baseVal.value / gauge.viewBox.baseVal.width)) * (gauge.width.baseVal.value / gauge.viewBox.baseVal.width) }; } ] }) ]
+        }).on('resizemove', function (e) {
+          subnet.setAttribute('width', abacus.subnet = bore.value = e.rect.width / (gauge.width.baseVal.value / gauge.viewBox.baseVal.width));
+          subnetworks.setAttribute('value', abacus.subnets);
+          hosts.setAttribute('value', abacus.hosts);
+          netmask.value = abacus.netmask;
+        });
+
+      });
+
+    })();
+
+  </script>
+{%- endcapture -%}
+
+{%- capture body -%}
+  <header>
+  </header>
+  <main>
+    <div>
+      <svg id="gauge" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 9">
+        <rect id="rest" x="0" y="0" width="32" height="6" fill="#FBBC05" />
+        <rect id="subnet" x="8" y="0" width="12" height="6" fill="#34A853" />
+        <rect id="network" x="0" y="0" width="8" height="6" fill="#4285F4" />
+        <path class="plimsoll" d="M 0 7 l 0 1 l 8 0 l 0 -1 m 0 1 l 8 0 l 0 -1 m 0 1 l 8 0 l 0 -1 m 0 1 l 8 0 l 0 -1" />
+        <path class="plimsoll" opacity="0.5" d="M 1 7.5 l 0 0.5 M 2 7.5 l 0 0.5 M 3 7.5 l 0 0.5 M 4 7.5 l 0 0.5 M 5 7.5 l 0 0.5 M 6 7.5 l 0 0.5 M 7 7.5 l 0 0.5
+          M 9 7.5 l 0 0.5 M 10 7.5 l 0 0.5 M 11 7.5 l 0 0.5 M 12 7.5 l 0 0.5 M 13 7.5 l 0 0.5 M 14 7.5 l 0 0.5 M 15 7.5 l 0 0.5
+          M 17 7.5 l 0 0.5 M 18 7.5 l 0 0.5 M 19 7.5 l 0 0.5 M 20 7.5 l 0 0.5 M 21 7.5 l 0 0.5 M 22 7.5 l 0 0.5 M 23 7.5 l 0 0.5
+          M 25 7.5 l 0 0.5 M 26 7.5 l 0 0.5 M 27 7.5 l 0 0.5 M 28 7.5 l 0 0.5 M 29 7.5 l 0 0.5 M 30 7.5 l 0 0.5 M 31 7.5 l 0 0.5" />
+        <text class="plimsoll" x="32" y="8.5">32</text>
+        <text class="plimsoll" x="16" y="8.5">16</text>
+        <text class="plimsoll" x="24" y="8.5">24</text>
+        <text class="plimsoll" x="8" y="8.5">8</text>
+        <text class="plimsoll" x="0" y="8.5">0</text>
+      </svg>
+    </div>
+    <div id="classifier">
+      <label>
+        Address Class:
+        <select id="classification">
+          <option value="8">A</option>
+          <option value="16">B</option>
+          <option value="24">C</option>
+          <option disabled="disabled">D</option>
+          <option disabled="disabled">E</option>
+          <option value="0">VLSM</option>
+        </select>
+      </label>
+    </div>
+    <div id="stats">
+      <label>
+        Subnet bits:
+        <input id="bore" type="number" min="0" max="22" placeholder="0" value="12" />
+      </label>
+      <label>
+        Subnet mask:
+        <input id="netmask" type="text" minlength="7" maxlength="15" placeholder="255.0.0.0" pattern="255\.\d{1,3}\.\d{1,3}\.\d{1,3}" size="15" value="255.255.240.0" />
+      </label>
+      <hr />
+      <label>
+        Networks:
+        <input id="networks" type="text" value="126" disabled="disabled" />
+      </label>
+      <label>
+        Subnetworks:
+        <input id="subnetworks" type="text" value="4096" disabled="disabled" />
+      </label>
+      <label>
+        Hosts:
+        <input id="hosts" type="text" value="4094" disabled="disabled" />
+      </label>
+    </div>
+  </main>
+  <footer>
+  </footer>
+{%- endcapture -%}
+
+{%- include base.html -%}
+
+{%- comment -%} vim: set expandtab shiftwidth=2 syntax=liquid: {%- endcomment -%}

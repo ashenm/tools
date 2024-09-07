@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<!-- 
+
+  {{ page.title | default: site.title }}
+  {{ page.desc | default: site.desc }}
+  {{ site.url | append:page.url }}
+
+  {{ page.author | default: site.author }}
+  {{ page.email | default: site.email }}
+
+ -->
+<html lang="{{ page.lang | default: site.lang }}">
+<head>
+
+  {{ metadata }}
+ 
+  <meta name="build-timestamp" content="Sat Sep  7 15:16:25 2024" />
+  <meta name="build-commit" content="b91ab50fde2c9b9ef3279a192cfdfb69ea896d1c" />
+
+  {{ scripts }}
+
+</head>
+<body>
+
+  {{ body }}
+
+  {%- if jekyll.environment == 'production' -%}
+    <!-- BEGIN Google Analytics -->
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=UA-84329766-3"></script>
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'UA-84329766-3');</script>
+    <!-- END Google Analytics -->
+  {%- endif -%}
+
+</body>
+</html>

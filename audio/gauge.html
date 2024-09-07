@@ -1,0 +1,197 @@
+---
+lang: en
+title: Audio Gauge
+desc: An audio file size calculator
+keywords: ashen, gunaratne, ashen m. gunaratne, audio, bit depth, bit rate, sample rate, size
+---
+
+{%- capture metadata -%}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no" />
+  <meta name="description" content="{{ page.desc }}" />
+  <meta name="keywords" content="{{ page.keywords }}" />
+  <meta name="author" content="{{ site.author }}" />
+
+  <title>{{ page.title }}</title>
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+    }
+
+    main {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      min-width: 100vw;
+    }
+
+    svg {
+      top: 0;
+      fill: #777;
+      height: 100%;
+      position: fixed;
+      max-height: 100%;
+      max-width: 100%;
+      opacity: 0.125;
+    }
+
+    main > form {
+      z-index: 128;
+    }
+
+    main > div {
+      bottom: 0;
+      height: 2.5rem;
+      position: fixed;
+      background: #DFDFDF;
+      padding: 0.5rem;
+      width: 100vw;
+      left: 0;
+    }
+
+    output {
+      font-size: 1.5rem;
+      text-align: center;
+      display: block;
+    }
+
+    label {
+      display: grid;
+      grid-template-columns: 1fr 2.5fr 0.5fr;
+      grid-column-gap: 0.25rem;
+      margin: 0.5rem 0;
+    }
+
+    input {
+      text-align: right;
+    }
+
+    @media (min-width: 768px) {
+
+      main {
+        justify-content: space-evenly;
+      }
+
+      output {
+        background: #DFDFDF;
+        margin: calc((25vh - 2.5rem) / 2) 0;
+        border-radius: 5px;
+      }
+
+      main > div {
+        height: 25vh;
+        background: none;
+        position: relative;
+        width: 25vh;
+      }
+
+      svg {
+        fill: #4285F4;
+        position: absolute;
+        opacity: 1;
+      }
+
+    }
+
+  </style>
+{%- endcapture -%}
+
+{%- capture scripts -%}
+  <script src="//cdnjs.cloudflare.com/ajax/libs/filesize/6.1.0/filesize.min.js" integrity="sha256-tuhX0x+2JTJSBE+FPQAgscwfCLNvPBnEM/INIVFjpzo=" crossorigin="anonymous"></script>
+  <script>
+
+    var approximate = function estimateAudioFileSize (e) {
+      window.form.rate.value = window.form.channels.value * window.form.frequency.value * window.form.depth.value;
+      return window.output.innerText = filesize(window.form.duration.value * window.form.rate.value / 8);
+    };
+
+    document.onreadystatechange = function onDOMContentLoaded () {
+
+      if (document.readyState !== 'interactive') {
+        return false;
+      }
+
+      window.form = document.querySelector('form');
+      window.output = document.querySelector('output');
+
+      window.form.duration = document.getElementById('#duration');
+      window.form.frequency = document.getElementById('#frequency');
+      window.form.depth = document.getElementById('#depth');
+      window.form.rate = document.getElementById('#rate');
+
+      window.form.addEventListener('input', approximate);
+
+    };
+
+  </script>
+{%- endcapture -%}
+
+{%- capture body -%}
+  <header></header>
+  <main>
+    <form>
+      <label>
+        Channels
+        <select id="channels">
+          <option value="1">1 (Monophonic)</option>
+          <option value="2" selected="selected">2 (Stereophonic)</option>
+          <option value="4">4 (Quadraphonic)</option>
+          <option value="6">6 (5.1 Surround)</option>
+          <option value="8">8 (Octophonic)</option>
+        </select>
+      </label>
+      <label>
+        Duration <input id="duration" autofocus="autofocus" type="number" value="0" /> sec
+      </label>
+      <label>
+        Sample Rate
+        <select id="frequency">
+          <option value="8000">8,000 (Telephones)</option>
+          <option value="32000">32,000 (Camcorders)</option>
+          <option value="44100" selected="selected">44,100 (CD-XA Audio)</option>
+          <option value="48000">48,000 (Standard Audio)</option>
+          <option value="96000">96,000 (DVD Audio)</option>
+        </select>
+        Hz
+      </label>
+      <label>
+        Bit Depth
+        <select id="depth">
+          <option value="4">4</option>
+          <option value="8">8</option>
+          <option value="11">11</option>
+          <option value="12">12</option>
+          <option value="16">16</option>
+          <option value="18">18</option>
+          <option value="20">20</option>
+          <option value="24">24</option>
+          <option value="32">32</option>
+          <option value="48">48</option>
+          <option value="64">64</option>
+        </select>
+        bits
+      </label>
+      <label>
+        Bit Rate <input id="rate" type="number" disabled="disabled" value="0" /> bps
+      </label>
+    </form>
+    <div>
+      <output>0 B</output>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36">
+        <path d="M 9 7 L 9 26 Q 9 27 8 27 Q 1 27 1 31 Q 1.5 35 8 33 Q 10.5 32 11 31 L 11 14 Q 11 13 12 13 L 26 10.5 Q 27 10.5 27 11 L 27 22 Q 27 23 26 23 Q 19 23 19 27 Q 19.5 31 26 29 Q 28.5 28 29 27 L 29 3.5 Z" />
+      </svg>
+    </div>
+  </main>
+  <footer></footer>
+{%- endcapture -%}
+
+{%- include base.html -%}
+
+{%- comment -%} vim: set expandtab shiftwidth=2 syntax=liquid: {%- endcomment -%}

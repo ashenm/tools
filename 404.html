@@ -1,0 +1,80 @@
+---
+title: 404 Not Found
+desc: Page not found
+---
+
+{%- capture metadata -%}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <meta name="description" content="{{ page.desc }}" />
+  <meta name="keywords" content="{{ page.keywords }}" />
+  <meta name="author" content="{{ site.author }}" />
+
+  <title>{{ page.title }}</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css" integrity="sha256-3iu9jgsy9TpTwXKb7bNQzqWekRX7pPK+2OLj3R922fo=" crossorigin="anonymous" />
+
+  <style type="text/css">
+
+    body {
+      margin: 0px;
+    }
+
+    main {
+      color: #3a3a3a;
+      display: flex;
+      min-height: 100vh;
+      text-align: center;
+      align-items: center;
+      font-family: "Segoe UI", "Helvetica", "Arial";
+    }
+
+    h1 {
+      font-size: 40px;
+      padding-bottom: 4.75px;
+      border-bottom: 1px solid #eaecef;
+      border-bottom: 1px solid #eaecef;
+    }
+
+    h5 {
+      color: #555;
+      font-size: 20px;
+    }
+
+    h1,
+    h5 {
+      font-weight: 500;
+      line-height: 1.2;
+      margin: 0px 0px 8px 0px;
+    }
+
+    .ionicons {
+      margin: 16px;
+      font-size: 144px;
+    }
+
+    .container {
+      width: 100%;
+      margin-left: 5.75vw;
+      margin-right: 5.75vw;
+    }
+
+  </style>
+{%- endcapture -%}
+
+{%- capture scripts -%}
+{%- endcapture -%}
+
+{%- capture body -%}
+  <main>
+    <div class="container">
+      <span class="ionicons ion-sad"></span>
+      <h1>404</h1>
+      <h5>The requested page was not found</h5>
+    </div>
+  </main>
+{%- endcapture -%}
+
+{%- include base.html -%}
+
+{%- comment -%} vim: set expandtab shiftwidth=2 syntax=liquid: {%- endcomment -%}

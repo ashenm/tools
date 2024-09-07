@@ -1,0 +1,32 @@
+---
+lang: <lang>
+title: <title>
+desc: <description>
+keywords: ashen, gunaratne, ashen m. gunaratne
+---
+
+{%- capture metadata -%}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <meta name="description" content="{{ page.desc }}" />
+  <meta name="keywords" content="{{ page.keywords }}" />
+  <meta name="author" content="{{ site.author }}" />
+
+  <title>{{ page.title }}</title>
+
+  <style></style>
+{%- endcapture -%}
+
+{%- capture scripts -%}
+  <script></script>
+{%- endcapture -%}
+
+{%- capture body -%}
+  <header></header>
+  <main></main>
+  <footer></footer>
+{%- endcapture -%}
+
+{%- include base.html -%}
+
+{%- comment -%} vim: set expandtab shiftwidth=2 syntax=liquid: {%- endcomment -%}

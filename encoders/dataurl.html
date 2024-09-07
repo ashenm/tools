@@ -1,0 +1,193 @@
+---
+lang: en
+title: FileToURL
+desc: A file to Data URL encoder
+keywords: ashen, gunaratne, ashen m. gunaratne, encoder, datauri, uri
+---
+
+{%- capture metadata -%}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <meta name="description" content="{{ page.desc }}" />
+  <meta name="keywords" content="{{ page.keywords }}" />
+  <meta name="author" content="{{ site.author }}" />
+
+  <title>{{ page.title }}</title>
+
+  <style>
+
+    body {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0;
+    }
+
+    main {
+      width: 90vw;
+    }
+
+    form {
+      display: flex;
+    }
+
+    form > input[type="text"],
+    form > input[type="file"] {
+      border: 1px solid #BBB;
+      border-right-width: 0rem;
+      margin-left: 0.25rem;
+      border-right: none;
+      padding: 0 0.25rem;
+      flex-grow: 1;
+      width: 0;
+    }
+
+    form > input[type="file"] {
+      padding-left: 0;
+    }
+
+    output {
+      margin: 0.75rem 0;
+      padding: 0.5rem 0;
+      display: block;
+    }
+
+    @media (min-width: 768px) {
+      main { width: 50vw; }
+    }
+
+  </style>
+{%- endcapture -%}
+
+{%- capture scripts -%}
+  <script>
+
+   (function () {
+
+      var blobToDataUrl = function encodeBlobToDataUrl (blob, callback) {
+
+        var reader = new FileReader();
+
+        if (blob.size > 131072) {
+          callback('File size exceeds 128kb limit!', undefined, 'rgb(251, 188, 5)');
+          reader.addEventListener('loadend', function (e) { console.info(this.result); });
+          reader.readAsDataURL(blob);
+          return;
+        }
+
+        reader.addEventListener('error', function (e) { callback(this.error); });
+        reader.addEventListener('loadend', function (e) { callback(null, this.result); });
+
+        reader.readAsDataURL(blob);
+
+      };
+
+      var urlToDataUrl = function encodeUrlToDataUrl (url, callback) {
+
+        var xhr = new XMLHttpRequest();
+
+        xhr.responseType = 'blob';
+        xhr.onreadystatechange = function () {
+  
+          if (this.readyState !== XMLHttpRequest.DONE) {
+            return;
+          }
+
+          if (this.status !== 200) {
+            callback(this.statusText);
+            return;
+          }
+
+          blobToDataUrl(this.response, callback);
+        
+        };
+
+        xhr.open('GET', url, true);
+        xhr.send(null);
+
+      };
+
+      var output = function displayEncodedDataUrl (error, url, color) {
+
+        if (error) {
+          document.noderef.output.value = error;
+          document.noderef.output.style.color = color || 'rgb(234, 67, 53)';
+          document.noderef.output.style.textAlign = 'center';
+          return;
+        }
+
+        document.noderef.output.style.color = color || 'rgb(52, 168, 83)';
+        document.noderef.output.style.overflowX = 'scroll';
+        document.noderef.output.value = url;
+
+      };
+
+      document.addEventListener('DOMContentLoaded', function (e) {
+    
+        document.noderef = {
+          form: document.querySelector('main > form'),
+          input: document.querySelector('main > form > input'),
+          selector: document.querySelector('main > form > select'),
+          output: document.querySelector('main > output')
+        };
+
+        document.noderef.form.onsubmit = function (e) {
+
+          if (!document.noderef.input.value) {
+            output('Missing required argument!');
+            return false;
+          }
+
+          document.noderef.input.type === 'file'
+            ? blobToDataUrl(document.noderef.input.files[0], output)
+            : urlToDataUrl(document.noderef.input.value, output);
+        
+          return false;
+
+        };
+
+        document.noderef.selector.onchange = function (e) {
+          document.noderef.input.type = this.value !== 'file' ? 'text' : 'file';
+        };
+
+        document.noderef.selector.oninput = function (e) {
+          document.noderef.output.style.overflowX = '';
+          document.noderef.output.value = '';
+        };
+
+        document.noderef.input.oninput = function (e) {
+          document.noderef.output.style.overflowX = '';
+          document.noderef.output.value = '';
+        };
+
+      });
+
+   })();
+
+  </script>
+{%- endcapture -%}
+
+{%- capture body -%}
+  <header>
+  </header>
+  <main>
+    <form>
+      <select>
+        <option disabled="disabled">Input Type</option>
+        <option value="url" selected="selected">URL</option>
+        <option value="file">File</option>
+      </select>
+      <input type="text" placeholder="URL" required="required" />
+      <input type="submit" value="Encode" />
+    </form>
+    <output></output>
+  </main>
+  <footer>
+  </footer>
+{%- endcapture -%}
+
+{%- include base.html -%}
+
+{%- comment -%} vim: set expandtab shiftwidth=2 syntax=liquid: {%- endcomment -%}

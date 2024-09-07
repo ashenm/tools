@@ -1,0 +1,244 @@
+---
+lang: en
+title: Catalogue
+keywords: ashen, gunaratne, ashen m. gunaratne, educational, tools, materials, catalogue
+---
+
+{%- capture metadata -%}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <meta name="description" content="{{ page.desc | default: site.desc }}" />
+  <meta name="keywords" content="{{ page.keywords | default: site.keywords }}" />
+  <meta name="author" content="{{ site.author | default: site.author }}" />
+
+  <title>{{ page.title }}</title>
+
+  <style type="text/css">
+
+    body {
+      margin: 15px;
+      font-family: "Segoe UI", "Roboto", "sans-serif";
+    }
+
+    a {
+      color: #007bff;
+      text-decoration: none;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-right: auto;
+      margin-left: auto;
+    }
+
+    table th,
+    table td {
+      padding: 0.75rem;
+      border-top: 1px solid #e9ecef;
+      text-align: left;
+    }
+
+    thead th {
+      border-bottom: 2px solid #e9ecef;
+    }
+
+    tbody th {
+      color: #6C757D;
+      border-top: none;
+    }
+
+    tbody tr:hover {
+      background-color: #efefef;
+    }
+
+    tbody tr td:first-child {
+      white-space: nowrap;
+    }
+
+    caption {
+      color: #868e96;
+      padding-top: 0.75rem;
+      padding-bottom: 0.75rem;
+      caption-side: bottom;
+      text-align: center;
+    }
+
+    @media (min-width: 576px) {
+      table { max-width: 75vw; }
+    }
+
+    @media (min-width: 768px) {
+      table { max-width: 65vw; }
+    }
+
+    @media (min-width: 992px) {
+      table { max-width: 55vw; }
+    }
+
+    @media (min-width: 1200px) {
+      table { max-width: 45vw; }
+    }
+
+  </style>
+{%- endcapture -%}
+
+{%- capture body -%}
+  <main>
+    <table>
+      <caption>List of Tools</caption>
+      <thead>
+        <tr>
+          <th scope="col">Tool</th>
+          <th scope="col">Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th id="audio" colspan="2">Audio</th>
+        </tr>
+        <tr>
+          <td headers="audio"><a href="audio/gauge">Audio Gauge</a></td>
+          <td headers="audio">An audio file size calculator</td>
+        </tr>
+        <tr>
+          <th id="cryptography" colspan="2">Cryptography</th>
+        </tr>
+        <tr>
+          <td headers="cryptography"><a href="cryptography/caesar">Caesar Cipher</a></td>
+          <td headers="cryptography">A shift substitution cipher</td>
+        </tr>
+        <tr>
+          <td headers="cryptography"><a href="cryptography/random">Random Password</a></td>
+          <td headers="cryptography">A login page with a random password with prominent security vulnerabilities</td>
+        </tr>
+        <tr>
+          <td headers="cryptography"><a href="cryptography/vigenere">Vigenere Cipher</a></td>
+          <td headers="cryptography">A shift substitution cipher</td>
+        </tr>
+        <tr>
+          <th id="data-structures" colspan="2">Data Structures</th>
+        </tr>
+        <tr>
+          <td headers="data-structures"><a href="data-structures/heapify">Heapify</a></td>
+          <td headers="data-structures">An array to heap visualiser</td>
+        </tr>
+        <tr>
+          <th id="encoders" colspan="2">Encoders</th>
+        </tr>
+        <tr>
+          <td headers="encoders"><a href="encoders/dataurl">FileToURL</a></td>
+          <td headers="encoders">A file to Data URL encoder</td>
+        </tr>
+        <tr>
+          <td headers="encoders"><a href="encoders/uri">URI Encoder</a></td>
+          <td headers="encoders">A percent-encoder</td>
+        </tr>
+        <tr>
+          <th id="generic" colspan="2">Generic</th>
+        </tr>
+        <tr>
+          <td headers="generic"><a href="ascii">ASCII</a></td>
+          <td headers="generic">An ASCII lookup table</td>
+        </tr>
+        <tr>
+          <td headers="generic"><a href="bulbs">Binary Bulbs</a></td>
+          <td headers="generic">An interactive illustration of binary number system</td>
+        </tr>
+        <tr>
+          <td headers="generic"><a href="bytes">Bytes</a></td>
+          <td headers="generic">A binary prefix calculator</td>
+        </tr>
+        <tr>
+          <td headers="generic"><a href="draw">DrawBoard</a></td>
+          <td headers="generic">An interactive blackboard</td>
+        </tr>
+        <tr>
+          <td headers="generic"><a href="utc">UTC</a></td>
+          <td headers="generic">A UTC, EST, UNIX, and local time converter</td>
+        </tr>
+        <tr>
+          <th id="graphics" colspan="2">Graphics</th>
+        </tr>
+        <tr>
+          <td headers="graphics"><a href="graphics/cmyk">CMYK Explorer</a></td>
+          <td headers="graphics">A CMYK colour scheme explorer</td>
+        </tr>
+        <tr>
+          <td headers="graphics"><a href="graphics/colorpick">ColorPick</a></td>
+          <td headers="graphics">A RGBA color picker</td>
+        </tr>
+        <tr>
+          <td headers="graphics"><a href="graphics/gauge">Image Gauge</a></td>
+          <td headers="graphics">An image file size calculator</td>
+        </tr>
+        <tr>
+          <td headers="graphics"><a href="graphics/grid">GridSnap</a></td>
+          <td headers="graphics">An image gridline delineator</td>
+        </tr>
+        <tr>
+          <td headers="graphics"><a href="graphics/livefeed">LiveFeed</a></td>
+          <td headers="graphics">A webcam viewer</td>
+        </tr>
+        <tr>
+          <td headers="graphics"><a href="graphics/rgb">RGB Explorer</a></td>
+          <td headers="graphics">A RGB colour scheme explorer</td>
+        </tr>
+        <tr>
+          <th id="mathematics" colspan="2">Mathematics</th>
+        </tr>
+        <tr>
+          <td headers="mathematics"><a href="mathematics/bcd">BCD</a></td>
+          <td headers="mathematics">A binary-coded decimal converter</td>
+        </tr>
+        <tr>
+          <td headers="mathematics"><a href="mathematics/factors">Factors</a></td>
+          <td headers="mathematics">A LCM/GCD calculator</td>
+        </tr>
+        <tr>
+          <td headers="mathematics"><a href="mathematics/latex">LaTeX</a></td>
+          <td headers="mathematics">A TeX/LaTex typesetting renderer</td>
+        </tr>
+        <tr>
+          <td headers="mathematics"><a href="mathematics/numerals">Numerals</a></td>
+          <td headers="mathematics">A numeral base converter</td>
+        </tr>
+        <tr>
+          <td headers="mathematics"><a href="mathematics/twos-complement">Two&#x27;s Complement</a></td>
+          <td headers="mathematics">A two&#x27;s complement calculator</td>
+        </tr>
+        <tr>
+          <th id="networking" colspan="2">Networking</th>
+        </tr>
+        <tr>
+          <td headers="networking"><a href="networking/subnetting">Subnetting</a></td>
+          <td headers="networking">An IPv4 fixed-length network subdivisor</td>
+        </tr>
+        <tr>
+          <td headers="networking"><a href="networking/vlsm">VLSM</a></td>
+          <td headers="networking">An IPv4 arbitrary-length subdivisor</td>
+        </tr>
+        <tr>
+          <th id="physics" colspan="2">Physics</th>
+        </tr>
+        <tr>
+          <td headers="physics"><a href="physics/wire">Wire</a></td>
+          <td headers="physics">A wire gauge and resistance calculator</td>
+        </tr>
+        <tr>
+          <th id="web-authoring" colspan="2">Web Authoring</th>
+        </tr>
+        <tr>
+          <td headers="web-authoring"><a href="web-authoring/blink">Blink</a></td>
+          <td headers="web-authoring">An illustration of depreciated blink tag</td>
+        </tr>
+        <tr>
+          <td headers="web-authoring"><a href="web-authoring/editor">HTMLEditor</a></td>
+          <td headers="web-authoring">A live HTML editor</td>
+        </tr>
+      </tbody>
+    </table>
+  </main>
+{%- endcapture -%}
+
+{%- include base.html -%}
